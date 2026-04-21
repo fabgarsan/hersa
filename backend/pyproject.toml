@@ -1,0 +1,28 @@
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "UP"]
+ignore = ["E501"]
+
+[tool.mypy]
+python_version = "3.12"
+plugins = ["mypy_django_plugin.main", "mypy_drf_plugin.main"]
+strict = true
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = ["factory", "factory.*"]
+ignore_errors = true
+
+[[tool.mypy.overrides]]
+module = "apps.*.factories"
+disallow_untyped_calls = false
+
+[tool.django-stubs]
+django_settings_module = "hersa.settings"
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "hersa.settings"
+python_files = ["tests.py", "test_*.py"]

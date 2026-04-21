@@ -1,0 +1,16 @@
+#!/bin/sh
+
+# Frontend: ESLint + Prettier via lint-staged (runs from frontend/ so paths and config resolve correctly)
+STAGED_FRONTEND=$(git diff --cached --name-only --diff-filter=ACM | grep "^frontend/src/.*\.\(ts\|tsx\)$" || true)
+if [ -n "$STAGED_FRONTEND" ]; then
+  (cd frontend && npx lint-staged)
+fi
+
+# Backend: ruff + mypy on staged Python files
+STAGED_PY=$(git diff --cached --name-only --diff-filter=ACM | grep "^backend/.*\.py$" || true)
+
+if [ -n "$STAGED_PY" ]; then
+  echo "Running ruff on staged backend files..."
+  RELATIVE_PY=$(echo "$STAGED_PY" | sed 's|^backend/||g')
+  (cd backend && pipenv run ruff check $RELATIVE_PY --fix && pipenv run mypy $RELATIVE_PY)
+fi
