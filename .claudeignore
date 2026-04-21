@@ -1,0 +1,42 @@
+# IDE
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment files
+.env
+*.env.local
+
+# Node
+node_modules/
+package-lock.json
+
+# Frontend build
+frontend/dist/
+frontend/tsconfig.tsbuildinfo
+
+# Python caches & artifacts
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+*.egg-info/
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+
+# Lock files (large, auto-generated)
+Pipfile.lock
+
+# Django collected static & media
+backend/staticfiles/
+backend/media/
+
+# Test coverage
+.coverage
+htmlcov/
+
+# Git hooks internals
+.husky/_/
