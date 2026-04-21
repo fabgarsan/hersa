@@ -1,0 +1,15 @@
+FROM python:3.12-slim
+
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+
+WORKDIR /app
+
+RUN pip install pipenv
+
+COPY Pipfile ./
+RUN pipenv install --dev --deploy --ignore-pipfile
+
+COPY . .
+
+EXPOSE 8000
