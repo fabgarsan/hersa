@@ -1,11 +1,12 @@
+---
+model: haiku
+---
+
 Analyze the changes in the current branch and create a comprehensive PR description.
 
 **IMPORTANT**: Follow CLAUDE.md for git workflow (worktree vs branch-based).
 
-**IMPORTANT**: You have access to environment variables and git information WITHOUT executing bash commands:
-
-- `$DATA_REPO` is available in the `<env>` section as "Working directory"
-- Do NOT execute `echo $DATA_REPO` - read it directly from your environment context
+**IMPORTANT**: The project root (where `.claude/` lives) is available in the `<env>` section as "Working directory".
 
 Steps:
 
@@ -13,7 +14,11 @@ Steps:
 2. Get the current branch name by running: `git branch --show-current`
    - DO NOT rely on gitStatus from context - it may be stale from the start of the conversation
    - ALWAYS execute the git command to get the CURRENT branch
-3. Try to read `$DATA_REPO/.claude/tmp/<branch-name>.json` using the Read tool
+3. **Extract Linear ID from branch name** (if present):
+   - Look for pattern `HRS-xxx` where xxx is a number
+   - If found, extract it (e.g., from `fabiogarciasanchez/hrs-7-configure-haiku` → `HRS-7`)
+   - Use Linear MCP to fetch the issue and get its URL
+4. Try to read `<project-root>/.claude/tmp/<branch-name>.json` using the Read tool
 
    - If it exists: Ask the user if they want to:
 
@@ -21,14 +26,18 @@ Steps:
 
      **b)** Overwrite with a new description based on current changes
 
-   - If they choose to reuse: Skip to the final step and provide the command
+   - If they choose to reuse: Skip to step 8
    - If the file doesn't exist or they choose to overwrite: Continue to step 5
 
-4. Review the changes with: `git diff master` (or appropriate base branch)
-5. Create a JSON file at: `$DATA_REPO/.claude/tmp/<branch-name>.json`
-6. When you're done, show me the description.
-7. Immediately following the description, provide the command to create the PR using gh cli:
-   `gh pr create --recover $DATA_REPO/.claude/tmp/<branch-name>.json`
+5. Review the changes with: `git diff master` (or appropriate base branch)
+6. Create the PR title:
+   - If Linear ID found: `HRS-xxx - <Your Title>`
+   - If no Linear ID: `<Your Title>`
+7. Create a JSON file at: `<project-root>/.claude/tmp/<branch-name>.json`
+   - **IMPORTANT**: If Linear ID was found, prepend the Linear issue URL at the very start of the Body (before any other content)
+8. When you're done, show the PR description.
+9. Immediately following the description, provide the command to create the PR using gh cli:
+   `gh pr create --recover <project-root>/.claude/tmp/<branch-name>.json`
 
 The JSON file should have this exact structure:
 
@@ -37,8 +46,8 @@ The JSON file should have this exact structure:
   "Type": 1,
   "Draft": false,
   "ActorAssignees": false,
-  "Body": "<markdown description here>",
-  "Title": "[Component] Brief title",
+  "Body": "[Linear Issue Link](https://linear.app/hersa/issue/HRS-xxx/...)\n\n## Summary\n\n...",
+  "Title": "HRS-7 - Your PR title here",
   "Template": "",
   "Metadata": null,
   "Reviewers": null,
@@ -49,6 +58,15 @@ The JSON file should have this exact structure:
   "MetadataResult": null
 }
 ```
+
+**Title Format:**
+- With Linear ID: `HRS-7 - Configure Haiku model for CLI commands`
+- Without Linear ID: `Configure Haiku model for CLI commands`
+
+**Body Format:**
+- ALWAYS start with the Linear issue link (if ID was found)
+- Format: `[HRS-7](https://linear.app/hersa/issue/HRS-7/configure-haiku-model-for-cli-commands)`
+- Then add blank line and proceed with the description sections
 
 ## Conciseness Requirements
 
