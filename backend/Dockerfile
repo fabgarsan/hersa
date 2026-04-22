@@ -7,9 +7,14 @@ WORKDIR /app
 
 RUN pip install pipenv
 
-COPY Pipfile ./
-RUN pipenv install --dev --deploy --ignore-pipfile
+COPY Pipfile Pipfile.lock ./
+RUN pipenv install --deploy --ignore-pipfile
 
 COPY . .
 
+RUN chmod +x docker-entrypoint.sh
+
 EXPOSE 8000
+
+ENTRYPOINT ["./docker-entrypoint.sh"]
+CMD ["pipenv", "run", "gunicorn", "--config", "gunicorn.conf.py", "hersa.wsgi:application"]

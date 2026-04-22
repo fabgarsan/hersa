@@ -2,11 +2,9 @@ from pathlib import Path
 
 from decouple import Csv, config
 
-BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 SECRET_KEY: str = config("SECRET_KEY")
-DEBUG: bool = config("DEBUG", default=False, cast=bool)
-ALLOWED_HOSTS: list[str] = config("ALLOWED_HOSTS", default="localhost", cast=Csv())
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -19,6 +17,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "rest_framework_simplejwt",
     "corsheaders",
+    "storages",
     # Local
     "apps.users",
 ]
@@ -54,17 +53,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "hersa.wsgi.application"
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": config("DB_NAME", default="hersa"),
-        "USER": config("DB_USER", default="hersa"),
-        "PASSWORD": config("DB_PASSWORD", default="hersa"),
-        "HOST": config("DB_HOST", default="db"),
-        "PORT": config("DB_PORT", default="5432"),
-    }
-}
-
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
     {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
@@ -79,6 +67,9 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
+
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
@@ -97,7 +88,6 @@ CORS_ALLOWED_ORIGINS: list[str] = config(
     "CORS_ALLOWED_ORIGINS", default="http://localhost:5173", cast=Csv()
 )
 
-# Email — use console backend locally; override to SMTP in production via env var
 EMAIL_BACKEND: str = config(
     "EMAIL_BACKEND", default="django.core.mail.backends.console.EmailBackend"
 )

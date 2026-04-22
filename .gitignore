@@ -1,5 +1,6 @@
 # Editors
 .idea/
+frontend/.vite
 .vscode/
 *.swp
 *.swo
