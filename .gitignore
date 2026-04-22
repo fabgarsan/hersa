@@ -4,6 +4,7 @@ frontend/.vite
 .vscode/
 *.swp
 *.swo
+frontend/.vite/
 
 # OS
 .DS_Store
