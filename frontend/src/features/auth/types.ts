@@ -7,3 +7,8 @@ export interface LoginCredentials {
   username: string;
   password: string;
 }
+
+export interface UseAuthReturn {
+  isAuthenticated: boolean;
+  logout: () => void;
+}

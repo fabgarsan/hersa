@@ -8,3 +8,8 @@ export interface TokenPair {
 }
 
 export type LoginCredentials = z.infer<typeof loginSchema>;
+
+export interface UseAuthReturn {
+  isAuthenticated: boolean;
+  logout: () => void;
+}

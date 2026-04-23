@@ -17,15 +17,8 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { ROUTES } from "@shared/constants/routes";
 import { UI } from "@shared/constants/ui";
 import { usePermissions } from "@shared/hooks/usePermissions";
-import { ModuleSlug } from "@shared/types/permissions";
+import type { NavItem } from "./types";
 import styles from "./NavSidebar.module.scss";
-
-interface NavItem {
-  label: string;
-  icon: React.ReactNode;
-  path: string;
-  module: ModuleSlug | null;
-}
 
 const NAV_ITEMS: NavItem[] = [
   { label: UI.nav.STORE, icon: <StorefrontIcon />, path: ROUTES.TIENDA, module: "tienda" },

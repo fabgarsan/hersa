@@ -1,16 +1,9 @@
-import React from "react";
-
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 
 import { usePermissions } from "@shared/hooks/usePermissions";
-import { ModuleSlug } from "@shared/types/permissions";
+import type { ModuleGuardProps } from "./types";
 import styles from "./ModuleGuard.module.scss";
-
-interface ModuleGuardProps {
-  module: ModuleSlug;
-  children: React.ReactNode;
-}
 
 export function ModuleGuard({ module, children }: ModuleGuardProps) {
   const { hasAccess, isLoading } = usePermissions();

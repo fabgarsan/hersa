@@ -1,4 +1,3 @@
-import type { ReactNode } from "react";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
@@ -8,11 +7,8 @@ import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
 import LogoutIcon from "@mui/icons-material/Logout";
 import { useAuth } from "@/features/auth/useAuth";
+import type { LayoutProps } from "./types";
 import styles from "./Layout.module.scss";
-
-interface LayoutProps {
-  children: ReactNode;
-}
 
 export function Layout({ children }: LayoutProps) {
   const { logout } = useAuth();
