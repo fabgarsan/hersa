@@ -1,9 +1,10 @@
-import React from 'react';
+import React from "react";
 
-import { Box, Typography } from '@mui/material';
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
 
-import { usePermissions } from '@shared/hooks/usePermissions';
-import { ModuleSlug } from '@shared/types/permissions';
+import { usePermissions } from "@shared/hooks/usePermissions";
+import { ModuleSlug } from "@shared/types/permissions";
 
 interface ModuleGuardProps {
   module: ModuleSlug;
@@ -21,11 +22,11 @@ export function ModuleGuard({ module, children }: ModuleGuardProps) {
     return (
       <Box
         sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          height: '100%',
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          height: "100%",
         }}
       >
         <Typography variant="h2" color="text.secondary">
