@@ -1,5 +1,9 @@
 # Security Checklist — Hersa
 
+> **Agents:** security-auditor (always); django-developer, react-developer for auth/data-sensitive modules  
+> **Load when:** Pre-deploy review; implementing auth, permissions, or data-sensitive features  
+> **Summary:** Project-specific security checklist with [DEPLOY] blockers
+
 Apply this checklist when writing or reviewing code. Items marked **[DEPLOY]** block the deploy if not met.
 
 ## Django — Configuration

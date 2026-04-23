@@ -1,5 +1,9 @@
 # Error Handling — Hersa
 
+> **Agents:** django-developer, react-developer  
+> **Load when:** Writing views, serializers, or React components that handle API responses  
+> **Summary:** Error handling patterns for DRF views and React Query / mutations
+
 Consistent error handling patterns for both layers. All agents must follow these conventions.
 
 ## Django — Backend
