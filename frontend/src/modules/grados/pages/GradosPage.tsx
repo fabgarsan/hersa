@@ -1,4 +1,7 @@
-import { Box, Typography, Paper, Grid2 } from "@mui/material";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import Paper from "@mui/material/Paper";
+import Grid2 from "@mui/material/Grid2";
 import SchoolIcon from "@mui/icons-material/School";
 
 export default function GradosPage() {

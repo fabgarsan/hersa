@@ -1,4 +1,7 @@
-import { Box, Grid2, Typography, Paper } from "@mui/material";
+import Box from "@mui/material/Box";
+import Grid2 from "@mui/material/Grid2";
+import Typography from "@mui/material/Typography";
+import Paper from "@mui/material/Paper";
 import StorefrontIcon from "@mui/icons-material/Storefront";
 
 export default function TiendaPage() {

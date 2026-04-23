@@ -1,5 +1,11 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Box, Button, Container, Paper, TextField, Typography, Alert } from "@mui/material";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Container from "@mui/material/Container";
+import Paper from "@mui/material/Paper";
+import TextField from "@mui/material/TextField";
+import Typography from "@mui/material/Typography";
+import Alert from "@mui/material/Alert";
 import { Controller, useForm } from "react-hook-form";
 
 import { UI } from "../../constants/ui";

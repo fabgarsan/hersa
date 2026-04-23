@@ -1,6 +1,8 @@
 import { useState } from "react";
 import type { ReactNode } from "react";
-import { Box, Drawer, Toolbar } from "@mui/material";
+import Box from "@mui/material/Box";
+import Drawer from "@mui/material/Drawer";
+import Toolbar from "@mui/material/Toolbar";
 
 import { AppHeader } from "./AppHeader";
 import { NavSidebar } from "./NavSidebar";
