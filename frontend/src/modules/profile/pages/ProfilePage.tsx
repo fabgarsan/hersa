@@ -5,7 +5,7 @@ import {
   CardHeader,
   Container,
   Divider,
-  Grid,
+  Grid2,
   Typography,
 } from "@mui/material";
 import LockIcon from "@mui/icons-material/Lock";
@@ -20,8 +20,8 @@ export default function ProfilePage() {
         Mi perfil
       </Typography>
 
-      <Grid container spacing={3} sx={{ mt: 1 }}>
-        <Grid item xs={12} md={6}>
+      <Grid2 container spacing={3} sx={{ mt: 1 }}>
+        <Grid2 size={{ xs: 12, md: 6 }}>
           <Card variant="outlined">
             <CardHeader
               avatar={<LockIcon color="primary" />}
@@ -36,9 +36,9 @@ export default function ProfilePage() {
               <ChangePasswordForm />
             </CardContent>
           </Card>
-        </Grid>
+        </Grid2>
 
-        <Grid item xs={12} md={6}>
+        <Grid2 size={{ xs: 12, md: 6 }}>
           <Card variant="outlined">
             <CardHeader
               avatar={<PersonIcon color="primary" />}
@@ -57,8 +57,8 @@ export default function ProfilePage() {
               </Box>
             </CardContent>
           </Card>
-        </Grid>
-      </Grid>
+        </Grid2>
+      </Grid2>
     </Container>
   );
 }

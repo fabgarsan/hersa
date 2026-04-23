@@ -1,6 +1,7 @@
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 
 import { Layout } from "@shared/components/Layout";
+import { ModuleGuard } from "@shared/components/ModuleGuard";
 import { ROUTES } from "@shared/constants/routes";
 import { AuthModal, useAuth } from "@modules/auth";
 import { TiendaPage } from "@modules/tienda";
@@ -31,8 +32,8 @@ export default function App() {
     <Layout>
       <Routes>
         <Route path={ROUTES.HOME} element={<Navigate to={ROUTES.PROFILE} replace />} />
-        <Route path={ROUTES.TIENDA} element={<TiendaPage />} />
-        <Route path={ROUTES.GRADOS} element={<GradosPage />} />
+        <Route path={ROUTES.TIENDA} element={<ModuleGuard module="tienda"><TiendaPage /></ModuleGuard>} />
+        <Route path={ROUTES.GRADOS} element={<ModuleGuard module="programador"><GradosPage /></ModuleGuard>} />
         <Route path={ROUTES.ADMIN} element={<AdminPage />} />
         <Route path={ROUTES.PROFILE} element={<ProfilePage />} />
       </Routes>

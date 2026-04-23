@@ -330,3 +330,4 @@ npm install <package>
 | `<method><n>Mutation.ts` for mutations | Generic names like `roomApi.ts` |
 | `types.ts` per feature | Types scattered across component files |
 | Export from feature `index.ts` | Import directly from internal feature files |
+| `import Grid2 from '@mui/material/Grid2'` — use `size={{ xs, sm, md }}` prop | Legacy `Grid` from `@mui/material` with `item`/`xs`/`sm`/`md` as separate props |
