@@ -1,0 +1,26 @@
+@use '../../../shared/styles/variables' as v;
+
+.container {
+  padding-top: v.sp(2);
+  padding-bottom: v.sp(2);
+
+  @media (min-width: v.$breakpoint-sm) {
+    padding-top: v.sp(3);
+    padding-bottom: v.sp(3);
+  }
+
+  @media (min-width: v.$breakpoint-md) {
+    padding-top: v.sp(4);
+    padding-bottom: v.sp(4);
+  }
+}
+
+.grid {
+  margin-top: v.sp(1);
+}
+
+.placeholder {
+  padding-top: v.sp(4);
+  padding-bottom: v.sp(4);
+  text-align: center;
+}

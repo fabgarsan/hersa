@@ -12,15 +12,16 @@ import LockIcon from "@mui/icons-material/Lock";
 import PersonIcon from "@mui/icons-material/Person";
 
 import { ChangePasswordForm } from "../features/password";
+import styles from "./ProfilePage.module.scss";
 
 export default function ProfilePage() {
   return (
-    <Container maxWidth="lg" sx={{ py: { xs: 2, sm: 3, md: 4 } }}>
+    <Container maxWidth="lg" className={styles.container}>
       <Typography variant="h4" fontWeight={600} color="primary" gutterBottom>
         Mi perfil
       </Typography>
 
-      <Grid2 container spacing={3} sx={{ mt: 1 }}>
+      <Grid2 container spacing={3} className={styles.grid}>
         <Grid2 size={{ xs: 12, md: 6 }}>
           <Card variant="outlined">
             <CardHeader
@@ -50,7 +51,7 @@ export default function ProfilePage() {
             />
             <Divider />
             <CardContent>
-              <Box sx={{ py: 4, textAlign: "center" }}>
+              <Box className={styles.placeholder}>
                 <Typography variant="body1" color="text.secondary">
                   Edición de perfil próximamente.
                 </Typography>

@@ -1,0 +1,13 @@
+@use '../../shared/styles/variables' as v;
+
+.container {
+  margin-top: v.sp(12);
+}
+
+.paper {
+  padding: v.sp(4);
+}
+
+.alert {
+  margin-bottom: v.sp(2);
+}

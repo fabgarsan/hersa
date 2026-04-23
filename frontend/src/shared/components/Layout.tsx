@@ -6,8 +6,7 @@ import Toolbar from "@mui/material/Toolbar";
 
 import { AppHeader } from "./AppHeader";
 import { NavSidebar } from "./NavSidebar";
-
-const DRAWER_WIDTH = 240;
+import styles from "./Layout.module.scss";
 
 interface LayoutProps {
   children: ReactNode;
@@ -19,51 +18,26 @@ export function Layout({ children }: LayoutProps) {
   const handleDrawerToggle = () => setMobileOpen((prev) => !prev);
 
   return (
-    <Box sx={{ display: "flex", minHeight: "100vh" }}>
-      <AppHeader drawerWidth={DRAWER_WIDTH} onMenuClick={handleDrawerToggle} />
+    <Box className={styles.root}>
+      <AppHeader onMenuClick={handleDrawerToggle} />
 
-      {/* Mobile: temporary drawer (overlay) */}
       <Drawer
         variant="temporary"
         open={mobileOpen}
         onClose={handleDrawerToggle}
         ModalProps={{ keepMounted: true }}
-        sx={{
-          display: { xs: "block", md: "none" },
-          "& .MuiDrawer-paper": { width: DRAWER_WIDTH, boxSizing: "border-box", border: "none" },
-        }}
+        className={styles.mobileDrawer}
       >
         <NavSidebar />
       </Drawer>
 
-      {/* Desktop: permanent drawer (pushes content) */}
-      <Drawer
-        variant="permanent"
-        sx={{
-          display: { xs: "none", md: "block" },
-          width: DRAWER_WIDTH,
-          flexShrink: 0,
-          "& .MuiDrawer-paper": { width: DRAWER_WIDTH, boxSizing: "border-box", border: "none" },
-        }}
-        open
-      >
+      <Drawer variant="permanent" className={styles.desktopDrawer} open>
         <NavSidebar />
       </Drawer>
 
-      {/* Main content */}
-      <Box
-        component="main"
-        sx={{
-          flexGrow: 1,
-          display: "flex",
-          flexDirection: "column",
-          minHeight: "100vh",
-          width: { md: `calc(100% - ${DRAWER_WIDTH}px)` },
-          bgcolor: "background.default",
-        }}
-      >
+      <Box component="main" className={styles.main}>
         <Toolbar />
-        <Box sx={{ flexGrow: 1, p: { xs: 2, sm: 3, md: 4 } }}>{children}</Box>
+        <Box className={styles.content}>{children}</Box>
       </Box>
     </Box>
   );

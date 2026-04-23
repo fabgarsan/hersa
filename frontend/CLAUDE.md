@@ -101,6 +101,7 @@ typography: {
 | Global state  | Redux Toolkit (only when necessary)   |
 | Forms         | react-hook-form                       |
 | HTTP Client   | axios (centralized instance)          |
+| Styling       | SCSS Modules (sass)                   |
 | Linting       | ESLint + Prettier                     |
 | Git hooks     | Husky + lint-staged                   |
 | Testing       | React Testing Library                 |
@@ -113,10 +114,11 @@ frontend/
 ├── src/
 │   ├── api/                      # Axios instance & interceptors
 │   ├── shared/
-│   │   ├── components/           # Reusable UI components
+│   │   ├── components/           # Reusable UI components (PascalCase .tsx + .module.scss)
 │   │   ├── hooks/                # Reusable custom hooks
 │   │   ├── contexts/             # Global contexts (Auth, Theme…)
 │   │   ├── helpers/              # Shared business logic (Hersa domain)
+│   │   ├── styles/               # theme.ts + _variables.scss (SCSS brand tokens)
 │   │   ├── utils/                # Shared code utilities (generic, domain-agnostic)
 │   │   └── types/                # Shared TypeScript types/interfaces
 │   ├── features/
@@ -124,7 +126,7 @@ frontend/
 │   │       ├── api/
 │   │       │   ├── get<n>Query.ts
 │   │       │   └── <method><n>Mutation.ts
-│   │       ├── components/       # PascalCase files
+│   │       ├── components/       # PascalCase .tsx + co-located .module.scss
 │   │       ├── hooks/            # camelCase files
 │   │       ├── helpers/          # Business logic for this feature (camelCase files)
 │   │       ├── utils/            # Code utilities for this feature (camelCase files)
@@ -289,6 +291,37 @@ export interface Room {
 }
 ```
 
+## Styling
+
+**Rule: every component file must have a co-located CSS Module.**
+
+| Component file | Style file |
+|----------------|------------|
+| `NavSidebar.tsx` | `NavSidebar.module.scss` |
+| `ProfilePage.tsx` | `ProfilePage.module.scss` |
+
+- Never use MUI's `sx` prop. Use `className={styles.xxx}` from the co-located SCSS module.
+- Never use inline `style={{ ... }}` objects.
+- Import shared brand tokens: `@use '@/shared/styles/variables' as v;` (or via relative path).
+- All brand colors and layout constants live in `src/shared/styles/_variables.scss`.
+- Use `:global(.MuiComponent-class)` inside a module class to target MUI internals.
+- `@emotion/cache` is configured with `prepend: true` in `main.tsx` so compiled SCSS always wins the specificity battle against MUI's Emotion styles.
+
+```scss
+// NavSidebar.module.scss
+@use '../styles/variables' as v;
+
+.root { background-color: v.$primary-dark; }
+.navItemActive { color: v.$secondary-main; border-left: 3px solid v.$secondary-main; }
+```
+
+```tsx
+// NavSidebar.tsx
+import styles from './NavSidebar.module.scss';
+<Box className={styles.root}>
+  <ListItemButton className={active ? styles.navItemActive : styles.navItem}>
+```
+
 ## Forms
 
 - Always use `react-hook-form` for form state and validation.
@@ -331,3 +364,6 @@ npm install <package>
 | `types.ts` per feature | Types scattered across component files |
 | Export from feature `index.ts` | Import directly from internal feature files |
 | `import Grid2 from '@mui/material/Grid2'` — use `size={{ xs, sm, md }}` prop | Legacy `Grid` from `@mui/material` with `item`/`xs`/`sm`/`md` as separate props |
+| Co-located `ComponentName.module.scss` per component | `sx={{...}}` inline styles or `style={{...}}` objects |
+| `className={styles.xxx}` from CSS Module | MUI `sx` prop for styling |
+| `@use '.../shared/styles/variables' as v;` for brand tokens | Hardcode hex colors in SCSS |

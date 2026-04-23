@@ -1,0 +1,61 @@
+@use '../styles/variables' as v;
+
+.root {
+  display: flex;
+  min-height: 100vh;
+}
+
+.mobileDrawer {
+  display: block;
+
+  @media (min-width: v.$breakpoint-md) {
+    display: none;
+  }
+
+  :global(.MuiDrawer-paper) {
+    width: v.$drawer-width;
+    box-sizing: border-box;
+    border: none;
+  }
+}
+
+.desktopDrawer {
+  display: none;
+  width: v.$drawer-width;
+  flex-shrink: 0;
+
+  @media (min-width: v.$breakpoint-md) {
+    display: block;
+  }
+
+  :global(.MuiDrawer-paper) {
+    width: v.$drawer-width;
+    box-sizing: border-box;
+    border: none;
+  }
+}
+
+.main {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: v.$bg-default;
+
+  @media (min-width: v.$breakpoint-md) {
+    width: calc(100% - #{v.$drawer-width});
+  }
+}
+
+.content {
+  flex-grow: 1;
+  padding: v.sp(2);
+
+  @media (min-width: v.$breakpoint-sm) {
+    padding: v.sp(3);
+  }
+
+  @media (min-width: v.$breakpoint-md) {
+    padding: v.sp(4);
+  }
+}

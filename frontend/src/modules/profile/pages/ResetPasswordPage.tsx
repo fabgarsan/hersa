@@ -9,6 +9,7 @@ import { Link as RouterLink, useSearchParams } from "react-router-dom";
 import { ROUTES } from "@shared/constants/routes";
 import { UI } from "../constants/ui";
 import { ResetPasswordForm } from "../features/password";
+import styles from "./ResetPasswordPage.module.scss";
 
 export default function ResetPasswordPage() {
   const [searchParams] = useSearchParams();
@@ -18,19 +19,10 @@ export default function ResetPasswordPage() {
   const isValidLink = uid.length > 0 && token.length > 0;
 
   return (
-    <Box
-      sx={{
-        minHeight: "100vh",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        bgcolor: "background.default",
-        px: 2,
-      }}
-    >
+    <Box className={styles.pageRoot}>
       <Container maxWidth="xs">
         <Card variant="outlined">
-          <CardContent sx={{ p: { xs: 3, sm: 4 } }}>
+          <CardContent className={styles.cardContent}>
             <Typography variant="h5" fontWeight={600} color="primary" gutterBottom>
               {UI.pages.resetPassword.TITLE}
             </Typography>
@@ -39,7 +31,7 @@ export default function ResetPasswordPage() {
               <ResetPasswordForm uid={uid} token={token} />
             ) : (
               <Box>
-                <Typography color="error" sx={{ mb: 2 }}>
+                <Typography color="error" className={styles.invalidLinkMessage}>
                   {UI.pages.resetPassword.INVALID_LINK}
                 </Typography>
                 <Link
@@ -53,7 +45,7 @@ export default function ResetPasswordPage() {
               </Box>
             )}
 
-            <Box sx={{ mt: 3, textAlign: "center" }}>
+            <Box className={styles.footer}>
               <Link component={RouterLink} to={ROUTES.HOME} variant="body2" color="primary">
                 {UI.pages.resetPassword.BACK_TO_LOGIN}
               </Link>

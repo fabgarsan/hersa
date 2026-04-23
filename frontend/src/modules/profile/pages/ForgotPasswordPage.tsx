@@ -9,32 +9,24 @@ import { Link as RouterLink } from "react-router-dom";
 import { ROUTES } from "@shared/constants/routes";
 import { UI } from "../constants/ui";
 import { ForgotPasswordForm } from "../features/password";
+import styles from "./ForgotPasswordPage.module.scss";
 
 export default function ForgotPasswordPage() {
   return (
-    <Box
-      sx={{
-        minHeight: "100vh",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        bgcolor: "background.default",
-        px: 2,
-      }}
-    >
+    <Box className={styles.pageRoot}>
       <Container maxWidth="xs">
         <Card variant="outlined">
-          <CardContent sx={{ p: { xs: 3, sm: 4 } }}>
+          <CardContent className={styles.cardContent}>
             <Typography variant="h5" fontWeight={600} color="primary" gutterBottom>
               {UI.pages.forgotPassword.TITLE}
             </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+            <Typography variant="body2" color="text.secondary" className={styles.subtitle}>
               {UI.pages.forgotPassword.SUBTITLE}
             </Typography>
 
             <ForgotPasswordForm />
 
-            <Box sx={{ mt: 3, textAlign: "center" }}>
+            <Box className={styles.footer}>
               <Link component={RouterLink} to={ROUTES.HOME} variant="body2" color="primary">
                 {UI.pages.forgotPassword.BACK_TO_LOGIN}
               </Link>
