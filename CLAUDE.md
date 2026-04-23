@@ -36,15 +36,26 @@ my-project/
 
 ## AWS Infrastructure
 
-| Resource  | Service                       |
-|-----------|-------------------------------|
-| Frontend  | S3 (static) + CloudFront      |
-| Backend   | Elastic Beanstalk             |
-| Database  | RDS PostgreSQL                |
+| Resource  | Service                                              |
+|-----------|------------------------------------------------------|
+| Frontend  | S3 static website hosting (CloudFront — pending approval) |
+| Backend   | Elastic Beanstalk                                    |
+| Database  | RDS PostgreSQL                                       |
 
 - Frontend and backend are deployed **independently** despite living in the same repo.
 - Backend secrets: set as EB environment properties — never hardcoded.
-- Frontend env vars: `VITE_` prefix, injected at build time.
+- Frontend env vars: `VITE_` prefix, injected at build time via `frontend/.env.production`.
+
+### Frontend deploy
+
+```bash
+./frontend/scripts/cf-deploy.sh
+```
+
+- Reads `frontend/.env.production` — requires `S3_BUCKET`, `VITE_API_BASE_URL`.
+- `CLOUDFRONT_DISTRIBUTION_ID` is optional: if set, invalidates the CDN after upload.
+- S3 bucket must have **static website hosting** enabled with error document `index.html` (required for React Router).
+- Hashed assets (`dist/assets/`) are uploaded with `max-age=31536000,immutable`; `index.html` with `no-cache`.
 
 ## Global Rules
 
