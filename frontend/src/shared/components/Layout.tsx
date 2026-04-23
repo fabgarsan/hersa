@@ -1,16 +1,12 @@
 import { useState } from "react";
-import type { ReactNode } from "react";
 import Box from "@mui/material/Box";
 import Drawer from "@mui/material/Drawer";
 import Toolbar from "@mui/material/Toolbar";
 
 import { AppHeader } from "./AppHeader";
 import { NavSidebar } from "./NavSidebar";
+import type { LayoutProps } from "@shared/types/permissions";
 import styles from "./Layout.module.scss";
-
-interface LayoutProps {
-  children: ReactNode;
-}
 
 export function Layout({ children }: LayoutProps) {
   const [mobileOpen, setMobileOpen] = useState(false);

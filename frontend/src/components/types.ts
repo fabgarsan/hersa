@@ -1,7 +1,5 @@
 import type { ReactNode } from "react";
 
-export type ModuleSlug = "tienda" | "programador";
-
 export interface LayoutProps {
   children: ReactNode;
 }

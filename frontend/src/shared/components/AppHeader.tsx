@@ -1,3 +1,4 @@
+import type { AppHeaderProps } from "./types";
 import AppBar from "@mui/material/AppBar";
 import IconButton from "@mui/material/IconButton";
 import Toolbar from "@mui/material/Toolbar";
@@ -7,10 +8,6 @@ import MenuIcon from "@mui/icons-material/Menu";
 
 import { useAuth } from "@modules/auth";
 import styles from "./AppHeader.module.scss";
-
-interface AppHeaderProps {
-  onMenuClick: () => void;
-}
 
 export function AppHeader({ onMenuClick }: AppHeaderProps) {
   const { logout } = useAuth();

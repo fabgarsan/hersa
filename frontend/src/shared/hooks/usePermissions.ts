@@ -1,12 +1,13 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery } from "@tanstack/react-query";
 
-import { apiClient } from '@api/client';
-import { API } from '@shared/constants/api';
-import { ModuleSlug } from '@shared/types/permissions';
+import { apiClient } from "@api/client";
+import { API } from "@shared/constants/api";
+import { ModuleSlug } from "@shared/types/permissions";
+import type { UsePermissionsReturn } from "./types";
 
-export function usePermissions() {
+export function usePermissions(): UsePermissionsReturn {
   const { data, isLoading } = useQuery<ModuleSlug[]>({
-    queryKey: ['permissions', 'me'],
+    queryKey: ["permissions", "me"],
     queryFn: async () => {
       const { data: responseData } = await apiClient.get<ModuleSlug[]>(API.MY_MODULE_PERMISSIONS);
       return responseData;

@@ -1,4 +1,6 @@
-export const useAuth = () => {
+import type { UseAuthReturn } from "./types";
+
+export const useAuth = (): UseAuthReturn => {
   const token = localStorage.getItem("access_token");
   const isAuthenticated = Boolean(token);
 
