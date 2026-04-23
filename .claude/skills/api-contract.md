@@ -1,5 +1,9 @@
 # API Contract — Hersa
 
+> **Agents:** django-developer, react-developer, tdd-writer  
+> **Load when:** Implementing or reviewing any API endpoint  
+> **Summary:** Shared API contract — base URL, response format, casing, HTTP codes, domain resources
+
 Shared contract between the Django backend and the React frontend. Any deviation must be agreed upon and reflected here.
 
 ## Base URL

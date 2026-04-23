@@ -188,10 +188,29 @@ export function clamp(value: number, min: number, max: number): number { ... }
 - If a helper grows complex enough to need a hook (e.g. it fetches data), extract it to `hooks/`
 - Promote to `shared/helpers/` or `shared/utils/` only when used in more than one feature
 
+## Naming Conventions
+
+| Element              | Convention                    | Example                                 |
+|----------------------|-------------------------------|-----------------------------------------|
+| Component files      | `PascalCase`                  | `UserCard.tsx`, `AuthModal.tsx`         |
+| Hook files           | `camelCase`                   | `useAuth.ts`, `useRoomFilters.ts`       |
+| Util / helper files  | `camelCase`                   | `formatDate.ts`, `buildQueryParams.ts`  |
+| Feature folders      | `kebab-case`                  | `user-profile/`, `booking-flow/`        |
+| RQ queries           | `get<n>Query.ts`              | `getRoomsQuery.ts`                      |
+| RQ mutations         | `<method><n>Mutation.ts`      | `createRoomMutation.ts`                 |
+| Types per feature    | `types.ts`                    | `features/rooms/types.ts`               |
+| Component props      | `<ComponentName>Props`        | `AppHeaderProps`, `ModuleGuardProps`    |
+| Hook return types    | `Use<HookName>Return`         | `UseAuthReturn`, `UsePermissionsReturn` |
+| Component styles     | `<ComponentName>.module.scss` | `UserCard.module.scss`                  |
+
 ## TypeScript Conventions
 
 - `strict: true` — never use `any`; use `unknown` + narrowing when the shape is truly unknown.
-- Component props typed with `interface`, not `type`.
+- `interface` for object shapes and domain types; `type` for unions and computed types.
+- Component props typed with `interface`. Named `<ComponentName>Props`, defined in the co-located `types.ts` — never inlined in the `.tsx` file.
+- Hook return types named `Use<HookName>Return`, defined in the co-located `types.ts` — the hook must explicitly annotate its return type.
+- Use `import type` for all type-only imports.
+- Never use `as` to cast — prefer type guards or narrowing.
 - Named exports by default; default export only for pages and layouts.
 - Components as `function` declarations, not top-level arrow functions.
 - Components must stay under **300 lines** — extract hooks or subcomponents if exceeded.
@@ -199,12 +218,15 @@ export function clamp(value: number, min: number, max: number): number { ... }
 
 ## Import Order
 
+MUI imports must be **direct** (never barrel) for tree shaking:
+
 ```typescript
 // 1. React
-import React, { useContext, useState } from 'react';
+import { useContext, useState } from 'react';
 // 2. Third-party (alphabetical within the group)
 import { useQuery } from '@tanstack/react-query';
-import { Box, Button } from '@mui/material';
+import Box from '@mui/material/Box';        // ✅ direct
+import Button from '@mui/material/Button';  // ✅ direct — never { Button } from '@mui/material'
 import { useNavigate } from 'react-router-dom';
 // 3. Internal aliases
 import { AuthContext } from '@shared/contexts/AuthContext';
@@ -279,6 +301,13 @@ export const getRoomsQuery = () =>
 - Each feature has its own `types.ts` at the feature root.
 - Types shared across features go in `src/shared/types/`.
 - All API response shapes must be typed in camelCase (the interceptor handles transformation).
+- Types defined in `types.ts` are re-exported through the folder's `index.ts`.
+
+| What | Naming pattern | Example |
+|------|---------------|---------|
+| Component props | `<ComponentName>Props` | `AppHeaderProps`, `ModuleGuardProps` |
+| Hook return type | `Use<HookName>Return` | `UseAuthReturn`, `UsePermissionsReturn` |
+| Domain entities | `PascalCase` | `Room`, `Booking` |
 
 ```typescript
 // features/rooms/types.ts
@@ -289,7 +318,39 @@ export interface Room {
   isActive: boolean;
   createdAt: string;
 }
+
+export interface RoomCardProps {
+  room: Room;
+  onSelect: (id: string) => void;
+}
+
+export interface UseRoomsReturn {
+  rooms: Room[];
+  isLoading: boolean;
+}
 ```
+
+## Preferred MUI Components
+
+| Use case | Component |
+|----------|-----------|
+| Data tables | `DataGrid` from `@mui/x-data-grid` |
+| Forms | `TextField` + RHF `Controller` |
+| Modals | `Dialog` — never a custom implementation |
+| Content loading | `Skeleton` |
+| Action loading | `CircularProgress` |
+| Status badges | `Chip` with semantic `color` |
+| Sidebar | `Drawer` |
+| Sub-navigation | `Tabs` |
+| Notifications | `Snackbar` + `Alert` |
+| Multi-column layout | `Grid2` (MUI v6) with `size={{ xs, sm, md }}` prop |
+| Single-direction alignment | `Stack` |
+
+## Language
+
+**All user-facing UI text must be in Spanish.** This includes labels, placeholders, button text, headings, error messages, empty states, tooltips, and any other string rendered in the UI. Code identifiers, comments, and internal documentation remain in English.
+
+---
 
 ## Styling
 
@@ -345,7 +406,19 @@ npm run format       # Prettier
 
 # Install a dependency (no Docker rebuild needed)
 npm install <package>
+npm install -D <package>
 ```
+
+## Deploy
+
+```bash
+./scripts/cf-deploy.sh
+```
+
+- Requires `S3_BUCKET` and `VITE_API_BASE_URL` in `.env.production`.
+- `CLOUDFRONT_DISTRIBUTION_ID` optional — if set, invalidates the CDN after upload.
+- S3 bucket must have static website hosting with error document `index.html` (required for React Router).
+- `dist/assets/` → `max-age=31536000,immutable`; `index.html` → `no-cache`.
 
 ## ✅ Do / ❌ Don't
 
@@ -367,3 +440,4 @@ npm install <package>
 | Co-located `ComponentName.module.scss` per component | `sx={{...}}` inline styles or `style={{...}}` objects |
 | `className={styles.xxx}` from CSS Module | MUI `sx` prop for styling |
 | `@use '.../shared/styles/variables' as v;` for brand tokens | Hardcode hex colors in SCSS |
+| UI text (labels, errors, placeholders) in Spanish | User-facing strings in English |

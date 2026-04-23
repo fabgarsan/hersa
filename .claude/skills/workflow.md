@@ -1,5 +1,9 @@
 # Agent Workflow — Hersa
 
+> **Agents:** All  
+> **Load when:** Starting any non-trivial feature; orchestrating multiple agents  
+> **Summary:** Step-by-step agent orchestration guide for features, bugs, and deploys
+
 How to orchestrate agents effectively for different work scenarios.
 
 ## Standard feature workflow

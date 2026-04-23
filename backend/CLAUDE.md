@@ -43,8 +43,19 @@ backend/
 └── manage.py
 ```
 
+## Naming Conventions
+
+| Element      | Convention           | Example                             |
+|--------------|----------------------|-------------------------------------|
+| Models       | `PascalCase`         | `BookingRequest`, `UserProfile`     |
+| Vars / fns   | `snake_case`         | `get_active_rooms`, `user_id`       |
+| Serializers  | `<Model>Serializer`  | `RoomSerializer`                    |
+| Views        | `<Resource>View`     | `RoomView`, `BookingListView`       |
+| URL patterns | `kebab-case`         | `/api/booking-requests/`            |
+
 ## Mandatory Rules
 
+- **Django Admin UI must be in Spanish**: `verbose_name`, `verbose_name_plural`, `fieldsets` labels, `list_display` headers, `short_description`, and any other user-visible Admin string must be written in Spanish. The end users speak Spanish.
 - Always use **CBV** — never function-based views.
 - All PKs must be **UUID4** — never auto-increment integers.
 - **Type hints** on all functions, methods, and variables.
@@ -84,11 +95,25 @@ def chunk_list(lst: list, size: int) -> list[list]: ...
 import uuid
 from django.db import models
 
-class MyModel(models.Model):
+class GraduationEvent(models.Model):
     id: models.UUIDField = models.UUIDField(
         primary_key=True, default=uuid.uuid4, editable=False
     )
+    event_date: models.DateField = models.DateField(db_index=True)
+    is_active: models.BooleanField = models.BooleanField(default=True)  # soft-delete
+
+    class Meta:
+        verbose_name = 'Evento de graduación'
+        verbose_name_plural = 'Eventos de graduación'
+
+    def __str__(self) -> str:
+        return f'{self.name} — {self.event_date}'
 ```
+
+- `verbose_name` and `verbose_name_plural` in every `Meta`
+- `__str__` always present with a domain-identifiable value
+- `is_active` for soft-delete where applicable
+- Explicit `db_index=True` on fields used in frequent filters
 
 ### Base View
 
@@ -96,11 +121,16 @@ class MyModel(models.Model):
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.request import Request
+from rest_framework.permissions import IsAuthenticated
 
 class MyResourceView(APIView):
+    permission_classes = [IsAuthenticated]  # always explicit, never rely on global default
+
     def get(self, request: Request, pk: str) -> Response:
         ...
 ```
+
+- Business logic in `helpers.py` — never inside the View method
 
 ### Base Serializer
 
@@ -109,7 +139,16 @@ class RoomSerializer(serializers.ModelSerializer):
     class Meta:
         model = Room
         fields = ['id', 'name', 'capacity', 'is_active', 'created_at']
+
+    def validate_capacity(self, value: int) -> int:
+        if value < 1:
+            raise serializers.ValidationError('Capacity must be at least 1.')
+        return value
 ```
+
+- Use separate serializers for read and write when they differ significantly
+- Business validations in `validate_<field>()` or `validate()`
+- Never expose sensitive fields (passwords, internal tokens, payment data)
 
 ### DRF Default Settings
 
@@ -127,7 +166,8 @@ REST_FRAMEWORK = {
 - `only()` or `values()` when not all fields are needed.
 - `exists()` instead of `count() > 0`.
 - `bulk_create()` / `bulk_update()` for batch operations.
-- Never call `.all()` inside loops.
+- `annotate()` and `aggregate()` for database-side computations — never in Python.
+- Never call `.all()` inside loops — N+1 is a critical error.
 
 ## Testing
 
@@ -136,17 +176,61 @@ REST_FRAMEWORK = {
 - Reuse setup logic via `pytest` fixtures in `conftest.py`.
 - File naming: `test_<module>.py`. Function naming: `test_<behavior>_<condition>`.
 
+## URL Conventions
+
+- Versioned prefix always: `/api/v1/`
+- Kebab-case: `/api/v1/graduation-events/`
+- Namespace per app: `app_name = 'events'` in each `urls.py`
+- Use `include()` to group URLs by app in the root `urls.py`
+- Non-CRUD actions as sub-resources: `POST /api/v1/events/{id}/confirm/`
+
+### HTTP response codes
+
+| Code | When to use |
+|------|-------------|
+| 200 | Success with data (GET, PATCH, PUT) |
+| 201 | Successful creation (POST) |
+| 204 | Success without data (DELETE) |
+| 400 | Validation error |
+| 401 | Unauthenticated (token missing or expired) |
+| 403 | Unauthorized (no permission for the resource) |
+| 404 | Resource not found |
+| 500 | Internal server error |
+
+### Domain resources
+
+| Resource | Base URL |
+|----------|----------|
+| Schools / Institutions | `/api/v1/schools/` |
+| Graduation events | `/api/v1/graduation-events/` |
+| Academic gown rentals | `/api/v1/toga-rentals/` |
+| Auditorium bookings | `/api/v1/auditorium-bookings/` |
+| Photography packages | `/api/v1/photo-packages/` |
+| Users | `/api/v1/users/` |
+| Auth | `/api/v1/auth/` |
+
 ## Settings & Environment Variables
 
 - `DJANGO_SETTINGS_MODULE=config.settings.development` in `.env.local`.
 - `DJANGO_SETTINGS_MODULE=config.settings.production` in EB environment properties.
 - Always use `decouple.config('VAR')` — never hardcode secrets.
+- Never `print()` — always `import logging; logger = logging.getLogger(__name__)`.
 
 | File               | Purpose                                     |
 |--------------------|---------------------------------------------|
 | `.env.local`       | Local development overrides                 |
 | `.env.production`  | Production values (never commit)            |
 | `.env.example`     | Committed template with all keys, no values |
+
+## Migrations
+
+- Never modify an existing migration — always create a new one with `makemigrations`.
+- Describe the intent in the migration name when it is not obvious from the auto-generated name.
+
+## Signals
+
+- Defined in a dedicated `signals.py` file per app.
+- Registered in `AppConfig.ready()` of the corresponding app — never at module level.
 
 ## Development Commands
 
@@ -183,3 +267,4 @@ docker compose build backend   # rebuild image after Pipfile changes
 | `factory_boy` + `Faker` in tests | `Model.objects.create()` directly |
 | Separate unit and integration tests | Mix them together |
 | Secrets only in `.env` files | Hardcode or commit secrets |
+| Django Admin strings in Spanish | Admin labels, `verbose_name`, `short_description` in English |
