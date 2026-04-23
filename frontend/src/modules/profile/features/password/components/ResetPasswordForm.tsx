@@ -22,6 +22,7 @@ import { UI } from "../../../constants/ui";
 import { useResetPasswordMutation } from "../api/resetPasswordMutation";
 import { resetPasswordSchema } from "../schemas";
 import type { ResetPasswordFormValues } from "../types";
+import styles from "./ResetPasswordForm.module.scss";
 
 interface ResetPasswordFormProps {
   uid: string;
@@ -71,7 +72,7 @@ export function ResetPasswordForm({ uid, token }: ResetPasswordFormProps) {
   if (success) {
     return (
       <Stack spacing={2} alignItems="flex-start">
-        <Alert severity="success" sx={{ width: "100%" }}>
+        <Alert severity="success" className={styles.successAlert}>
           {UI.password.RESET_SUCCESS}
         </Alert>
         <Button variant="contained" color="primary" onClick={() => navigate(ROUTES.HOME)}>
@@ -90,7 +91,7 @@ export function ResetPasswordForm({ uid, token }: ResetPasswordFormProps) {
             <Typography
               variant="body2"
               color="primary"
-              sx={{ cursor: "pointer", textDecoration: "underline" }}
+              className={styles.requestNewLink}
               onClick={() => navigate(ROUTES.FORGOT_PASSWORD)}
             >
               {UI.password.REQUEST_NEW_LINK}

@@ -88,6 +88,7 @@ my-project/
 | RQ queries          | `get<n>Query.ts`         | `getRoomsQuery.ts`                    |
 | RQ mutations        | `<method><n>Mutation.ts` | `createRoomMutation.ts`               |
 | Types per feature   | `types.ts`               | `features/rooms/types.ts`             |
+| Component styles    | `<ComponentName>.module.scss` | `UserCard.module.scss`, `AuthModal.module.scss` |
 
 ## Git Hooks (Husky + lint-staged)
 

@@ -4,6 +4,8 @@ import Paper from "@mui/material/Paper";
 import Grid2 from "@mui/material/Grid2";
 import SchoolIcon from "@mui/icons-material/School";
 
+import styles from "./GradosPage.module.scss";
+
 export default function GradosPage() {
   return (
     <Box>
@@ -18,18 +20,8 @@ export default function GradosPage() {
           "Maestros de ceremonia",
         ].map((item) => (
           <Grid2 size={{ xs: 12, sm: 6, md: 3 }} key={item}>
-            <Paper
-              variant="outlined"
-              sx={{
-                p: 4,
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                gap: 2,
-                color: "text.secondary",
-              }}
-            >
-              <SchoolIcon sx={{ fontSize: 40, color: "secondary.main" }} />
+            <Paper variant="outlined" className={styles.card}>
+              <SchoolIcon className={styles.icon} />
               <Typography variant="subtitle1" fontWeight={500} textAlign="center">
                 {item}
               </Typography>

@@ -7,6 +7,7 @@ import Paper from "@mui/material/Paper";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import { useLoginMutation } from "./loginMutation";
+import styles from "./AuthModal.module.scss";
 
 export function AuthModal() {
   const [username, setUsername] = useState("");
@@ -19,13 +20,13 @@ export function AuthModal() {
   };
 
   return (
-    <Container maxWidth="xs" sx={{ mt: 12 }}>
-      <Paper elevation={3} sx={{ p: 4 }}>
+    <Container maxWidth="xs" className={styles.container}>
+      <Paper elevation={3} className={styles.paper}>
         <Typography variant="h5" fontWeight={700} mb={3} textAlign="center">
           Hersa
         </Typography>
         {error && (
-          <Alert severity="error" sx={{ mb: 2 }}>
+          <Alert severity="error" className={styles.alert}>
             Invalid credentials. Please try again.
           </Alert>
         )}

@@ -5,6 +5,7 @@ import Typography from "@mui/material/Typography";
 
 import { usePermissions } from "@shared/hooks/usePermissions";
 import { ModuleSlug } from "@shared/types/permissions";
+import styles from "./ModuleGuard.module.scss";
 
 interface ModuleGuardProps {
   module: ModuleSlug;
@@ -20,15 +21,7 @@ export function ModuleGuard({ module, children }: ModuleGuardProps) {
 
   if (!hasAccess(module)) {
     return (
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          height: "100%",
-        }}
-      >
+      <Box className={styles.notFound}>
         <Typography variant="h2" color="text.secondary">
           404
         </Typography>

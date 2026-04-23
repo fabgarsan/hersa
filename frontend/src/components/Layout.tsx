@@ -8,6 +8,7 @@ import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
 import LogoutIcon from "@mui/icons-material/Logout";
 import { useAuth } from "@/features/auth/useAuth";
+import styles from "./Layout.module.scss";
 
 interface LayoutProps {
   children: ReactNode;
@@ -20,7 +21,7 @@ export function Layout({ children }: LayoutProps) {
     <Box minHeight="100vh" bgcolor="grey.50">
       <AppBar position="static" elevation={0}>
         <Toolbar>
-          <Typography variant="h6" fontWeight={700} sx={{ flexGrow: 1 }}>
+          <Typography variant="h6" fontWeight={700} className={styles.titleSpacer}>
             Hersa
           </Typography>
           <Tooltip title="Sign out">
@@ -30,7 +31,7 @@ export function Layout({ children }: LayoutProps) {
           </Tooltip>
         </Toolbar>
       </AppBar>
-      <Container maxWidth="lg" sx={{ py: 4 }}>
+      <Container maxWidth="lg" className={styles.pageContent}>
         {children}
       </Container>
     </Box>

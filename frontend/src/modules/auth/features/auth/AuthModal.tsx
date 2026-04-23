@@ -12,6 +12,7 @@ import { UI } from "../../constants/ui";
 import { loginSchema } from "./schemas";
 import { useLoginMutation } from "./loginMutation";
 import type { LoginCredentials } from "./types";
+import styles from "./AuthModal.module.scss";
 
 export function AuthModal() {
   const { mutate, isPending, error } = useLoginMutation();
@@ -26,13 +27,13 @@ export function AuthModal() {
   };
 
   return (
-    <Container maxWidth="xs" sx={{ mt: { xs: 6, sm: 12 } }}>
-      <Paper elevation={3} sx={{ p: { xs: 3, sm: 4 } }}>
+    <Container maxWidth="xs" className={styles.container}>
+      <Paper elevation={3} className={styles.paper}>
         <Typography variant="h5" fontWeight={700} mb={3} textAlign="center">
           Hersa
         </Typography>
         {error && (
-          <Alert severity="error" sx={{ mb: 2 }}>
+          <Alert severity="error" className={styles.alert}>
             {UI.auth.WRONG_CREDENTIALS}
           </Alert>
         )}

@@ -4,6 +4,8 @@ import Typography from "@mui/material/Typography";
 import Paper from "@mui/material/Paper";
 import StorefrontIcon from "@mui/icons-material/Storefront";
 
+import styles from "./TiendaPage.module.scss";
+
 export default function TiendaPage() {
   return (
     <Box>
@@ -13,18 +15,8 @@ export default function TiendaPage() {
       <Grid2 container spacing={3}>
         {["Togas y accesorios", "Diplomas", "Paquetes fotográficos", "Recuerdos"].map((item) => (
           <Grid2 size={{ xs: 12, sm: 6, md: 3 }} key={item}>
-            <Paper
-              variant="outlined"
-              sx={{
-                p: 4,
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                gap: 2,
-                color: "text.secondary",
-              }}
-            >
-              <StorefrontIcon sx={{ fontSize: 40, color: "secondary.main" }} />
+            <Paper variant="outlined" className={styles.card}>
+              <StorefrontIcon className={styles.icon} />
               <Typography variant="subtitle1" fontWeight={500} textAlign="center">
                 {item}
               </Typography>

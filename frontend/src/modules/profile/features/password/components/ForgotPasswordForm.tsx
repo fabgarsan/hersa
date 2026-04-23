@@ -13,6 +13,7 @@ import { UI } from "../../../constants/ui";
 import { useForgotPasswordMutation } from "../api/forgotPasswordMutation";
 import { forgotPasswordSchema } from "../schemas";
 import type { ForgotPasswordFormValues } from "../types";
+import styles from "./ForgotPasswordForm.module.scss";
 
 export function ForgotPasswordForm() {
   const [submitted, setSubmitted] = useState(false);
@@ -39,7 +40,7 @@ export function ForgotPasswordForm() {
 
   if (submitted) {
     return (
-      <Alert severity="success" sx={{ mt: 2 }}>
+      <Alert severity="success" className={styles.successAlert}>
         {UI.password.FORGOT_SUCCESS}
       </Alert>
     );

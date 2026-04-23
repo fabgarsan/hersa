@@ -20,6 +20,7 @@ import { UI } from "../../../constants/ui";
 import { useChangePasswordMutation } from "../api/changePasswordMutation";
 import { changePasswordSchema } from "../schemas";
 import type { ChangePasswordFormValues } from "../types";
+import styles from "./ChangePasswordForm.module.scss";
 
 interface ChangePasswordFormProps {
   onSuccess?: () => void;
@@ -153,7 +154,7 @@ export function ChangePasswordForm({ onSuccess }: ChangePasswordFormProps) {
           color="primary"
           disabled={isPending}
           startIcon={isPending ? <CircularProgress size={18} color="inherit" /> : null}
-          sx={{ alignSelf: "flex-start" }}
+          className={styles.submitButton}
         >
           {isPending ? UI.password.CHANGING : UI.password.CHANGE_BUTTON}
         </Button>

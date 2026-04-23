@@ -1,0 +1,21 @@
+@use '../../../../shared/styles/variables' as v;
+
+.container {
+  margin-top: v.sp(6);
+
+  @media (min-width: v.$breakpoint-sm) {
+    margin-top: v.sp(12);
+  }
+}
+
+.paper {
+  padding: v.sp(3);
+
+  @media (min-width: v.$breakpoint-sm) {
+    padding: v.sp(4);
+  }
+}
+
+.alert {
+  margin-bottom: v.sp(2);
+}

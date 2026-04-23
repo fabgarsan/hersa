@@ -1,0 +1,57 @@
+@use '../styles/variables' as v;
+
+.root {
+  background-color: v.$primary-dark;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.toolbar {
+  background-color: v.$primary-main;
+  flex-shrink: 0;
+}
+
+.divider {
+  border-color: v.$primary-light;
+}
+
+.list {
+  padding-top: v.sp(1);
+  padding-left: v.sp(1);
+  padding-right: v.sp(1);
+  flex-grow: 1;
+}
+
+.navItem {
+  border-radius: 4px;
+  margin-bottom: v.sp(0.5);
+  padding-left: v.sp(1.5);
+  color: rgba(255, 255, 255, 0.75);
+  background-color: transparent;
+  border-left: 3px solid transparent;
+
+  &:hover {
+    background-color: v.$primary-light;
+    color: #ffffff;
+  }
+}
+
+.navItemActive {
+  border-radius: 4px;
+  margin-bottom: v.sp(0.5);
+  padding-left: v.sp(1.5);
+  color: v.$secondary-main;
+  background-color: rgba(201, 162, 39, 0.1);
+  border-left: 3px solid v.$secondary-main;
+
+  &:hover {
+    background-color: rgba(201, 162, 39, 0.15);
+    color: v.$secondary-main;
+  }
+}
+
+.navItemIcon {
+  color: inherit;
+  min-width: 40px;
+}
