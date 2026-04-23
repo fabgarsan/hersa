@@ -116,8 +116,8 @@ frontend/
 │   │   ├── components/           # Reusable UI components
 │   │   ├── hooks/                # Reusable custom hooks
 │   │   ├── contexts/             # Global contexts (Auth, Theme…)
-│   │   ├── utils/                # Pure utility functions
-│   │   ├── helpers/              # Helper functions
+│   │   ├── helpers/              # Shared business logic (Hersa domain)
+│   │   ├── utils/                # Shared code utilities (generic, domain-agnostic)
 │   │   └── types/                # Shared TypeScript types/interfaces
 │   ├── features/
 │   │   └── <feature-name>/       # kebab-case folder
@@ -126,7 +126,8 @@ frontend/
 │   │       │   └── <method><n>Mutation.ts
 │   │       ├── components/       # PascalCase files
 │   │       ├── hooks/            # camelCase files
-│   │       ├── utils/            # camelCase files
+│   │       ├── helpers/          # Business logic for this feature (camelCase files)
+│   │       ├── utils/            # Code utilities for this feature (camelCase files)
 │   │       ├── types.ts
 │   │       └── index.ts          # Public exports for this feature
 │   ├── pages/                    # One file per route
@@ -159,6 +160,31 @@ frontend/
 
 Mirror the same aliases in `vite.config.ts` under `resolve.alias`.  
 **Never use deep relative imports** (`../../../`).
+
+## Helpers vs Utils
+
+Every feature (and `shared/`) has two folders for auxiliary logic. The distinction is mandatory:
+
+| Folder | Contains | Rule |
+|--------|----------|------|
+| `helpers/` | **Business logic** — Hersa domain rules | References domain types, pricing rules, status transitions, or Hersa-specific concepts |
+| `utils/` | **Code utilities** — generic, reusable anywhere | Could be copy-pasted to any other project unchanged |
+
+```typescript
+// helpers/calculatePackageTotal.ts — knows about Hersa domain
+export function calculatePackageTotal(booking: Booking): number { ... }
+export function getEventStatusLabel(status: EventStatus): string { ... }
+export function buildTogaSizeLabel(height: number): string { ... }
+
+// utils/formatDate.ts — generic, domain-agnostic
+export function formatDate(iso: string, locale?: string): string { ... }
+export function groupBy<T>(arr: T[], key: keyof T): Record<string, T[]> { ... }
+export function clamp(value: number, min: number, max: number): number { ... }
+```
+
+- Components and hooks call helpers; helpers may call utils — never the reverse
+- If a helper grows complex enough to need a hook (e.g. it fetches data), extract it to `hooks/`
+- Promote to `shared/helpers/` or `shared/utils/` only when used in more than one feature
 
 ## TypeScript Conventions
 

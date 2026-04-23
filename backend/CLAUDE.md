@@ -31,6 +31,8 @@ backend/
 │       ├── serializers.py
 │       ├── views.py
 │       ├── urls.py
+│       ├── helpers.py     # business logic (domain-specific): calculate_toga_price(), get_eligible_students()
+│       ├── utils.py       # code utilities (generic): parse_date_range(), format_uuid()
 │       └── tests/
 ├── tests/
 │   ├── unit/              # pure logic — no DB or HTTP
@@ -49,6 +51,30 @@ backend/
 - Default permission: `IsAuthenticated`. Only override to `AllowAny` explicitly on public endpoints.
 - Never use `fields = '__all__'` in serializers — always list fields explicitly.
 - Always include `id` as the first field in every serializer.
+
+## Helpers vs Utils
+
+Every app has two files for auxiliary logic. The distinction is mandatory:
+
+| File | Contains | Rule |
+|------|----------|------|
+| `helpers.py` | **Business logic** — Hersa domain rules | If it references a model, a business concept, or Hersa-specific logic, it goes here |
+| `utils.py` | **Code utilities** — generic, reusable anywhere | If it could be copy-pasted to another project unchanged, it goes here |
+
+```python
+# helpers.py — knows about the Hersa domain
+def calculate_toga_price(student_height: int, rental_days: int) -> Decimal: ...
+def get_eligible_students(event: GraduationEvent) -> QuerySet: ...
+def build_package_summary(booking: Booking) -> dict: ...
+
+# utils.py — generic, domain-agnostic
+def parse_date_range(raw: str) -> tuple[date, date]: ...
+def sanitize_filename(name: str) -> str: ...
+def chunk_list(lst: list, size: int) -> list[list]: ...
+```
+
+- Views call helpers; helpers may call utils — never the reverse
+- Neither file should import from `views.py` or `serializers.py`
 
 ## Code Patterns
 
