@@ -26,6 +26,8 @@ backend/
 ├── config/settings/{base,development,production}.py
 ├── apps/<app-name>/
 │   ├── models.py  serializers.py  views.py  urls.py
+│   ├── migrations/
+│   │   └── __init__.py
 │   └── tests/
 └── tests/{unit,integration}/
 ```
@@ -36,8 +38,9 @@ backend/
 2. Follow the conventions in the `django-conventions.md` skill
 3. Respect `api-contract.md` when defining responses
 4. Apply `security-checklist.md` to all code you write
-5. After creating models, always generate the migration
-6. Verify the code is error-free before reporting complete
+5. When creating a new app, immediately create `migrations/__init__.py` — `makemigrations` fails without it
+6. After creating models, always generate the migration
+7. Verify the code is error-free before reporting complete
 
 ## Reference commands
 
@@ -50,6 +53,7 @@ docker compose exec backend pipenv run pytest apps/<app>/tests/
 
 ## Constraints
 
+- Always create `migrations/__init__.py` when scaffolding a new app — never omit it
 - Never modify existing migrations — always create new ones
 - Never use `print()` — always use `logging`
 - Never hardcode secrets — always use `decouple.config('VAR')`

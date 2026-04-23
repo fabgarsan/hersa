@@ -16,20 +16,34 @@ import { useLocation, useNavigate } from "react-router-dom";
 
 import { ROUTES } from "@shared/constants/routes";
 import { UI } from "@shared/constants/ui";
+import { usePermissions } from "@shared/hooks/usePermissions";
+import { ModuleSlug } from "@shared/types/permissions";
 
-const NAV_ITEMS = [
-  { label: UI.nav.STORE, icon: <StorefrontIcon />, path: ROUTES.TIENDA },
-  { label: UI.nav.GRADUATIONS, icon: <SchoolIcon />, path: ROUTES.GRADOS },
-  { label: UI.nav.ADMIN, icon: <AdminPanelSettingsIcon />, path: ROUTES.ADMIN },
-  { label: UI.nav.PROFILE, icon: <PersonIcon />, path: ROUTES.PROFILE },
-] as const;
+interface NavItem {
+  label: string;
+  icon: React.ReactNode;
+  path: string;
+  module: ModuleSlug | null;
+}
+
+const NAV_ITEMS: NavItem[] = [
+  { label: UI.nav.STORE, icon: <StorefrontIcon />, path: ROUTES.TIENDA, module: "tienda" },
+  { label: UI.nav.GRADUATIONS, icon: <SchoolIcon />, path: ROUTES.GRADOS, module: "programador" },
+  { label: UI.nav.ADMIN, icon: <AdminPanelSettingsIcon />, path: ROUTES.ADMIN, module: null },
+  { label: UI.nav.PROFILE, icon: <PersonIcon />, path: ROUTES.PROFILE, module: null },
+];
 
 export function NavSidebar() {
   const location = useLocation();
   const navigate = useNavigate();
+  const { hasAccess } = usePermissions();
 
   const isActive = (path: string) =>
     location.pathname === path || location.pathname.startsWith(path + "/");
+
+  const visibleItems = NAV_ITEMS.filter(
+    (item) => item.module === null || hasAccess(item.module),
+  );
 
   return (
     <Box sx={{ bgcolor: "primary.dark", height: "100%", display: "flex", flexDirection: "column" }}>
@@ -42,7 +56,7 @@ export function NavSidebar() {
       <Divider sx={{ borderColor: "primary.light" }} />
 
       <List sx={{ pt: 1, px: 1, flexGrow: 1 }}>
-        {NAV_ITEMS.map(({ label, icon, path }) => {
+        {visibleItems.map(({ label, icon, path }) => {
           const active = isActive(path);
           return (
             <ListItemButton

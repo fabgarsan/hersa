@@ -1,4 +1,4 @@
-import { Box, Typography, Paper, Grid } from "@mui/material";
+import { Box, Typography, Paper, Grid2 } from "@mui/material";
 import SchoolIcon from "@mui/icons-material/School";
 
 export default function GradosPage() {
@@ -7,14 +7,14 @@ export default function GradosPage() {
       <Typography variant="h4" fontWeight={700} mb={3}>
         Grados
       </Typography>
-      <Grid container spacing={3}>
+      <Grid2 container spacing={3}>
         {[
           "Gestión de ceremonias",
           "Logística del día",
           "Reserva de auditorios",
           "Maestros de ceremonia",
         ].map((item) => (
-          <Grid item xs={12} sm={6} md={3} key={item}>
+          <Grid2 size={{ xs: 12, sm: 6, md: 3 }} key={item}>
             <Paper
               variant="outlined"
               sx={{
@@ -34,9 +34,9 @@ export default function GradosPage() {
                 Próximamente
               </Typography>
             </Paper>
-          </Grid>
+          </Grid2>
         ))}
-      </Grid>
+      </Grid2>
     </Box>
   );
 }

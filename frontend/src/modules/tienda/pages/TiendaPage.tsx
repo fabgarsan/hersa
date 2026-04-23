@@ -1,4 +1,4 @@
-import { Box, Typography, Paper, Grid } from "@mui/material";
+import { Box, Grid2, Typography, Paper } from "@mui/material";
 import StorefrontIcon from "@mui/icons-material/Storefront";
 
 export default function TiendaPage() {
@@ -7,9 +7,9 @@ export default function TiendaPage() {
       <Typography variant="h4" fontWeight={700} mb={3}>
         Tienda
       </Typography>
-      <Grid container spacing={3}>
+      <Grid2 container spacing={3}>
         {["Togas y accesorios", "Diplomas", "Paquetes fotográficos", "Recuerdos"].map((item) => (
-          <Grid item xs={12} sm={6} md={3} key={item}>
+          <Grid2 size={{ xs: 12, sm: 6, md: 3 }} key={item}>
             <Paper
               variant="outlined"
               sx={{
@@ -29,9 +29,9 @@ export default function TiendaPage() {
                 Próximamente
               </Typography>
             </Paper>
-          </Grid>
+          </Grid2>
         ))}
-      </Grid>
+      </Grid2>
     </Box>
   );
 }

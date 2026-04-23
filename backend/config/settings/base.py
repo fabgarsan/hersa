@@ -20,6 +20,7 @@ INSTALLED_APPS = [
     "storages",
     # Local
     "apps.users",
+    "apps.modules",
 ]
 
 MIDDLEWARE = [
