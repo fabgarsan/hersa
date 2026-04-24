@@ -65,10 +65,11 @@ docker compose exec backend pipenv run pytest                       # run backen
 
 ## Knowledge Files
 
-These files in `.claude/skills/` extend these docs. Read them when indicated — they are not loaded automatically.
+These files extend these docs. Read them when indicated — they are not loaded automatically.
 
 | File | Read when |
 |------|-----------|
+| `.claude/shared/hersa-context.md` | Designing data models, implementing business logic, or working on any of the system modules |
 | `.claude/skills/workflow.md` | Starting any non-trivial feature; orchestrating multiple agents |
 | `.claude/skills/api-contract.md` | Implementing or reviewing any endpoint (`django-developer`, `react-developer`, `tdd-writer`) |
 | `.claude/skills/error-handling.md` | Writing views, serializers, or React components that handle API responses |
