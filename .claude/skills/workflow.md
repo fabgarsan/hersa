@@ -1,14 +1,52 @@
 # Agent Workflow — Hersa
 
-> **Agents:** All  
-> **Load when:** Starting any non-trivial feature; orchestrating multiple agents  
+> **Agents:** All
+> **Load when:** Starting any non-trivial feature; orchestrating multiple agents
 > **Summary:** Step-by-step agent orchestration guide for features, bugs, and deploys
 
-How to orchestrate agents effectively for different work scenarios.
+How to orchestrate agents effectively for different work scenarios. **Default to the lightest flow that fits the work** — the full feature pipeline exists for ambitious, multi-surface features, not for every change.
 
-## Standard feature workflow
+## Bug fix (default for bugs)
 
-For any non-trivial feature, follow this order without skipping steps:
+```
+1. Read the relevant code directly (no architect needed)
+2. django-developer or react-developer → fix
+3. test-writer → add a regression test that would have caught the bug
+4. code-reviewer → verify the fix is clean
+```
+
+## Lightweight feature (UI-only, config change, small contained change)
+
+Skip `architect` and the discovery/PRD/TDD pipeline. Go directly to:
+
+```
+react-developer (or django-developer) → code-reviewer → (test-writer if behavior is non-trivial)
+```
+
+## Linear ticket → implementation
+
+When starting from an existing Linear ticket (no discovery needed):
+
+1. Read the ticket fully — understand the acceptance criteria, not just the title
+2. Check if a TDD exists in `/documentation/requirements/tdd/` for this feature
+3. If no TDD and the ticket is non-trivial: run `tdd-writer` before implementing
+4. Branch name follows the ticket: `HRS-<n>/<short-description>`
+5. Commit messages reference the ticket: `feat(events): add confirmation endpoint (HRS-42)`
+
+## Pre-deploy checklist
+
+```
+1. security-auditor → full scan
+2. code-reviewer    → review any code not yet reviewed
+3. test-writer      → ensure coverage on critical paths
+4. docs-writer      → update changelog
+```
+
+---
+
+## Full feature pipeline (only for ambitious, multi-surface features)
+
+Use this when the work touches both backend and frontend, introduces new domain concepts, or needs stakeholder alignment. For smaller work, fall back to the lightweight or bug-fix flows above.
 
 ```
 1. pm-discovery     → interview to reach full shared understanding
@@ -40,31 +78,7 @@ For any non-trivial feature, follow this order without skipping steps:
 13. /pr-create      → generates PR description linking to TDD and Linear ticket
 ```
 
-## Lightweight feature (UI-only or config change)
-
-Skip `architect` for small, contained changes. Go directly to:
-
-```
-react-developer → code-reviewer → (test-writer if behavior is non-trivial)
-```
-
-## Bug fix workflow
-
-```
-1. Read the relevant code directly (no architect needed)
-2. django-developer or react-developer → fix
-3. test-writer → add a regression test that would have caught the bug
-4. code-reviewer → verify the fix is clean
-```
-
-## Pre-deploy checklist
-
-```
-1. security-auditor → full scan
-2. code-reviewer    → review any code not yet reviewed
-3. test-writer      → ensure coverage on critical paths
-4. docs-writer      → update changelog
-```
+---
 
 ## Agent handoff rules
 
@@ -75,20 +89,6 @@ react-developer → code-reviewer → (test-writer if behavior is non-trivial)
 - **developer → test-writer**: the developer reports which files were created or modified. The test-writer reads those files before writing a single test.
 - **developer → code-reviewer**: the reviewer reads the diff. The code must speak for itself.
 - **any → docs-writer**: only trigger after implementation is stable and tests pass.
-
----
-
-## Linear ticket → implementation
-
-When starting from an existing Linear ticket (no discovery needed):
-
-1. Read the ticket fully — understand the acceptance criteria, not just the title
-2. Check if a TDD exists in `/documentation/requirements/tdd/` for this feature
-3. If no TDD: run `tdd-writer` before implementing
-4. Branch name follows the ticket: `HRS-<n>/<short-description>`
-5. Commit messages reference the ticket: `feat(events): add confirmation endpoint (HRS-42)`
-
----
 
 ## Parallel vs sequential
 

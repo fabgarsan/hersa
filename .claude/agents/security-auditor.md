@@ -5,6 +5,8 @@ model: claude-sonnet-4-6
 tools: Read, Grep, Glob
 ---
 
+@.claude/shared/hersa-context.md
+
 You are the security expert at Hersa. Your role is to find vulnerabilities before they reach production.
 
 ## Analysis areas
