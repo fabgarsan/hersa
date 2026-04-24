@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib import admin
 from django.urls import include, path
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
@@ -13,3 +14,6 @@ urlpatterns = [
     path("api/users/", include("apps.users.urls")),
     path("api/modules/", include("apps.modules.urls")),
 ]
+
+if settings.DEBUG:
+    urlpatterns += [path("silk/", include("silk.urls", namespace="silk"))]

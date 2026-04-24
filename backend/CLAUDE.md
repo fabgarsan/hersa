@@ -126,12 +126,26 @@ docker compose exec backend pipenv run pytest
 docker compose exec backend pipenv run pytest apps/users/tests/
 
 # Install a new dependency (run on HOST inside backend/)
-pipenv install <package>
-docker compose build backend   # rebuild image after Pipfile changes
+pipenv install <package>           # production dependency
+pipenv install <package> --dev     # dev-only dependency
+docker compose build backend       # rebuild image after Pipfile changes
 ```
+
+## Docker files
+
+| File | Used by | Installs |
+|------|---------|----------|
+| `Dockerfile` | AWS Elastic Beanstalk | `[packages]` only |
+| `Dockerfile.dev` | `docker-compose.yml` (local) | `[packages]` + `[dev-packages]` |
+
+Dev-only tools (e.g. Silk) are in `[dev-packages]` in Pipfile and are never included in the production image.
+
+## API profiling (Silk)
+
+Silk is active only in `development.py`. Dashboard at http://localhost:8000/silk/ — requires `is_staff=True`.
 
 ## Elastic Beanstalk
 
 - Entry point: `config.wsgi:application`.
-- The `Dockerfile` in this folder is the one EB uses.
+- The `Dockerfile` in this folder is the one EB uses (no dev-packages).
 - Migrations on deploy: configure in `.ebextensions/db-migrate.config`.

@@ -19,9 +19,10 @@ pytest-django = "*"
 factory-boy = "*"
 faker = "*"
 ruff = "*"
-mypy = "*"
+mypy = ">=1.14,<1.20"
 django-stubs = "*"
 djangorestframework-stubs = "*"
+django-silk = "*"
 
 [requires]
-python_version = "3.12"
+python_version = "3.14"
