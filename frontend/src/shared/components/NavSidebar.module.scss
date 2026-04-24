@@ -55,3 +55,22 @@
   color: inherit;
   min-width: 40px;
 }
+
+.userSection {
+  display: flex;
+  align-items: center;
+  gap: v.sp(1);
+  padding: v.sp(1.5) v.sp(2);
+  flex-shrink: 0;
+}
+
+.userIcon {
+  font-size: 18px;
+  color: rgba(255, 255, 255, 0.5);
+  flex-shrink: 0;
+}
+
+.username {
+  color: rgba(255, 255, 255, 0.6);
+  overflow: hidden;
+}

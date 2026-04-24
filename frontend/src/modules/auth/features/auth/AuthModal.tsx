@@ -1,13 +1,16 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import Alert from "@mui/material/Alert";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Container from "@mui/material/Container";
+import MuiLink from "@mui/material/Link";
 import Paper from "@mui/material/Paper";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
-import Alert from "@mui/material/Alert";
 import { Controller, useForm } from "react-hook-form";
+import { Link as RouterLink } from "react-router-dom";
 
+import { ROUTES } from "@shared/constants/routes";
 import { UI } from "../../constants/ui";
 import { loginSchema } from "./schemas";
 import { useLoginMutation } from "./loginMutation";
@@ -73,6 +76,14 @@ export function AuthModal() {
           <Button type="submit" variant="contained" size="large" disabled={isPending}>
             {isPending ? UI.auth.LOGGING_IN : UI.auth.LOGIN_BUTTON}
           </Button>
+          <MuiLink
+            component={RouterLink}
+            to={ROUTES.FORGOT_PASSWORD}
+            variant="body2"
+            className={styles.forgotLink}
+          >
+            {UI.auth.FORGOT_PASSWORD_LINK}
+          </MuiLink>
         </Box>
       </Paper>
     </Container>
