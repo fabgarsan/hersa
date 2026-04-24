@@ -1,6 +1,6 @@
 ---
 description: Create a branch and start work on a Linear issue
-model: haiku
+model: claude-haiku-4-5-20251001
 ---
 
 # Start Linear Task

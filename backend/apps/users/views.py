@@ -1,5 +1,5 @@
 from django.conf import settings
-from django.contrib.auth.models import User
+from django.contrib.auth.models import Permission, User
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.core.mail import send_mail
 from django.utils.encoding import force_bytes, force_str
@@ -27,6 +27,19 @@ class MeView(APIView):
         assert isinstance(request.user, User)
         serializer = UserSerializer(request.user)
         return Response(serializer.data)
+
+
+class MyPermissionsView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request: Request) -> Response:
+        assert isinstance(request.user, User)
+        if request.user.is_superuser:
+            perms = Permission.objects.select_related("content_type").all()
+            result = sorted(f"{p.content_type.app_label}.{p.codename}" for p in perms)
+        else:
+            result = sorted(request.user.get_all_permissions())
+        return Response(result)
 
 
 class ChangePasswordView(APIView):

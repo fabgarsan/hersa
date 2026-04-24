@@ -32,8 +32,8 @@ export default function App() {
     <Layout>
       <Routes>
         <Route path={ROUTES.HOME} element={<Navigate to={ROUTES.PROFILE} replace />} />
-        <Route path={ROUTES.TIENDA} element={<ModuleGuard module="tienda"><TiendaPage /></ModuleGuard>} />
-        <Route path={ROUTES.GRADOS} element={<ModuleGuard module="programador"><GradosPage /></ModuleGuard>} />
+        <Route path={ROUTES.TIENDA} element={<ModuleGuard module="modules.access_tienda"><TiendaPage /></ModuleGuard>} />
+        <Route path={ROUTES.GRADOS} element={<ModuleGuard module="modules.access_programador"><GradosPage /></ModuleGuard>} />
         <Route path={ROUTES.ADMIN} element={<AdminPage />} />
         <Route path={ROUTES.PROFILE} element={<ProfilePage />} />
       </Routes>

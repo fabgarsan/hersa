@@ -1,26 +1,29 @@
 import { useQuery } from "@tanstack/react-query";
 
 import { apiClient } from "@api/client";
+import { useMeQuery } from "@modules/auth";
 import { API } from "@shared/constants/api";
-import { ModuleSlug } from "@shared/types/permissions";
 import type { UsePermissionsReturn } from "./types";
 
 export function usePermissions(): UsePermissionsReturn {
-  const { data, isLoading } = useQuery<ModuleSlug[]>({
+  const { data: user } = useMeQuery();
+
+  const { data, isLoading } = useQuery<string[]>({
     queryKey: ["permissions", "me"],
     queryFn: async () => {
-      const { data: responseData } = await apiClient.get<ModuleSlug[]>(API.MY_MODULE_PERMISSIONS);
+      const { data: responseData } = await apiClient.get<string[]>(API.MY_PERMISSIONS);
       return responseData;
     },
     staleTime: 5 * 60 * 1000,
   });
 
-  const modules = data ?? [];
+  const permissions = data ?? [];
 
-  const hasAccess = (slug: ModuleSlug): boolean => {
+  const hasAccess = (permission: string): boolean => {
     if (isLoading) return false;
-    return modules.includes(slug);
+    if (user?.is_superuser) return true;
+    return permissions.includes(permission);
   };
 
-  return { hasAccess, modules, isLoading };
+  return { hasAccess, permissions, isLoading };
 }
