@@ -176,38 +176,12 @@ REST_FRAMEWORK = {
 - Reuse setup logic via `pytest` fixtures in `conftest.py`.
 - File naming: `test_<module>.py`. Function naming: `test_<behavior>_<condition>`.
 
-## URL Conventions
+## API contract
 
-- Versioned prefix always: `/api/v1/`
-- Kebab-case: `/api/v1/graduation-events/`
+URL conventions, base paths per domain resource, HTTP response codes, pagination, and response/error shapes are defined in `.claude/skills/api-contract.md` (shared between backend and frontend). Django-side specifics only:
+
 - Namespace per app: `app_name = 'events'` in each `urls.py`
 - Use `include()` to group URLs by app in the root `urls.py`
-- Non-CRUD actions as sub-resources: `POST /api/v1/events/{id}/confirm/`
-
-### HTTP response codes
-
-| Code | When to use |
-|------|-------------|
-| 200 | Success with data (GET, PATCH, PUT) |
-| 201 | Successful creation (POST) |
-| 204 | Success without data (DELETE) |
-| 400 | Validation error |
-| 401 | Unauthenticated (token missing or expired) |
-| 403 | Unauthorized (no permission for the resource) |
-| 404 | Resource not found |
-| 500 | Internal server error |
-
-### Domain resources
-
-| Resource | Base URL |
-|----------|----------|
-| Schools / Institutions | `/api/v1/schools/` |
-| Graduation events | `/api/v1/graduation-events/` |
-| Academic gown rentals | `/api/v1/toga-rentals/` |
-| Auditorium bookings | `/api/v1/auditorium-bookings/` |
-| Photography packages | `/api/v1/photo-packages/` |
-| Users | `/api/v1/users/` |
-| Auth | `/api/v1/auth/` |
 
 ## Settings & Environment Variables
 
