@@ -18,3 +18,11 @@ export interface NavItem {
   path: string;
   module: ModuleSlug | null;
 }
+
+export interface ModuleLayoutProps {
+  title: string;
+  subtitle?: string;
+  actions?: ReactNode;
+  footer?: ReactNode;
+  children: ReactNode;
+}

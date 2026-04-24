@@ -1,17 +1,14 @@
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
-import Paper from "@mui/material/Paper";
 import Grid2 from "@mui/material/Grid2";
+import Paper from "@mui/material/Paper";
+import Typography from "@mui/material/Typography";
 import SchoolIcon from "@mui/icons-material/School";
 
+import { ModuleLayout } from "@shared/components";
 import styles from "./GradosPage.module.scss";
 
 export default function GradosPage() {
   return (
-    <Box>
-      <Typography variant="h4" fontWeight={700} mb={3}>
-        Grados
-      </Typography>
+    <ModuleLayout title="Grados">
       <Grid2 container spacing={3}>
         {[
           "Gestión de ceremonias",
@@ -32,6 +29,6 @@ export default function GradosPage() {
           </Grid2>
         ))}
       </Grid2>
-    </Box>
+    </ModuleLayout>
   );
 }
