@@ -15,3 +15,13 @@ DATABASES = {
         "PORT": config("DB_PORT", default="5432"),
     }
 }
+
+# --- Silk (dev-only API profiling) ---
+INSTALLED_APPS += ["silk"]
+MIDDLEWARE = ["silk.middleware.SilkyMiddleware"] + MIDDLEWARE
+
+SILKY_AUTHENTICATION = True   # require login to view /silk/
+SILKY_AUTHORISATION = True    # require is_staff
+SILKY_MAX_RECORDED_REQUESTS = 500
+SILKY_MAX_RECORDED_REQUESTS_CHECK_PERCENT = 25
+SILKY_PYTHON_PROFILER = True
