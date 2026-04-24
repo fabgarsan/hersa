@@ -70,6 +70,35 @@ const { control, handleSubmit } = useForm<FormValues>();
 
 Never use ad-hoc or uncontrolled form state.
 
+## Deprecated APIs — never use
+
+MUI v6 replaced legacy slot props. Use the new `slots` / `slotProps` API exclusively.
+
+| Deprecated (v5) | Replacement (v6) |
+|-----------------|-----------------|
+| `InputProps={{ ... }}` | `slotProps={{ input: { ... } }}` |
+| `inputProps={{ ... }}` | `slotProps={{ htmlInput: { ... } }}` |
+| `componentsProps={{ ... }}` | `slotProps={{ ... }}` |
+| `components={{ ... }}` | `slots={{ ... }}` |
+| `PaperProps`, `BackdropProps`, `PopperProps` | `slotProps={{ paper: ..., backdrop: ..., popper: ... }}` |
+| `TransitionComponent` / `TransitionProps` | `slots.transition` / `slotProps.transition` |
+| `primaryTypographyProps={{ ... }}` (ListItemText) | `slotProps={{ primary: { ... } }}` |
+| `secondaryTypographyProps={{ ... }}` (ListItemText) | `slotProps={{ secondary: { ... } }}` |
+
+```tsx
+// ✅ v6 — TextField with end adornment
+<TextField
+  slotProps={{
+    input: {
+      endAdornment: <InputAdornment position="end">...</InputAdornment>,
+    },
+  }}
+/>
+
+// ❌ deprecated
+<TextField InputProps={{ endAdornment: ... }} />
+```
+
 ## Styling
 
 MUI styling rules live in `frontend/CLAUDE.md` (SCSS Modules section). **Never** use `sx` prop or inline `style={{}}` objects.

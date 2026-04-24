@@ -1,5 +1,4 @@
 import Button from "@mui/material/Button";
-import Chip from "@mui/material/Chip";
 import Divider from "@mui/material/Divider";
 import Grid2 from "@mui/material/Grid2";
 import List from "@mui/material/List";
@@ -13,14 +12,13 @@ import DownloadIcon from "@mui/icons-material/Download";
 import EventIcon from "@mui/icons-material/Event";
 import GroupIcon from "@mui/icons-material/Group";
 import SchoolIcon from "@mui/icons-material/School";
-import TrendingDownIcon from "@mui/icons-material/TrendingDown";
-import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 
 import { ModuleLayout } from "@shared/components";
+import { StatCard } from "@modules/admin/components/StatCard";
+import type { StatCard as StatCardData } from "@modules/admin/pages/types";
 import styles from "./AdminPage.module.scss";
-import { StatCard } from "@modules/admin/pages/types.ts";
 
-const STATS: StatCard[] = [
+const STATS: StatCardData[] = [
   {
     label: "Usuarios activos",
     value: "4",
@@ -85,23 +83,9 @@ export default function AdminPage() {
       footer={footer}
     >
       <Grid2 container spacing={3}>
-        {STATS.map(({ label, value, trend, trendUp, icon }) => (
-          <Grid2 size={{ xs: 12, sm: 6, md: 3 }} key={label}>
-            <Paper variant="outlined" className={styles.statCard}>
-              {icon}
-              <Typography variant="h4" fontWeight={700} className={styles.statValue}>
-                {value}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                {label}
-              </Typography>
-              <Chip
-                size="small"
-                icon={trendUp ? <TrendingUpIcon /> : <TrendingDownIcon />}
-                label={trend}
-                className={trendUp ? styles.chipUp : styles.chipDown}
-              />
-            </Paper>
+        {STATS.map((stat) => (
+          <Grid2 size={{ xs: 12, sm: 6, md: 3 }} key={stat.label}>
+            <StatCard {...stat} />
           </Grid2>
         ))}
 
@@ -121,8 +105,10 @@ export default function AdminPage() {
                   <ListItemText
                     primary={action}
                     secondary={user}
-                    primaryTypographyProps={{ variant: "body2" }}
-                    secondaryTypographyProps={{ variant: "caption" }}
+                    slotProps={{
+                      primary: { variant: "body2" },
+                      secondary: { variant: "caption" },
+                    }}
                   />
                   <Typography
                     variant="caption"

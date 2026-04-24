@@ -1,0 +1,28 @@
+@use '../styles/variables' as v;
+
+.pageRoot {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: v.$bg-default;
+  padding-left: v.sp(2);
+  padding-right: v.sp(2);
+}
+
+.cardContent {
+  padding: v.sp(3);
+
+  @media (min-width: v.$breakpoint-sm) {
+    padding: v.sp(4);
+  }
+}
+
+.subtitle {
+  margin-bottom: v.sp(3);
+}
+
+.footer {
+  margin-top: v.sp(3);
+  text-align: center;
+}

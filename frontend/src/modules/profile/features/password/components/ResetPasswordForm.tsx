@@ -1,37 +1,23 @@
 import { useState } from "react";
 
-import {
-  Alert,
-  Box,
-  Button,
-  CircularProgress,
-  IconButton,
-  InputAdornment,
-  Stack,
-  TextField,
-  Typography,
-} from "@mui/material";
-import Visibility from "@mui/icons-material/Visibility";
-import VisibilityOff from "@mui/icons-material/VisibilityOff";
+import Alert from "@mui/material/Alert";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Stack from "@mui/material/Stack";
+import Typography from "@mui/material/Typography";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Controller, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 
+import { PasswordTextField, SubmitButton } from "@shared/components";
 import { ROUTES } from "@shared/constants/routes";
 import { UI } from "../../../constants/ui";
 import { useResetPasswordMutation } from "../api/resetPasswordMutation";
 import { resetPasswordSchema } from "../schemas";
-import type { ResetPasswordFormValues } from "../types";
+import type { ResetPasswordFormProps, ResetPasswordFormValues } from "../types";
 import styles from "./ResetPasswordForm.module.scss";
 
-interface ResetPasswordFormProps {
-  uid: string;
-  token: string;
-}
-
 export function ResetPasswordForm({ uid, token }: ResetPasswordFormProps) {
-  const [showNew, setShowNew] = useState(false);
-  const [showConfirm, setShowConfirm] = useState(false);
   const [success, setSuccess] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -99,65 +85,27 @@ export function ResetPasswordForm({ uid, token }: ResetPasswordFormProps) {
           </Stack>
         )}
 
-        <Controller
+        <PasswordTextField
           name="newPassword"
           control={control}
-          render={({ field }) => (
-            <TextField
-              {...field}
-              label={UI.password.NEW_LABEL}
-              type={showNew ? "text" : "password"}
-              error={Boolean(errors.newPassword)}
-              helperText={errors.newPassword?.message}
-              fullWidth
-              autoFocus
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton onClick={() => setShowNew((v) => !v)} edge="end">
-                      {showNew ? <VisibilityOff /> : <Visibility />}
-                    </IconButton>
-                  </InputAdornment>
-                ),
-              }}
-            />
-          )}
+          label={UI.password.NEW_LABEL}
+          error={errors.newPassword}
+          autoFocus
         />
 
-        <Controller
+        <PasswordTextField
           name="confirmPassword"
           control={control}
-          render={({ field }) => (
-            <TextField
-              {...field}
-              label={UI.password.CONFIRM_LABEL}
-              type={showConfirm ? "text" : "password"}
-              error={Boolean(errors.confirmPassword)}
-              helperText={errors.confirmPassword?.message}
-              fullWidth
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton onClick={() => setShowConfirm((v) => !v)} edge="end">
-                      {showConfirm ? <VisibilityOff /> : <Visibility />}
-                    </IconButton>
-                  </InputAdornment>
-                ),
-              }}
-            />
-          )}
+          label={UI.password.CONFIRM_LABEL}
+          error={errors.confirmPassword}
         />
 
-        <Button
-          type="submit"
-          variant="contained"
-          color="primary"
-          disabled={isPending}
-          startIcon={isPending ? <CircularProgress size={18} color="inherit" /> : null}
+        <SubmitButton
+          isPending={isPending}
+          label={UI.password.RESET_BUTTON}
+          pendingLabel={UI.password.RESETTING}
           fullWidth
-        >
-          {isPending ? UI.password.RESETTING : UI.password.RESET_BUTTON}
-        </Button>
+        />
       </Stack>
     </Box>
   );

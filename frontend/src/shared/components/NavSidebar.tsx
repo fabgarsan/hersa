@@ -20,8 +20,18 @@ import type { NavItem } from "./types";
 import styles from "./NavSidebar.module.scss";
 
 const NAV_ITEMS: NavItem[] = [
-  { label: UI.nav.STORE, icon: <StorefrontIcon />, path: ROUTES.TIENDA, module: "modules.access_tienda" },
-  { label: UI.nav.GRADUATIONS, icon: <SchoolIcon />, path: ROUTES.GRADOS, module: "modules.access_programador" },
+  {
+    label: UI.nav.STORE,
+    icon: <StorefrontIcon />,
+    path: ROUTES.TIENDA,
+    module: "modules.access_tienda",
+  },
+  {
+    label: UI.nav.GRADUATIONS,
+    icon: <SchoolIcon />,
+    path: ROUTES.GRADOS,
+    module: "modules.access_programador",
+  },
   { label: UI.nav.ADMIN, icon: <AdminPanelSettingsIcon />, path: ROUTES.ADMIN, module: null },
   { label: UI.nav.PROFILE, icon: <PersonIcon />, path: ROUTES.PROFILE, module: null },
 ];
@@ -59,7 +69,7 @@ export function NavSidebar() {
               <ListItemIcon className={styles.navItemIcon}>{icon}</ListItemIcon>
               <ListItemText
                 primary={label}
-                primaryTypographyProps={{ fontWeight: active ? 600 : 400, fontSize: "0.9rem" }}
+                slotProps={{ primary: { fontWeight: active ? 600 : 400, fontSize: "0.9rem" } }}
               />
             </ListItemButton>
           );
