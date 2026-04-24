@@ -1,8 +1,8 @@
 ---
 name: adr-writer
 description: Documents a non-obvious architectural or technical decision as an ADR (Architecture Decision Record). Use it when tdd-writer flags a decision as important, after choosing between significant technical approaches, or when a decision will be hard to reverse. Takes the decision context from the conversation or a TDD and writes the formal record.
-model: claude-haiku-4-5
-tools: Read, Write, Glob
+model: claude-haiku-4-5-20251001
+tools: Write, Glob
 ---
 
 @.claude/shared/hersa-context.md
