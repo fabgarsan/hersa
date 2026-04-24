@@ -1,35 +1,20 @@
 import { useState } from "react";
 
-import {
-  Alert,
-  Box,
-  Button,
-  CircularProgress,
-  IconButton,
-  InputAdornment,
-  Stack,
-  TextField,
-} from "@mui/material";
-import Visibility from "@mui/icons-material/Visibility";
-import VisibilityOff from "@mui/icons-material/VisibilityOff";
+import Alert from "@mui/material/Alert";
+import Box from "@mui/material/Box";
+import Stack from "@mui/material/Stack";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Controller, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import type { AxiosError } from "axios";
 
+import { PasswordTextField, SubmitButton } from "@shared/components";
 import { UI } from "../../../constants/ui";
 import { useChangePasswordMutation } from "../api/changePasswordMutation";
 import { changePasswordSchema } from "../schemas";
-import type { ChangePasswordFormValues } from "../types";
+import type { ChangePasswordFormProps, ChangePasswordFormValues } from "../types";
 import styles from "./ChangePasswordForm.module.scss";
 
-interface ChangePasswordFormProps {
-  onSuccess?: () => void;
-}
-
 export function ChangePasswordForm({ onSuccess }: ChangePasswordFormProps) {
-  const [showCurrent, setShowCurrent] = useState(false);
-  const [showNew, setShowNew] = useState(false);
-  const [showConfirm, setShowConfirm] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -71,93 +56,38 @@ export function ChangePasswordForm({ onSuccess }: ChangePasswordFormProps) {
   };
 
   return (
-    <Box component="form" onSubmit={handleSubmit(onSubmit)} noValidate>
+    <Box component="form" onSubmit={handleSubmit(onSubmit)} noValidate className={styles.form}>
       <Stack spacing={2.5}>
         {successMessage && <Alert severity="success">{successMessage}</Alert>}
         {errorMessage && <Alert severity="error">{errorMessage}</Alert>}
 
-        <Controller
+        <PasswordTextField
           name="currentPassword"
           control={control}
-          render={({ field }) => (
-            <TextField
-              {...field}
-              label={UI.password.CURRENT_LABEL}
-              type={showCurrent ? "text" : "password"}
-              error={Boolean(errors.currentPassword)}
-              helperText={errors.currentPassword?.message}
-              fullWidth
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton onClick={() => setShowCurrent((v) => !v)} edge="end">
-                      {showCurrent ? <VisibilityOff /> : <Visibility />}
-                    </IconButton>
-                  </InputAdornment>
-                ),
-              }}
-            />
-          )}
+          label={UI.password.CURRENT_LABEL}
+          error={errors.currentPassword}
         />
 
-        <Controller
+        <PasswordTextField
           name="newPassword"
           control={control}
-          render={({ field }) => (
-            <TextField
-              {...field}
-              label={UI.password.NEW_LABEL}
-              type={showNew ? "text" : "password"}
-              error={Boolean(errors.newPassword)}
-              helperText={errors.newPassword?.message}
-              fullWidth
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton onClick={() => setShowNew((v) => !v)} edge="end">
-                      {showNew ? <VisibilityOff /> : <Visibility />}
-                    </IconButton>
-                  </InputAdornment>
-                ),
-              }}
-            />
-          )}
+          label={UI.password.NEW_LABEL}
+          error={errors.newPassword}
         />
 
-        <Controller
+        <PasswordTextField
           name="confirmPassword"
           control={control}
-          render={({ field }) => (
-            <TextField
-              {...field}
-              label={UI.password.CONFIRM_LABEL}
-              type={showConfirm ? "text" : "password"}
-              error={Boolean(errors.confirmPassword)}
-              helperText={errors.confirmPassword?.message}
-              fullWidth
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton onClick={() => setShowConfirm((v) => !v)} edge="end">
-                      {showConfirm ? <VisibilityOff /> : <Visibility />}
-                    </IconButton>
-                  </InputAdornment>
-                ),
-              }}
-            />
-          )}
+          label={UI.password.CONFIRM_LABEL}
+          error={errors.confirmPassword}
         />
 
-        <Button
-          type="submit"
-          variant="contained"
-          color="primary"
-          disabled={isPending}
-          startIcon={isPending ? <CircularProgress size={18} color="inherit" /> : null}
-          className={styles.submitButton}
-        >
-          {isPending ? UI.password.CHANGING : UI.password.CHANGE_BUTTON}
-        </Button>
+        <SubmitButton
+          isPending={isPending}
+          label={UI.password.CHANGE_BUTTON}
+          pendingLabel={UI.password.CHANGING}
+          fullWidth={false}
+        />
       </Stack>
     </Box>
   );

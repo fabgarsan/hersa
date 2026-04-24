@@ -8,6 +8,7 @@ import { TiendaPage } from "@modules/tienda";
 import { GradosPage } from "@modules/grados";
 import { AdminPage } from "@modules/admin";
 import { ForgotPasswordPage, ProfilePage, ResetPasswordPage } from "@modules/profile";
+import styles from "./App.module.scss";
 
 export default function App() {
   const { isAuthenticated } = useAuth();
@@ -29,14 +30,30 @@ export default function App() {
   }
 
   return (
-    <Layout>
-      <Routes>
-        <Route path={ROUTES.HOME} element={<Navigate to={ROUTES.PROFILE} replace />} />
-        <Route path={ROUTES.TIENDA} element={<ModuleGuard module="modules.access_tienda"><TiendaPage /></ModuleGuard>} />
-        <Route path={ROUTES.GRADOS} element={<ModuleGuard module="modules.access_programador"><GradosPage /></ModuleGuard>} />
-        <Route path={ROUTES.ADMIN} element={<AdminPage />} />
-        <Route path={ROUTES.PROFILE} element={<ProfilePage />} />
-      </Routes>
-    </Layout>
+    <div className={styles.root}>
+      <Layout>
+        <Routes>
+          <Route path={ROUTES.HOME} element={<Navigate to={ROUTES.PROFILE} replace />} />
+          <Route
+            path={ROUTES.TIENDA}
+            element={
+              <ModuleGuard module="modules.access_tienda">
+                <TiendaPage />
+              </ModuleGuard>
+            }
+          />
+          <Route
+            path={ROUTES.GRADOS}
+            element={
+              <ModuleGuard module="modules.access_programador">
+                <GradosPage />
+              </ModuleGuard>
+            }
+          />
+          <Route path={ROUTES.ADMIN} element={<AdminPage />} />
+          <Route path={ROUTES.PROFILE} element={<ProfilePage />} />
+        </Routes>
+      </Layout>
+    </div>
   );
 }

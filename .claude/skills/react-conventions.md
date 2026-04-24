@@ -76,3 +76,24 @@ export const getRoomsQuery = () =>
 - Mutations: `<method><Name>Mutation.ts` — one hook per file.
 - Never mix query and mutation logic in the same file.
 - Never use generic names like `roomApi.ts`.
+
+## Types — always in types.ts, never inline
+
+**Rule:** All `interface` and `type` definitions must live in `types.ts` — never declared inside `.tsx` or `.ts` logic files.
+
+- Component props (`<ComponentName>Props`) → feature `types.ts` or `shared/components/types.ts`
+- Hook return types (`Use<HookName>Return`) → feature `types.ts`
+- API shapes → feature `types.ts`
+
+```typescript
+// ✅ features/password/types.ts
+export interface ChangePasswordFormProps {
+  onSuccess?: () => void;
+}
+
+// ✅ ChangePasswordForm.tsx
+import type { ChangePasswordFormProps } from '../types';
+
+// ❌ never declare interfaces inside .tsx files
+interface ChangePasswordFormProps { ... }  // wrong — belongs in types.ts
+```

@@ -78,8 +78,10 @@ export default function ProfilePage() {
                       <ListItemText
                         primary={label}
                         secondary={value}
-                        primaryTypographyProps={{ variant: "caption", color: "text.secondary" }}
-                        secondaryTypographyProps={{ variant: "body2", color: "text.primary" }}
+                        slotProps={{
+                          primary: { variant: "caption", color: "text.secondary" },
+                          secondary: { variant: "body2", color: "text.primary" },
+                        }}
                       />
                     </ListItem>
                   ))}

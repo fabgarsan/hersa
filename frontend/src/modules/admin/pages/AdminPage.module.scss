@@ -1,35 +1,8 @@
 @use '../../../shared/styles/variables' as v;
 
-.statCard {
-  padding: v.sp(3);
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: v.sp(1);
-}
-
 .statIcon {
   font-size: 28px;
   color: v.$secondary-main;
-}
-
-.statValue {
-  color: v.$primary-main;
-  line-height: 1;
-}
-
-.chipUp {
-  :global(.MuiChip-icon) { color: v.$success-main; }
-  color: v.$success-main;
-  background-color: rgba(59, 109, 17, 0.08);
-  border: none;
-}
-
-.chipDown {
-  :global(.MuiChip-icon) { color: v.$error-main; }
-  color: v.$error-main;
-  background-color: rgba(163, 45, 45, 0.08);
-  border: none;
 }
 
 .activityCard {

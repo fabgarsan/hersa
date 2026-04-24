@@ -1,15 +1,4 @@
-@use '../../../shared/styles/variables' as v;
-
-.card {
-  padding: v.sp(4);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: v.sp(2);
-  color: v.$text-secondary;
-}
-
-.icon {
-  font-size: 40px;
-  color: v.$secondary-main;
+// Styles for this page are provided by ComingSoonGrid
+.root {
+  display: contents;
 }

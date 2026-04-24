@@ -1,0 +1,17 @@
+@use '../styles/variables' as v;
+
+.card {
+  padding: v.sp(4);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: v.sp(2);
+  color: v.$text-secondary;
+}
+
+.iconWrapper {
+  font-size: 40px;
+  color: v.$secondary-main;
+  display: flex;
+  align-items: center;
+}
