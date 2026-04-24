@@ -33,11 +33,12 @@ backend/
 ## How to work
 
 1. Read `backend/CLAUDE.md` (authoritative conventions) and the relevant files before modifying anything
-2. Respect `.claude/skills/api-contract.md` when defining responses
-3. Apply `.claude/skills/security-checklist.md` to all code you write
-4. When creating a new app, immediately create `migrations/__init__.py` — `makemigrations` fails without it
-5. After creating models, always generate the migration
-6. Verify the code is error-free before reporting complete
+2. Read `.claude/skills/backend-conventions.md` when creating models, views, serializers, or scaffolding a new app
+3. Respect `.claude/skills/api-contract.md` when defining responses
+4. Apply `.claude/skills/security-checklist.md` to all code you write
+5. When creating a new app, immediately create `migrations/__init__.py` — `makemigrations` fails without it
+6. After creating models, always generate the migration
+7. Verify the code is error-free before reporting complete
 
 ## Reference commands
 
