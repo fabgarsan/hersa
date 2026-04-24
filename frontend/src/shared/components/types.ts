@@ -1,14 +1,14 @@
-import type { ModuleSlug } from "@shared/types/permissions";
+import type { ModulePermission } from "@shared/types/permissions";
 import type { ReactNode } from "react";
 
-export type { ModuleSlug } from "@shared/types/permissions";
+export type { ModulePermission } from "@shared/types/permissions";
 
 export interface AppHeaderProps {
   onMenuClick: () => void;
 }
 
 export interface ModuleGuardProps {
-  module: ModuleSlug;
+  module: ModulePermission;
   children: ReactNode;
 }
 
@@ -16,7 +16,7 @@ export interface NavItem {
   label: string;
   icon: ReactNode;
   path: string;
-  module: ModuleSlug | null;
+  module: ModulePermission | null;
 }
 
 export interface ModuleLayoutProps {
