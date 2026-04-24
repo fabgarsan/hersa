@@ -1,15 +1,47 @@
 @use '../../../shared/styles/variables' as v;
 
-.card {
-  padding: v.sp(4);
+.statCard {
+  padding: v.sp(3);
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: v.sp(2);
-  color: v.$text-secondary;
+  align-items: flex-start;
+  gap: v.sp(1);
 }
 
-.icon {
-  font-size: 40px;
+.statIcon {
+  font-size: 28px;
   color: v.$secondary-main;
+}
+
+.statValue {
+  color: v.$primary-main;
+  line-height: 1;
+}
+
+.chipUp {
+  :global(.MuiChip-icon) { color: v.$success-main; }
+  color: v.$success-main;
+  background-color: rgba(59, 109, 17, 0.08);
+  border: none;
+}
+
+.chipDown {
+  :global(.MuiChip-icon) { color: v.$error-main; }
+  color: v.$error-main;
+  background-color: rgba(163, 45, 45, 0.08);
+  border: none;
+}
+
+.activityCard {
+  padding: v.sp(3);
+}
+
+.activityItem {
+  padding-top: v.sp(1.5);
+  padding-bottom: v.sp(1.5);
+}
+
+.activityTime {
+  white-space: nowrap;
+  margin-left: v.sp(2);
 }
