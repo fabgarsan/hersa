@@ -73,3 +73,7 @@ These files in `.claude/skills/` extend these docs. Read them when indicated —
 | `.claude/skills/api-contract.md` | Implementing or reviewing any endpoint (`django-developer`, `react-developer`, `tdd-writer`) |
 | `.claude/skills/error-handling.md` | Writing views, serializers, or React components that handle API responses |
 | `.claude/skills/security-checklist.md` | `security-auditor` always; any auth or data-sensitive module |
+| `.claude/skills/backend-conventions.md` | Creating Django models, views, serializers, or scaffolding a new app |
+| `.claude/skills/theme-tokens.md` | Defining or applying Hersa brand colors, typography, or logo rules |
+| `.claude/skills/mui-conventions.md` | Choosing MUI components, using Grid2, or wiring up RHF forms |
+| `.claude/skills/react-conventions.md` | Writing axios interceptors, React Query hooks, or managing auth/state |
