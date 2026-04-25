@@ -4,11 +4,12 @@ import Alert from "@mui/material/Alert";
 import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
 import { zodResolver } from "@hookform/resolvers/zod";
+import axios from "axios";
 import { useForm } from "react-hook-form";
-import type { AxiosError } from "axios";
 
+import { isApiErrorData } from "@api/client";
 import { PasswordTextField, SubmitButton } from "@shared/components";
-import { UI } from "../../../constants/ui";
+import { UI } from "@modules/profile/constants/ui";
 import { useChangePasswordMutation } from "../api/changePasswordMutation";
 import { changePasswordSchema } from "../schemas";
 import type { ChangePasswordFormProps, ChangePasswordFormValues } from "../types";
@@ -41,13 +42,16 @@ export function ChangePasswordForm({ onSuccess }: ChangePasswordFormProps) {
         onSuccess?.();
       },
       onError: (err) => {
-        const axiosErr = err as AxiosError<Record<string, string | string[]>>;
-        const data = axiosErr.response?.data;
-        if (data?.current_password) {
-          setError("currentPassword", { message: String(data.current_password) });
-        } else if (data?.new_password) {
-          const msg = Array.isArray(data.new_password) ? data.new_password[0] : data.new_password;
-          setError("newPassword", { message: String(msg) });
+        if (axios.isAxiosError(err) && isApiErrorData(err.response?.data)) {
+          const data = err.response.data;
+          if (data["currentPassword"]) {
+            setError("currentPassword", { message: String(data["currentPassword"]) });
+          } else if (data["newPassword"]) {
+            const msg = Array.isArray(data["newPassword"]) ? data["newPassword"][0] : data["newPassword"];
+            setError("newPassword", { message: String(msg) });
+          } else {
+            setErrorMessage(UI.password.CHANGE_ERROR);
+          }
         } else {
           setErrorMessage(UI.password.CHANGE_ERROR);
         }

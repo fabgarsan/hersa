@@ -5,7 +5,7 @@ import Toolbar from "@mui/material/Toolbar";
 
 import { AppHeader } from "./AppHeader";
 import { NavSidebar } from "./NavSidebar";
-import type { LayoutProps } from "@shared/types/permissions";
+import type { LayoutProps } from "./types";
 import styles from "./Layout.module.scss";
 
 export function Layout({ children }: LayoutProps) {

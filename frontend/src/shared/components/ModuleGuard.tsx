@@ -14,12 +14,12 @@ export function ModuleGuard({ module, children }: ModuleGuardProps) {
 
   if (!hasAccess(module)) {
     return (
-      <Box className={styles.notFound}>
-        <Typography variant="h2" color="text.secondary">
-          404
+      <Box className={styles.accessDenied}>
+        <Typography variant="h4" className={styles.accessDeniedTitle}>
+          Acceso restringido
         </Typography>
-        <Typography variant="h6" color="text.secondary">
-          Esta página no existe.
+        <Typography variant="body1" className={styles.accessDeniedMessage}>
+          No tienes permiso para acceder a este módulo.
         </Typography>
       </Box>
     );

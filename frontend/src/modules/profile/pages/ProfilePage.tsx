@@ -21,7 +21,7 @@ export default function ProfilePage() {
 
   return (
     <Container maxWidth="lg" className={styles.container}>
-      <Typography variant="h4" fontWeight={600} color="primary" gutterBottom>
+      <Typography variant="h4" className={styles.pageTitle}>
         Mi perfil
       </Typography>
 
@@ -31,7 +31,7 @@ export default function ProfilePage() {
             <CardHeader
               avatar={<LockIcon color="primary" />}
               title={
-                <Typography variant="h6" fontWeight={600}>
+                <Typography variant="h6" className={styles.cardSectionTitle}>
                   Cambiar contraseña
                 </Typography>
               }
@@ -48,7 +48,7 @@ export default function ProfilePage() {
             <CardHeader
               avatar={<PersonIcon color="primary" />}
               title={
-                <Typography variant="h6" fontWeight={600}>
+                <Typography variant="h6" className={styles.cardSectionTitle}>
                   Mi Información
                 </Typography>
               }
@@ -58,7 +58,7 @@ export default function ProfilePage() {
               {isLoading ? (
                 <List disablePadding>
                   {[0, 1, 2, 3].map((i) => (
-                    <ListItem key={i} divider={i < 3}>
+                    <ListItem key={`skeleton-field-${i}`} divider={i < 3}>
                       <ListItemText
                         primary={<Skeleton width={80} />}
                         secondary={<Skeleton width={160} />}
@@ -69,8 +69,8 @@ export default function ProfilePage() {
               ) : (
                 <List disablePadding>
                   {[
-                    { label: "Nombre", value: user?.first_name || "—" },
-                    { label: "Apellido", value: user?.last_name || "—" },
+                    { label: "Nombre", value: user?.firstName || "—" },
+                    { label: "Apellido", value: user?.lastName || "—" },
                     { label: "Usuario", value: user?.username || "—" },
                     { label: "Correo", value: user?.email || "—" },
                   ].map(({ label, value }, i) => (
@@ -79,8 +79,8 @@ export default function ProfilePage() {
                         primary={label}
                         secondary={value}
                         slotProps={{
-                          primary: { variant: "caption", color: "text.secondary" },
-                          secondary: { variant: "body2", color: "text.primary" },
+                          primary: { variant: "caption", className: styles.fieldLabel },
+                          secondary: { variant: "body2", className: styles.fieldValue },
                         }}
                       />
                     </ListItem>

@@ -15,70 +15,63 @@ import SchoolIcon from "@mui/icons-material/School";
 
 import { ModuleLayout } from "@shared/components";
 import { StatCard } from "@modules/admin/components/StatCard";
-import type { StatCard as StatCardData } from "@modules/admin/pages/types";
+import { UI } from "@modules/admin/constants/ui";
+import type { StatCardData } from "@modules/admin/pages/types";
 import styles from "./AdminPage.module.scss";
 
 const STATS: StatCardData[] = [
   {
-    label: "Usuarios activos",
-    value: "4",
-    trend: "+1 este mes",
+    label: UI.stats.ACTIVE_USERS_LABEL,
+    value: UI.stats.ACTIVE_USERS_VALUE,
+    trend: UI.stats.ACTIVE_USERS_TREND,
     trendUp: true,
     icon: <GroupIcon className={styles.statIcon} />,
   },
   {
-    label: "Colegios registrados",
-    value: "12",
-    trend: "+3 este año",
+    label: UI.stats.REGISTERED_SCHOOLS_LABEL,
+    value: UI.stats.REGISTERED_SCHOOLS_VALUE,
+    trend: UI.stats.REGISTERED_SCHOOLS_TREND,
     trendUp: true,
     icon: <SchoolIcon className={styles.statIcon} />,
   },
   {
-    label: "Ceremonias este mes",
-    value: "3",
-    trend: "−1 vs mes anterior",
+    label: UI.stats.CEREMONIES_LABEL,
+    value: UI.stats.CEREMONIES_VALUE,
+    trend: UI.stats.CEREMONIES_TREND,
     trendUp: false,
     icon: <EventIcon className={styles.statIcon} />,
   },
   {
-    label: "Ingresos estimados",
-    value: "$48.200",
-    trend: "+12% este mes",
+    label: UI.stats.REVENUE_LABEL,
+    value: UI.stats.REVENUE_VALUE,
+    trend: UI.stats.REVENUE_TREND,
     trendUp: true,
     icon: <AttachMoneyIcon className={styles.statIcon} />,
   },
 ];
 
-const RECENT_ACTIVITY = [
-  { user: "Carlos Méndez", action: "Actualizó paquete fotográfico", time: "Hace 10 min" },
-  { user: "Ana Torres", action: "Registró nuevo colegio: IED La Salle", time: "Hace 1 hora" },
-  { user: "Pedro Ruiz", action: "Generó reporte de grados 2025", time: "Hace 3 horas" },
-  { user: "Lucía Vargas", action: "Modificó configuración de toga talla M", time: "Ayer, 16:42" },
-  { user: "Carlos Méndez", action: "Cerró ceremonia Colegio San Jorge", time: "Ayer, 11:15" },
-];
-
 const actions = (
   <>
     <Button variant="outlined" startIcon={<DownloadIcon />}>
-      Exportar reporte
+      {UI.actions.EXPORT_REPORT}
     </Button>
     <Button variant="contained" startIcon={<AddIcon />}>
-      Nuevo usuario
+      {UI.actions.NEW_USER}
     </Button>
   </>
 );
 
 const footer = (
-  <Typography variant="body2" color="text.secondary">
-    4 usuarios activos · 12 colegios registrados · Última sincronización: hace 5 minutos
+  <Typography variant="body2" className={styles.footerText}>
+    {UI.page.FOOTER}
   </Typography>
 );
 
 export default function AdminPage() {
   return (
     <ModuleLayout
-      title="Administración"
-      subtitle="Panel de control del sistema y configuración global"
+      title={UI.page.TITLE}
+      subtitle={UI.page.SUBTITLE}
       actions={actions}
       footer={footer}
     >
@@ -91,15 +84,15 @@ export default function AdminPage() {
 
         <Grid2 size={{ xs: 12 }}>
           <Paper variant="outlined" className={styles.activityCard}>
-            <Typography variant="subtitle1" fontWeight={600} mb={1}>
-              Actividad reciente
+            <Typography variant="subtitle1" className={styles.activityTitle}>
+              {UI.activity.SECTION_TITLE}
             </Typography>
             <Divider />
             <List disablePadding>
-              {RECENT_ACTIVITY.map(({ user, action, time }, i) => (
+              {UI.activity.ITEMS.map(({ user, action, time }, i) => (
                 <ListItem
                   key={action}
-                  divider={i < RECENT_ACTIVITY.length - 1}
+                  divider={i < UI.activity.ITEMS.length - 1}
                   className={styles.activityItem}
                 >
                   <ListItemText
@@ -112,7 +105,6 @@ export default function AdminPage() {
                   />
                   <Typography
                     variant="caption"
-                    color="text.secondary"
                     className={styles.activityTime}
                   >
                     {time}

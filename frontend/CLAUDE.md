@@ -38,27 +38,28 @@ frontend/
 ├── src/
 │   ├── api/                      # Axios instance & interceptors
 │   ├── shared/
+│   │   ├── api/                  # Shared query/mutation hooks (getPermissionsQuery.ts, etc.)
 │   │   ├── components/           # Reusable UI components (PascalCase .tsx + .module.scss)
+│   │   ├── constants/            # Shared API routes and UI strings
+│   │   ├── contexts/             # Global contexts (Auth…)
 │   │   ├── hooks/                # Reusable custom hooks
-│   │   ├── contexts/             # Global contexts (Auth, Theme…)
-│   │   ├── helpers/              # Shared business logic (Hersa domain)
 │   │   ├── styles/               # theme.ts + _variables.scss (SCSS brand tokens)
-│   │   ├── utils/                # Shared code utilities (generic, domain-agnostic)
 │   │   └── types/                # Shared TypeScript types/interfaces
-│   ├── features/
-│   │   └── <feature-name>/       # kebab-case folder
-│   │       ├── api/
-│   │       │   ├── get<n>Query.ts
-│   │       │   └── <method><n>Mutation.ts
-│   │       ├── components/       # PascalCase .tsx + co-located .module.scss
-│   │       ├── hooks/            # camelCase files
-│   │       ├── helpers/          # Business logic for this feature (camelCase files)
-│   │       ├── utils/            # Code utilities for this feature (camelCase files)
-│   │       ├── types.ts
-│   │       └── index.ts          # Public exports for this feature
-│   ├── pages/                    # One file per route
+│   ├── modules/
+│   │   └── <module-name>/        # kebab-case folder (auth, profile, admin, etc.)
+│   │       ├── constants/        # Module-level API routes and UI strings
+│   │       ├── features/
+│   │       │   └── <feature>/
+│   │       │       ├── api/
+│   │       │       │   ├── get<n>Query.ts
+│   │       │       │   └── <method><n>Mutation.ts
+│   │       │       ├── components/   # PascalCase .tsx + co-located .module.scss
+│   │       │       ├── hooks/        # camelCase files
+│   │       │       ├── schemas.ts
+│   │       │       ├── types.ts
+│   │       │       └── index.ts      # Public exports for this feature
+│   │       └── index.ts          # Public exports for this module
 │   ├── router/                   # React Router configuration
-│   ├── store/                    # Redux Toolkit store & slices
 │   └── main.tsx
 ├── tests/
 │   └── utils/                    # renderWithProviders & shared helpers
@@ -73,12 +74,10 @@ frontend/
 {
   "compilerOptions": {
     "paths": {
-      "@/*":         ["./src/*"],
-      "@shared/*":   ["./src/shared/*"],
-      "@features/*": ["./src/features/*"],
-      "@pages/*":    ["./src/pages/*"],
-      "@store/*":    ["./src/store/*"],
-      "@api/*":      ["./src/api/*"]
+      "@/*":        ["./src/*"],
+      "@shared/*":  ["./src/shared/*"],
+      "@modules/*": ["./src/modules/*"],
+      "@api/*":     ["./src/api/*"]
     }
   }
 }

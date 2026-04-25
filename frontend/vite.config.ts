@@ -1,3 +1,4 @@
+/// <reference types="vitest" />
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { resolve } from "path";
@@ -9,8 +10,6 @@ export default defineConfig({
       "@": resolve(__dirname, "src"),
       "@shared": resolve(__dirname, "src/shared"),
       "@modules": resolve(__dirname, "src/modules"),
-      "@pages": resolve(__dirname, "src/pages"),
-      "@store": resolve(__dirname, "src/store"),
       "@api": resolve(__dirname, "src/api"),
     },
   },
@@ -21,5 +20,10 @@ export default defineConfig({
         changeOrigin: true,
       },
     },
+  },
+  test: {
+    environment: "jsdom",
+    globals: true,
+    setupFiles: ["./tests/setup.ts"],
   },
 });

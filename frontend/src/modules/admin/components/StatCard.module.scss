@@ -9,6 +9,7 @@
 }
 
 .statValue {
+  font-weight: 700;
   color: v.$primary-main;
   line-height: 1;
 }
@@ -18,6 +19,10 @@
   color: v.$success-main;
   background-color: rgba(59, 109, 17, 0.08);
   border: none;
+}
+
+.statLabel {
+  color: v.$text-secondary;
 }
 
 .chipDown {

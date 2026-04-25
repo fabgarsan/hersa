@@ -2,6 +2,10 @@ import type { Control, FieldError, FieldPath, FieldValues } from "react-hook-for
 import type { ModulePermission } from "@shared/types/permissions";
 import type { ReactNode } from "react";
 
+export interface LayoutProps {
+  children: ReactNode;
+}
+
 export type { ModulePermission } from "@shared/types/permissions";
 
 export interface AppHeaderProps {
@@ -58,4 +62,8 @@ export interface SubmitButtonProps {
   label: string;
   pendingLabel: string;
   fullWidth?: boolean;
+}
+
+export interface AuthGuardProps {
+  children: ReactNode;
 }

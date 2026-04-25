@@ -9,11 +9,11 @@ export function ModuleLayout({ title, subtitle, actions, footer, children }: Mod
     <Box className={styles.root}>
       <Box className={styles.header}>
         <Box className={styles.headerText}>
-          <Typography variant="h5" fontWeight={700}>
+          <Typography variant="h5" className={styles.title}>
             {title}
           </Typography>
           {subtitle && (
-            <Typography variant="body2" color="text.secondary">
+            <Typography variant="body2" className={styles.subtitle}>
               {subtitle}
             </Typography>
           )}

@@ -1,21 +1,11 @@
 import { useMutation } from "@tanstack/react-query";
 
 import { apiClient } from "@api/client";
-import { API } from "../../../constants/api";
-import type { ResetPasswordFormValues } from "../types";
-
-interface ResetPasswordPayload extends ResetPasswordFormValues {
-  uid: string;
-  token: string;
-}
+import { API } from "@modules/profile/constants/api";
+import type { ResetPasswordPayload } from "../types";
 
 const resetPassword = async (payload: ResetPasswordPayload): Promise<void> => {
-  await apiClient.post(API.USERS_RESET_PASSWORD, {
-    uid: payload.uid,
-    token: payload.token,
-    new_password: payload.newPassword,
-    confirm_password: payload.confirmPassword,
-  });
+  await apiClient.post(API.USERS_RESET_PASSWORD, payload);
 };
 
 export const useResetPasswordMutation = () => useMutation({ mutationFn: resetPassword });

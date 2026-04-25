@@ -31,3 +31,11 @@
   padding-top: v.sp(2);
   border-top: 1px solid rgba(0, 0, 0, 0.12);
 }
+
+.title {
+  font-weight: 700;
+}
+
+.subtitle {
+  color: v.$text-secondary;
+}

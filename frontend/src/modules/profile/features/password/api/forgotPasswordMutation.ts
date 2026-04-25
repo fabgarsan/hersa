@@ -1,13 +1,11 @@
 import { useMutation } from "@tanstack/react-query";
 
 import { apiClient } from "@api/client";
-import { API } from "../../../constants/api";
+import { API } from "@modules/profile/constants/api";
 import type { ForgotPasswordFormValues } from "../types";
 
 const forgotPassword = async (payload: ForgotPasswordFormValues): Promise<void> => {
-  await apiClient.post(API.USERS_FORGOT_PASSWORD, {
-    username_or_email: payload.usernameOrEmail,
-  });
+  await apiClient.post(API.USERS_FORGOT_PASSWORD, payload);
 };
 
 export const useForgotPasswordMutation = () => useMutation({ mutationFn: forgotPassword });
