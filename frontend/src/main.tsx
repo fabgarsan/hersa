@@ -8,6 +8,7 @@ import { CacheProvider } from "@emotion/react";
 import createCache from "@emotion/cache";
 import CssBaseline from "@mui/material/CssBaseline";
 import App from "./App";
+import { AuthProvider } from "@shared/contexts";
 import { hersaTheme } from "@shared/styles/theme";
 
 const queryClient = new QueryClient({
@@ -31,10 +32,12 @@ createRoot(root).render(
     <CacheProvider value={emotionCache}>
       <QueryClientProvider client={queryClient}>
         <BrowserRouter>
-          <ThemeProvider theme={hersaTheme}>
-            <CssBaseline />
-            <App />
-          </ThemeProvider>
+          <AuthProvider>
+            <ThemeProvider theme={hersaTheme}>
+              <CssBaseline />
+              <App />
+            </ThemeProvider>
+          </AuthProvider>
         </BrowserRouter>
         <ReactQueryDevtools initialIsOpen={false} />
       </QueryClientProvider>

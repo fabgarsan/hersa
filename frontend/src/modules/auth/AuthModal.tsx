@@ -7,17 +7,20 @@ import Paper from "@mui/material/Paper";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import { Controller, useForm } from "react-hook-form";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
 
+import { useAuthContext } from "@shared/contexts";
 import { SubmitButton } from "@shared/components";
 import { ROUTES } from "@shared/constants/routes";
-import { UI } from "../../constants/ui";
+import { UI } from "./constants/ui";
 import { loginSchema } from "./schemas";
 import { useLoginMutation } from "./loginMutation";
 import type { LoginCredentials } from "./types";
 import styles from "./AuthModal.module.scss";
 
 export function AuthModal() {
+  const { login } = useAuthContext();
+  const navigate = useNavigate();
   const { mutate, isPending, error } = useLoginMutation();
 
   const { control, handleSubmit } = useForm<LoginCredentials>({
@@ -26,13 +29,18 @@ export function AuthModal() {
   });
 
   const onSubmit = (values: LoginCredentials) => {
-    mutate(values, { onSuccess: () => window.location.reload() });
+    mutate(values, {
+      onSuccess: ({ access, refresh }) => {
+        login(access, refresh);
+        navigate(ROUTES.HOME);
+      },
+    });
   };
 
   return (
     <Container maxWidth="xs" className={styles.container}>
       <Paper elevation={3} className={styles.paper}>
-        <Typography variant="h5" fontWeight={700} mb={3} textAlign="center">
+        <Typography variant="h5" className={styles.title}>
           Hersa
         </Typography>
         {error && (
@@ -43,9 +51,7 @@ export function AuthModal() {
         <Box
           component="form"
           onSubmit={handleSubmit(onSubmit)}
-          display="flex"
-          flexDirection="column"
-          gap={2}
+          className={styles.form}
         >
           <Controller
             name="username"

@@ -1,6 +1,12 @@
 import axios from "axios";
+import camelcaseKeys from "camelcase-keys";
+import snakecaseKeys from "snakecase-keys";
 
 import { API } from "@shared/constants/api";
+
+export function isApiErrorData(data: unknown): data is Record<string, unknown> {
+  return typeof data === "object" && data !== null;
+}
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "";
 
@@ -9,30 +15,41 @@ export const apiClient = axios.create({
   headers: { "Content-Type": "application/json" },
 });
 
+// Request: attach JWT + convert camelCase body to snake_case
 apiClient.interceptors.request.use((config) => {
-  const token = localStorage.getItem("access_token");
+  const token = localStorage.getItem("accessToken");
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
+  }
+  if (config.data) {
+    config.data = snakecaseKeys(config.data as Record<string, unknown>, { deep: true });
   }
   return config;
 });
 
+// Response: convert snake_case data to camelCase
+// Error: attempt silent token refresh on 401
 apiClient.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    if (response.data) {
+      response.data = camelcaseKeys(response.data as Record<string, unknown>, { deep: true });
+    }
+    return response;
+  },
   async (error) => {
     const original = error.config;
     if (error.response?.status === 401 && !original._retry) {
       original._retry = true;
-      const refresh = localStorage.getItem("refresh_token");
+      const refresh = localStorage.getItem("refreshToken");
       if (refresh) {
         try {
           const { data } = await axios.post(`${BASE_URL}${API.TOKEN_REFRESH}`, { refresh });
-          localStorage.setItem("access_token", data.access);
+          localStorage.setItem("accessToken", data.access);
           original.headers.Authorization = `Bearer ${data.access}`;
           return apiClient(original);
         } catch {
-          localStorage.removeItem("access_token");
-          localStorage.removeItem("refresh_token");
+          localStorage.removeItem("accessToken");
+          localStorage.removeItem("refreshToken");
           window.location.href = "/";
         }
       }

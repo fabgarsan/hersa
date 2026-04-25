@@ -50,7 +50,7 @@ export function NavSidebar() {
   return (
     <Box className={styles.root}>
       <Toolbar className={styles.toolbar}>
-        <Typography variant="h6" fontWeight={700} color="secondary.main" letterSpacing={1}>
+        <Typography variant="h6" className={styles.brandTitle}>
           HERSA
         </Typography>
       </Toolbar>
@@ -69,7 +69,9 @@ export function NavSidebar() {
               <ListItemIcon className={styles.navItemIcon}>{icon}</ListItemIcon>
               <ListItemText
                 primary={label}
-                slotProps={{ primary: { fontWeight: active ? 600 : 400, fontSize: "0.9rem" } }}
+                slotProps={{
+                  primary: { className: active ? styles.navItemLabelActive : styles.navItemLabel },
+                }}
               />
             </ListItemButton>
           );

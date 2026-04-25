@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-export interface StatCard {
+export interface StatCardData {
   label: string;
   value: string;
   trend: string;

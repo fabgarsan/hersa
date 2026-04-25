@@ -17,4 +17,14 @@
 .activityTime {
   white-space: nowrap;
   margin-left: v.sp(2);
+  color: v.$text-secondary;
+}
+
+.activityTitle {
+  font-weight: 600;
+  margin-bottom: v.sp(1);
+}
+
+.footerText {
+  color: v.$text-secondary;
 }

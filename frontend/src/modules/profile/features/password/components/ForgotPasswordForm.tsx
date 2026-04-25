@@ -8,7 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
 
 import { SubmitButton } from "@shared/components";
-import { UI } from "../../../constants/ui";
+import { UI } from "@modules/profile/constants/ui";
 import { useForgotPasswordMutation } from "../api/forgotPasswordMutation";
 import { forgotPasswordSchema } from "../schemas";
 import type { ForgotPasswordFormValues } from "../types";

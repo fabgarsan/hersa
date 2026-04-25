@@ -1,7 +1,18 @@
-.notFound {
+@use '../styles/variables' as v;
+
+.accessDenied {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   height: 100%;
+  gap: v.sp(1);
+}
+
+.accessDeniedTitle {
+  color: v.$text-secondary;
+}
+
+.accessDeniedMessage {
+  color: v.$text-secondary;
 }

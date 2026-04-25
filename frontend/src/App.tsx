@@ -1,38 +1,37 @@
-import { Navigate, Route, Routes, useLocation } from "react-router-dom";
+import { Navigate, Outlet, Route, Routes } from "react-router-dom";
 
+import { AuthGuard } from "@shared/components/AuthGuard";
 import { Layout } from "@shared/components/Layout";
 import { ModuleGuard } from "@shared/components/ModuleGuard";
 import { ROUTES } from "@shared/constants/routes";
-import { AuthModal, useAuth } from "@modules/auth";
+import { AuthModal } from "@modules/auth";
 import { TiendaPage } from "@modules/tienda";
 import { GradosPage } from "@modules/grados";
 import { AdminPage } from "@modules/admin";
 import { ForgotPasswordPage, ProfilePage, ResetPasswordPage } from "@modules/profile";
 import styles from "./App.module.scss";
 
-export default function App() {
-  const { isAuthenticated } = useAuth();
-  const { pathname } = useLocation();
-
-  const isPublicPath = pathname === ROUTES.FORGOT_PASSWORD || pathname === ROUTES.RESET_PASSWORD;
-
-  if (!isAuthenticated && !isPublicPath) {
-    return <AuthModal />;
-  }
-
-  if (!isAuthenticated) {
-    return (
-      <Routes>
-        <Route path={ROUTES.FORGOT_PASSWORD} element={<ForgotPasswordPage />} />
-        <Route path={ROUTES.RESET_PASSWORD} element={<ResetPasswordPage />} />
-      </Routes>
-    );
-  }
-
+function ProtectedLayout() {
   return (
     <div className={styles.root}>
       <Layout>
-        <Routes>
+        <Outlet />
+      </Layout>
+    </div>
+  );
+}
+
+export default function App() {
+  return (
+    <AuthGuard>
+      <Routes>
+        {/* Public routes — no layout */}
+        <Route path={ROUTES.LOGIN} element={<AuthModal />} />
+        <Route path={ROUTES.FORGOT_PASSWORD} element={<ForgotPasswordPage />} />
+        <Route path={ROUTES.RESET_PASSWORD} element={<ResetPasswordPage />} />
+
+        {/* Protected routes — wrapped in Layout via ProtectedLayout */}
+        <Route element={<ProtectedLayout />}>
           <Route path={ROUTES.HOME} element={<Navigate to={ROUTES.PROFILE} replace />} />
           <Route
             path={ROUTES.TIENDA}
@@ -52,8 +51,8 @@ export default function App() {
           />
           <Route path={ROUTES.ADMIN} element={<AdminPage />} />
           <Route path={ROUTES.PROFILE} element={<ProfilePage />} />
-        </Routes>
-      </Layout>
-    </div>
+        </Route>
+      </Routes>
+    </AuthGuard>
   );
 }

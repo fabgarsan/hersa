@@ -1,2 +1,4 @@
-export { AuthModal, useAuth, useMeQuery } from "./features/auth";
-export type { TokenPair, LoginCredentials, UseAuthReturn, UserMe } from "./features/auth";
+export { AuthModal } from "./AuthModal";
+export { useAuth } from "./useAuth";
+export { useMeQuery } from "./getMeQuery";
+export type { TokenPair, LoginCredentials, UseAuthReturn, UserMe } from "./types";

@@ -1,4 +1,4 @@
-@use '../../../../shared/styles/variables' as v;
+@use '../../shared/styles/variables' as v;
 
 .container {
   margin-top: v.sp(6);
@@ -18,6 +18,18 @@
 
 .alert {
   margin-bottom: v.sp(2);
+}
+
+.title {
+  font-weight: 700;
+  margin-bottom: v.sp(3);
+  text-align: center;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: v.sp(2);
 }
 
 .forgotLink {

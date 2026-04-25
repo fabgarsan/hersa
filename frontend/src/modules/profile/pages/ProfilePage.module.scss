@@ -22,3 +22,21 @@
 .infoContent {
   padding: 0 !important;
 }
+
+.pageTitle {
+  font-weight: 600;
+  margin-bottom: v.sp(1);
+  color: v.$primary-main;
+}
+
+.cardSectionTitle {
+  font-weight: 600;
+}
+
+.fieldLabel {
+  color: v.$text-secondary;
+}
+
+.fieldValue {
+  color: v.$text-primary;
+}

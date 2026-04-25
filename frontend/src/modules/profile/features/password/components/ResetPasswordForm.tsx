@@ -6,12 +6,14 @@ import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import { zodResolver } from "@hookform/resolvers/zod";
+import axios from "axios";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 
+import { isApiErrorData } from "@api/client";
 import { PasswordTextField, SubmitButton } from "@shared/components";
 import { ROUTES } from "@shared/constants/routes";
-import { UI } from "../../../constants/ui";
+import { UI } from "@modules/profile/constants/ui";
 import { useResetPasswordMutation } from "../api/resetPasswordMutation";
 import { resetPasswordSchema } from "../schemas";
 import type { ResetPasswordFormProps, ResetPasswordFormValues } from "../types";
@@ -41,14 +43,18 @@ export function ResetPasswordForm({ uid, token }: ResetPasswordFormProps) {
       {
         onSuccess: () => setSuccess(true),
         onError: (err) => {
-          const data = (err as { response?: { data?: Record<string, unknown> } }).response?.data;
-          if (data?.confirm_password) {
-            setError("confirmPassword", { message: String(data.confirm_password) });
-          } else if (data?.new_password) {
-            const msg = Array.isArray(data.new_password) ? data.new_password[0] : data.new_password;
-            setError("newPassword", { message: String(msg) });
+          if (axios.isAxiosError(err) && isApiErrorData(err.response?.data)) {
+            const data = err.response.data;
+            if (data["confirmPassword"]) {
+              setError("confirmPassword", { message: String(data["confirmPassword"]) });
+            } else if (data["newPassword"]) {
+              const msg = Array.isArray(data["newPassword"]) ? data["newPassword"][0] : data["newPassword"];
+              setError("newPassword", { message: String(msg) });
+            } else {
+              setErrorMessage(String(data["detail"] ?? UI.password.RESET_LINK_INVALID));
+            }
           } else {
-            setErrorMessage(String(data?.detail ?? UI.password.RESET_LINK_INVALID));
+            setErrorMessage(UI.password.RESET_LINK_INVALID);
           }
         },
       },
@@ -57,7 +63,7 @@ export function ResetPasswordForm({ uid, token }: ResetPasswordFormProps) {
 
   if (success) {
     return (
-      <Stack spacing={2} alignItems="flex-start">
+      <Stack spacing={2} className={styles.successStack}>
         <Alert severity="success" className={styles.successAlert}>
           {UI.password.RESET_SUCCESS}
         </Alert>
