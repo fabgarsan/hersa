@@ -49,7 +49,14 @@ export default function App() {
               </ModuleGuard>
             }
           />
-          <Route path={ROUTES.ADMIN} element={<AdminPage />} />
+          <Route
+            path={ROUTES.ADMIN}
+            element={
+              <ModuleGuard module="modules.access_admin">
+                <AdminPage />
+              </ModuleGuard>
+            }
+          />
           <Route path={ROUTES.PROFILE} element={<ProfilePage />} />
         </Route>
       </Routes>

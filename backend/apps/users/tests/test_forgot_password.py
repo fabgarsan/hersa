@@ -1,4 +1,5 @@
 from typing import Any
+from unittest.mock import patch
 
 import pytest
 from django.contrib.auth.models import User
@@ -62,5 +63,7 @@ def test_forgot_password_user_without_email_no_email_sent(
 
 @pytest.mark.django_db
 def test_forgot_password_accessible_without_auth(api_client: APIClient, user: User) -> None:
-    response = api_client.post(URL, {"username_or_email": user.username})
+    # Bypass throttling — this test only verifies authentication is not required
+    with patch("apps.users.views.ForgotPasswordView.throttle_classes", []):
+        response = api_client.post(URL, {"username_or_email": user.username})
     assert response.status_code == 200

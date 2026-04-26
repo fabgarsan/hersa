@@ -1,3 +1,4 @@
+from datetime import timedelta
 from pathlib import Path
 
 from decouple import Csv, config
@@ -16,6 +17,7 @@ INSTALLED_APPS = [
     # Third-party
     "rest_framework",
     "rest_framework_simplejwt",
+    "rest_framework_simplejwt.token_blacklist",
     "corsheaders",
     "storages",
     # Local
@@ -83,6 +85,20 @@ REST_FRAMEWORK = {
     ],
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
     "PAGE_SIZE": 20,
+    "DEFAULT_THROTTLE_CLASSES": [
+        "rest_framework.throttling.AnonRateThrottle",
+        "rest_framework.throttling.UserRateThrottle",
+    ],
+    # NOTE: With Gunicorn's default in-memory cache, throttle limits are enforced
+    # per-process, not globally. For effective rate limiting across multiple workers,
+    # configure a shared cache backend (Redis/ElastiCache) as DEFAULT_CACHE and set
+    # REST_FRAMEWORK["DEFAULT_THROTTLE_BACKEND"] accordingly.
+    "DEFAULT_THROTTLE_RATES": {
+        "anon": "60/minute",
+        "user": "300/minute",
+        "auth": "10/minute",
+        "password_reset": "5/hour",
+    },
 }
 
 CORS_ALLOWED_ORIGINS: list[str] = config(
@@ -94,3 +110,13 @@ EMAIL_BACKEND: str = config(
 )
 DEFAULT_FROM_EMAIL: str = config("DEFAULT_FROM_EMAIL", default="no-reply@hersa.com")
 FRONTEND_URL: str = config("FRONTEND_URL", default="http://localhost:5173")
+
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=15),
+    "REFRESH_TOKEN_LIFETIME": timedelta(hours=4),
+    "ROTATE_REFRESH_TOKENS": True,
+    "BLACKLIST_AFTER_ROTATION": True,
+    "UPDATE_LAST_LOGIN": True,
+}
+
+PASSWORD_RESET_TIMEOUT = 3600  # 1 hour (Django default is 3 days)

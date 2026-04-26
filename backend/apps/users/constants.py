@@ -1,3 +1,5 @@
+HERSA_APP_LABELS: frozenset[str] = frozenset({"users", "modules"})
+
 MESSAGES: dict[str, dict[str, str]] = {
     "success": {
         "PASSWORD_CHANGED": "Contraseña cambiada exitosamente.",

@@ -3,6 +3,7 @@ import camelcaseKeys from "camelcase-keys";
 import snakecaseKeys from "snakecase-keys";
 
 import { API } from "@shared/constants/api";
+import { authEvents } from "./authEvents";
 
 export function isApiErrorData(data: unknown): data is Record<string, unknown> {
   return typeof data === "object" && data !== null;
@@ -45,12 +46,13 @@ apiClient.interceptors.response.use(
         try {
           const { data } = await axios.post(`${BASE_URL}${API.TOKEN_REFRESH}`, { refresh });
           localStorage.setItem("accessToken", data.access);
+          if (data.refresh) {
+            localStorage.setItem("refreshToken", data.refresh);
+          }
           original.headers.Authorization = `Bearer ${data.access}`;
           return apiClient(original);
         } catch {
-          localStorage.removeItem("accessToken");
-          localStorage.removeItem("refreshToken");
-          window.location.href = "/";
+          authEvents.triggerLogout();
         }
       }
     }

@@ -10,4 +10,5 @@ class AppModule(models.Model):
         permissions = [
             ("access_tienda", "Puede acceder al módulo Tienda"),
             ("access_programador", "Puede acceder al módulo Programador"),
+            ("access_admin", "Puede acceder al módulo Admin"),
         ]

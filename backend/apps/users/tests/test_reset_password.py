@@ -1,3 +1,6 @@
+from collections.abc import Generator
+from unittest.mock import patch
+
 import pytest
 from django.contrib.auth.models import User
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
@@ -9,8 +12,14 @@ URL = "/api/users/reset-password/"
 _token_generator = PasswordResetTokenGenerator()
 
 
+@pytest.fixture(autouse=True)
+def disable_reset_password_throttle() -> Generator[None]:
+    with patch("apps.users.views.ResetPasswordView.throttle_classes", []):
+        yield
+
+
 def _make_uid_token(user: User) -> tuple[str, str]:
-    uid = urlsafe_base64_encode(force_bytes(user.pk))
+    uid = urlsafe_base64_encode(force_bytes(user.email))
     token = _token_generator.make_token(user)
     return uid, token
 
@@ -116,6 +125,21 @@ def test_reset_password_validation_errors(
     response = api_client.post(URL, payload)
     assert response.status_code == 400
     assert expected_error_key in response.data
+
+
+@pytest.mark.django_db
+def test_reset_password_nonexistent_email_in_uid(api_client: APIClient) -> None:
+    uid = urlsafe_base64_encode(force_bytes("nonexistent@example.com"))
+    response = api_client.post(
+        URL,
+        {
+            "uid": uid,
+            "token": "any-token",
+            "new_password": "NewStrongPass456@",
+            "confirm_password": "NewStrongPass456@",
+        },
+    )
+    assert response.status_code == 400
 
 
 @pytest.mark.django_db
