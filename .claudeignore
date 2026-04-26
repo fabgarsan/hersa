@@ -9,9 +9,16 @@ Thumbs.db
 .env
 *.env.local
 
+# Git
+.git/
+
 # Node
 node_modules/
 package-lock.json
+
+# Build outputs
+dist/
+build/
 
 # Frontend build
 frontend/dist/
