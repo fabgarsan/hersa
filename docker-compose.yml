@@ -9,12 +9,17 @@ services:
       - postgres_data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U hersa"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile.dev
-    command: pipenv run python manage.py runserver 0.0.0.0:8000
+    command: sh -c "pipenv run python manage.py migrate --noinput && pipenv run python manage.py createcachetable && pipenv run python manage.py runserver 0.0.0.0:8000"
     volumes:
       - ./backend:/app
     ports:
@@ -22,7 +27,8 @@ services:
     env_file:
       - ./backend/.env
     depends_on:
-      - db
+      db:
+        condition: service_healthy
 
   frontend:
     build: ./frontend

@@ -6,10 +6,14 @@ import type { AuthGuardProps } from "./types";
 import styles from "./AuthGuard.module.scss";
 
 export function AuthGuard({ children }: AuthGuardProps) {
-  const { isAuthenticated } = useAuthContext();
+  const { isAuthenticated, isLoading } = useAuthContext();
   const { pathname } = useLocation();
 
   const isPublicRoute = PUBLIC_ROUTES.includes(pathname);
+
+  if (isLoading) {
+    return <div className={styles.root} />;
+  }
 
   if (!isAuthenticated && !isPublicRoute) {
     return <Navigate to={ROUTES.LOGIN} replace />;

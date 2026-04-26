@@ -20,5 +20,4 @@ export interface UserMe {
   email: string;
   firstName: string;
   lastName: string;
-  isSuperuser: boolean;
 }

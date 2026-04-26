@@ -76,6 +76,13 @@ MEDIA_ROOT = BASE_DIR / "media"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.db.DatabaseCache",
+        "LOCATION": "django_cache",
+    }
+}
+
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework_simplejwt.authentication.JWTAuthentication",
@@ -89,15 +96,15 @@ REST_FRAMEWORK = {
         "rest_framework.throttling.AnonRateThrottle",
         "rest_framework.throttling.UserRateThrottle",
     ],
-    # NOTE: With Gunicorn's default in-memory cache, throttle limits are enforced
-    # per-process, not globally. For effective rate limiting across multiple workers,
-    # configure a shared cache backend (Redis/ElastiCache) as DEFAULT_CACHE and set
-    # REST_FRAMEWORK["DEFAULT_THROTTLE_BACKEND"] accordingly.
+    # NOTE: Throttle counters use DatabaseCache (django_cache table) — shared across all
+    # Gunicorn workers and EB instances via RDS. Run `python manage.py createcachetable`
+    # once on first deploy to create the table.
     "DEFAULT_THROTTLE_RATES": {
         "anon": "60/minute",
         "user": "300/minute",
         "auth": "10/minute",
         "password_reset": "5/hour",
+        "change_password": "5/hour",
     },
 }
 

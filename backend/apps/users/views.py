@@ -19,7 +19,7 @@ from .serializers import (
     ResetPasswordSerializer,
     UserSerializer,
 )
-from .throttles import AuthTokenThrottle, PasswordResetThrottle
+from .throttles import AuthTokenThrottle, ChangePasswordThrottle, PasswordResetThrottle
 
 logger = logging.getLogger(__name__)
 
@@ -54,6 +54,7 @@ class MyPermissionsView(APIView):
 
 class ChangePasswordView(APIView):
     permission_classes = [permissions.IsAuthenticated]
+    throttle_classes = [ChangePasswordThrottle]
 
     def post(self, request: Request) -> Response:
         assert isinstance(request.user, User)
@@ -89,7 +90,9 @@ class ForgotPasswordView(APIView):
         )
 
         if user and user.is_active and user.email:
-            uid = urlsafe_base64_encode(force_bytes(user.email))
+            # Security fix (2026-04-26): encode PK instead of email to prevent PII leak in reset URL.
+            # Decision reached by ethical-hacker and security-auditor joint review.
+            uid = urlsafe_base64_encode(force_bytes(user.pk))
             token = _token_generator.make_token(user)
             reset_link = f"{settings.FRONTEND_URL}/reset-password?uid={uid}&token={token}"
             try:
@@ -123,8 +126,8 @@ class ResetPasswordView(APIView):
         token: str = serializer.validated_data["token"]
 
         try:
-            email = force_str(urlsafe_base64_decode(uid_b64))
-            user = User.objects.get(email=email)
+            user_pk = force_str(urlsafe_base64_decode(uid_b64))
+            user = User.objects.get(pk=user_pk)
         except (User.DoesNotExist, User.MultipleObjectsReturned, ValueError, TypeError, OverflowError):
             return Response(
                 {"detail": MESSAGES["not_found"]["INVALID_RESET_LINK"]},

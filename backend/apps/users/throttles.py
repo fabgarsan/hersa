@@ -1,4 +1,4 @@
-from rest_framework.throttling import AnonRateThrottle
+from rest_framework.throttling import AnonRateThrottle, UserRateThrottle
 
 
 class AuthTokenThrottle(AnonRateThrottle):
@@ -7,3 +7,7 @@ class AuthTokenThrottle(AnonRateThrottle):
 
 class PasswordResetThrottle(AnonRateThrottle):
     scope: str = "password_reset"
+
+
+class ChangePasswordThrottle(UserRateThrottle):
+    scope: str = "change_password"
