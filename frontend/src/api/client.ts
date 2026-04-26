@@ -28,8 +28,11 @@ apiClient.interceptors.request.use((config) => {
   return config;
 });
 
+// Shared promise across all concurrent 401s — prevents multiple simultaneous refresh calls
+let refreshPromise: Promise<string> | null = null;
+
 // Response: convert snake_case data to camelCase
-// Error: attempt silent token refresh on 401
+// Error: attempt silent token refresh on 401, serializing concurrent refreshes via mutex
 apiClient.interceptors.response.use(
   (response) => {
     if (response.data) {
@@ -44,12 +47,22 @@ apiClient.interceptors.response.use(
       const refresh = localStorage.getItem("refreshToken");
       if (refresh) {
         try {
-          const { data } = await axios.post(`${BASE_URL}${API.TOKEN_REFRESH}`, { refresh });
-          localStorage.setItem("accessToken", data.access);
-          if (data.refresh) {
-            localStorage.setItem("refreshToken", data.refresh);
+          if (!refreshPromise) {
+            refreshPromise = axios
+              .post(`${BASE_URL}${API.TOKEN_REFRESH}`, { refresh })
+              .then(({ data }) => {
+                localStorage.setItem("accessToken", data.access);
+                if (data.refresh) {
+                  localStorage.setItem("refreshToken", data.refresh);
+                }
+                return data.access as string;
+              })
+              .finally(() => {
+                refreshPromise = null;
+              });
           }
-          original.headers.Authorization = `Bearer ${data.access}`;
+          const newToken = await refreshPromise;
+          original.headers.Authorization = `Bearer ${newToken}`;
           return apiClient(original);
         } catch {
           authEvents.triggerLogout();

@@ -32,7 +32,7 @@ const NAV_ITEMS: NavItem[] = [
     path: ROUTES.GRADOS,
     module: "modules.access_programador",
   },
-  { label: UI.nav.ADMIN, icon: <AdminPanelSettingsIcon />, path: ROUTES.ADMIN, module: null },
+  { label: UI.nav.ADMIN, icon: <AdminPanelSettingsIcon />, path: ROUTES.ADMIN, module: "modules.access_admin" },
   { label: UI.nav.PROFILE, icon: <PersonIcon />, path: ROUTES.PROFILE, module: null },
 ];
 
