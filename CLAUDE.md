@@ -1,4 +1,4 @@
-# my-project
+# Hersa
 
 ## Business Context
 
@@ -43,12 +43,21 @@ my-project/
 
 ## Global Rules
 
-- Never commit `.env`. Keep `.env.example` updated whenever a new variable is added.
+- Never commit `.env`.
+- Keep `.env.example` updated whenever a new variable is added.
 - Commit format: `type(scope): description` — e.g. `feat(auth): add JWT refresh token`.
 - English for all code, comments, commits, and internal documentation.
 - Keep always the CLAUDE.md updated with any new conventions or architectural decisions.
 - Never delete CLAUDE.md
 
+
+## Do Not Touch
+
+- `*/migrations/*.py` — never modify existing migration files; always create new ones with `makemigrations`.
+- `.env` / `.env.production` — never commit; use `.env.example` as the committed template.
+- `frontend/dist/` and `backend/staticfiles/` — generated artifacts; never edit manually.
+- `.ebextensions/` and `.platform/` — AWS EB infrastructure config; only change with explicit infrastructure intent.
+- `Pipfile.lock` — never manually edit; managed by `pipenv`.
 
 ## Git Hooks (Husky + lint-staged)
 
@@ -78,3 +87,55 @@ These files extend these docs. Read them when indicated — they are not loaded 
 | `.claude/skills/theme-tokens.md` | Defining or applying Hersa brand colors, typography, or logo rules |
 | `.claude/skills/mui-conventions.md` | Choosing MUI components, using Grid2, or wiring up RHF forms |
 | `.claude/skills/react-conventions.md` | Writing axios interceptors, React Query hooks, or managing auth/state |
+
+## Agent Registry
+
+| Agent | Scope | When to use |
+|---|---|---|
+| `pm-discovery` | Discovery interview before writing any document | First step for any new feature idea |
+| `prd-writer` | PRD generation from feature description | After discovery; before architect or tdd-writer |
+| `architect` | Architecture design for complex features | After PRD; before tdd-writer; when unsure how to structure a module |
+| `tdd-writer` | TDD generation from approved PRD | After PRD is approved; before any code is written |
+| `adr-writer` | Documents non-obvious architectural decisions as ADRs | After choosing between significant technical approaches |
+| `django-developer` | All backend work: models, migrations, serializers, views, URLs | Any Python/Django task |
+| `react-developer` | All frontend work: pages, components, hooks, API integration | Any React/TypeScript/MUI task |
+| `test-writer` | Tests for existing code (pytest-django + RTL) | After implementing any feature |
+| `code-reviewer` | Read-only post-implementation review | After completing a feature or before committing |
+| `security-auditor` | Read-only security audit | Before deploying; after auth or sensitive-data work |
+| `docs-writer` | Docstrings, CLAUDE.md updates, API endpoint docs | After completing a module or before a release |
+| `component-factory` | Generate new agents and skills under `.claude/` | "scaffold/create/generate an agent or skill" |
+| `claude-md-architect` | Interview-driven CLAUDE.md generation and migration | "set up CLAUDE.md", "bootstrap this repo", "migrate my CLAUDE.md" |
+
+## Skill Registry
+
+| Skill | Trigger | Purpose |
+|---|---|---|
+| `agent-scaffold` | Used by `component-factory` after reuse approval | Renders a new `.claude/agents/<n>.md` |
+| `skill-scaffold` | Used by `component-factory` after reuse approval | Renders a new `.claude/skills/<n>/` directory |
+| `reuse-checker` | Used by `component-factory` before generation | Decides NEW vs EXTEND vs INLINE |
+| `component-linter` | Used by `component-factory` after generation | Structural validation against architecture rules |
+| `claude-md-linter` | Used by `claude-md-architect`, or directly in CI | Validates CLAUDE.md against architecture guide §1.1–§1.5 |
+
+## Conventions for Agents and Skills
+
+- Architecture rules: see `@docs/claude-code-architecture-guide.md` (do not duplicate here)
+- Naming: agents are `kebab-case` verb-noun; skills are `kebab-case` noun
+- Every agent/skill MUST declare both `when_to_use` and `when_not_to_use`
+- Tool grants follow least-privilege; >5 tools requires per-tool justification
+- I/O between components MUST use file paths, never inline content >50 lines
+- New components MUST pass `component-linter` before being merged
+- CLAUDE.md MUST pass `claude-md-linter` before being merged
+
+## Workflows
+
+**To bootstrap a new project's CLAUDE.md:**
+> "Use claude-md-architect to set up CLAUDE.md for this project."
+
+**To migrate a messy CLAUDE.md:**
+> "Use claude-md-architect to migrate my CLAUDE.md to the architecture-guide format."
+
+**To create a new agent or skill:**
+> "Use component-factory to scaffold a [skill|agent] that [capability]."
+
+**To audit CLAUDE.md health (e.g., in CI):**
+> Run `claude-md-linter` directly on the file.
