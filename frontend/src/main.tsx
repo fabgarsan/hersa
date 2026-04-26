@@ -39,7 +39,7 @@ createRoot(root).render(
             </ThemeProvider>
           </AuthProvider>
         </BrowserRouter>
-        <ReactQueryDevtools initialIsOpen={false} />
+        {import.meta.env.DEV && <ReactQueryDevtools initialIsOpen={false} />}
       </QueryClientProvider>
     </CacheProvider>
   </StrictMode>,

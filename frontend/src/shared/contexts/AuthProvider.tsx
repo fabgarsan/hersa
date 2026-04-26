@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
+import { authEvents } from "@api/authEvents";
 import { AuthContext } from "./AuthContext";
 import type { AuthProviderProps } from "./types";
 
@@ -14,11 +15,15 @@ export function AuthProvider({ children }: AuthProviderProps) {
     setIsAuthenticated(true);
   };
 
-  const logout = () => {
+  const logout = useCallback(() => {
     localStorage.removeItem("accessToken");
     localStorage.removeItem("refreshToken");
     setIsAuthenticated(false);
-  };
+  }, []);
+
+  useEffect(() => {
+    authEvents.setLogoutCallback(logout);
+  }, [logout]);
 
   return (
     <AuthContext.Provider value={{ isAuthenticated, login, logout }}>
