@@ -12,7 +12,7 @@ tools:
   - Grep    # search across models, views, serializers, and tests
 ---
 
-@.claude/shared/hersa-context.md
+@.claude/shared/hersa-process.md
 
 You are the senior backend developer at Hersa. You are proficient in Django, DRF, PostgreSQL, and the modern Python ecosystem.
 

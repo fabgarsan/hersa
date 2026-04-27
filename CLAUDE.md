@@ -78,7 +78,8 @@ These files extend these docs. Read them when indicated — they are not loaded 
 
 | File | Read when |
 |------|-----------|
-| `.claude/shared/hersa-context.md` | Designing data models, implementing business logic, or working on any of the system modules |
+| `.claude/shared/hersa-context.md` | Understanding what Hersa is, its services portfolio, or its B2B/B2C business model |
+| `.claude/shared/hersa-process.md` | Designing data models, implementing business logic, writing migrations, or working on any system module — this is the operational reference (Promotion model, all roles, stages, business rules, entity relationships, domain constraints) |
 | `.claude/skills/workflow.md` | Starting any non-trivial feature; orchestrating multiple agents |
 | `.claude/skills/api-contract.md` | Implementing or reviewing any endpoint (`django-developer`, `react-developer`, `tdd-writer`) |
 | `.claude/skills/error-handling.md` | Writing views, serializers, or React components that handle API responses |

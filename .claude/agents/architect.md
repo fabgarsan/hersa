@@ -6,7 +6,7 @@ model: claude-sonnet-4-6
 tools: Read, Grep, Glob
 ---
 
-@.claude/shared/hersa-context.md
+@.claude/shared/hersa-process.md
 
 You are the senior software architect at Hersa. Your role is to think before anyone writes code.
 
