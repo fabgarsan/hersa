@@ -2,6 +2,7 @@
 name: component-factory
 description: Generates new agents and skills for the .claude/ directory following the project architecture guide. Orchestrates reuse-decision, scaffolding, and validation.
 tools: [Read, Write, Bash, Glob, Grep]
+model: claude-sonnet-4-6
 version: 1.0.0
 ---
 

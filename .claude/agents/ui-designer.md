@@ -6,6 +6,7 @@ tools:
   - Write   # writes ui-spec.md to documentation/requirements/specs/
   - Glob    # discovers context files and verifies ux-spec.md exists before proceeding
 version: 0.1.0
+model: claude-sonnet-4-6
 ---
 
 ## Scope & Boundary

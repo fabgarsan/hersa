@@ -6,6 +6,7 @@ tools:
   - Write   # write the technical specification to documentation/requirements/specs/hersa-especificaciones-funcionales.md
   - Glob    # discover context files and verify the to-be document exists before proceeding
 version: 1.2.0
+model: claude-sonnet-4-6
 ---
 
 @.claude/shared/hersa-process.md

@@ -88,14 +88,14 @@ These files extend these docs. Read them when indicated — they are not loaded 
 | `.claude/skills/theme-tokens.md` | Defining or applying Hersa brand colors, typography, or logo rules |
 | `.claude/skills/mui-conventions.md` | Choosing MUI components, using Grid2, or wiring up RHF forms |
 | `.claude/skills/react-conventions.md` | Writing axios interceptors, React Query hooks, or managing auth/state |
+| `.claude/skills/pipeline-flows/SKILL.md` | Starting any non-trivial work; picking which pipeline flow (A–I) to use |
 
 ## Agent Registry
 
 | Agent | Scope | When to use |
 |---|---|---|
-| `pm-discovery` | Discovery interview before writing any document | First step for any new feature idea |
-| `prd-writer` | PRD generation from feature description | After discovery; before architect or tdd-writer |
-| `architect` | Architecture design for complex features | After PRD; before tdd-writer; when unsure how to structure a module |
+| `pm-discovery` | Discovery interview for new features without a prior process pipeline | New feature idea with no prior `process-analyst` pipeline; skip if the full process pipeline already ran — go directly to `prd-writer` |
+| `prd-writer` | PRD generation from confirmed pm-writer document (full pipeline) or pm-discovery brief (short path) | After `pm-writer` approves the functional spec (full pipeline) OR after `pm-discovery` produces a brief (short path); before `tdd-writer` |
 | `tdd-writer` | TDD generation from approved PRD | After PRD is approved; before any code is written |
 | `adr-writer` | Documents non-obvious architectural decisions as ADRs | After choosing between significant technical approaches |
 | `django-developer` | All backend work: models, migrations, serializers, views, URLs | Any Python/Django task |
@@ -103,11 +103,11 @@ These files extend these docs. Read them when indicated — they are not loaded 
 | `test-writer` | Tests for existing code (pytest-django + RTL) | After implementing any feature |
 | `code-reviewer` | Read-only post-implementation review | After completing a feature or before committing |
 | `security-auditor` | Read-only security audit | Before deploying; after auth or sensitive-data work |
+| `release-manager` | Pre-merge quality gate: orchestrates code review, security audit, and docs check before any PR merges to main | Before merging any non-trivial PR to `main`; final gate in Flows A and B before `aws-devops` |
 | `docs-writer` | Docstrings, CLAUDE.md updates, API endpoint docs | After completing a module or before a release |
 | `component-factory` | Generate new agents and skills under `.claude/` | "scaffold/create/generate an agent or skill" |
 | `claude-md-architect` | Interview-driven CLAUDE.md generation and migration | "set up CLAUDE.md", "bootstrap this repo", "migrate my CLAUDE.md" |
 | `aws-devops` | AWS infrastructure: EB, RDS, S3, CloudFront, CI/CD, secrets | Any deployment, infra config, or AWS resource management task |
-| `ethical-hacker` | Penetration testing, OWASP, API/network/cloud/OSINT security, CTF | Authorized pentests, CTF challenges, security research, red-team exercises |
 | `process-analyst` | As-is documentation of existing business processes | When documenting how a process works today, before any improvement or redesign |
 | `process-optimizer` | Lean-based to-be process optimization from a complete as-is document | After `process-analyst` produces a clean as-is (zero unresolved ambiguities); before implementation planning |
 | `systems-analyst` | Translate a complete to-be process into functional specifications: epics, user stories, AC, data entities, API contracts | After `process-optimizer` produces a clean to-be (zero unresolved `[NECESITA CONTEXTO]` items); before any implementation begins |
@@ -116,6 +116,14 @@ These files extend these docs. Read them when indicated — they are not loaded 
 | `engineering-manager` | Engineering team diagnosis: roles, processes, gaps, hiring, and agent pipeline integration | When analyzing team structure or processes, making hiring decisions, or defining how pipeline agents integrate with the dev team |
 | `ux-designer` | User flows, navigation, information hierarchy, screen structure, friction analysis, and text wireframes for any Hersa feature | After `systems-analyst` produces a clean spec (zero `[BLOCKER]` tags); before any visual design or frontend implementation begins |
 | `ui-designer` | Visual design specification: design tokens, component inventory, per-screen layout, accessibility guide, and MUI implementation notes | After `ux-designer` produces a clean `ux-spec.md` (zero unresolved `[FRICCIÓN ALTA]` items); before `react-developer` begins implementation |
+
+## Extra-Pipeline Agents
+
+These agents are available but do not participate in the standard feature pipeline. Invoke them explicitly for their specific purpose.
+
+| Agent | Scope | When to use |
+|---|---|---|
+| `ethical-hacker` | Penetration testing, OWASP, API/network/cloud/OSINT security, CTF | Authorized pentests, CTF challenges, security research, red-team exercises |
 
 ## Skill Registry
 
@@ -127,6 +135,11 @@ These files extend these docs. Read them when indicated — they are not loaded 
 | `component-linter` | Used by `component-factory` after generation | Structural validation against architecture rules |
 | `claude-md-linter` | Used by `claude-md-architect`, or directly in CI | Validates CLAUDE.md against architecture guide §1.1–§1.5 |
 | `pipeline-conventions` | Used by all document-pipeline agents | Shared pre-flight validation, operating rules, and blocking tag vocabulary for the process pipeline |
+| `pipeline-flows` | Starting any non-trivial work to pick the correct flow (A–I) | Canonical catalogue of 9 configurable pipeline flows with entry/exit/sequence |
+| `pipeline-runner` | When the user says "execute Flow X from agent Y to agent Z" | Generates ordered invocation sequence from pipeline-flows catalogue |
+| `developer-conventions` | Used by `django-developer`, `react-developer`, `tdd-writer`, `test-writer` | Shared operating rules for all implementation agents |
+| `review-conventions` | Used by `code-reviewer`, `security-auditor` | Shared severity scale, output format, and read-only discipline |
+| `pipeline-trace-linter` | After `tdd-writer` produces a TDD; before implementation begins | Cross-document consistency validator: spec → PRD → TDD |
 
 ## Conventions for Agents and Skills
 
@@ -137,17 +150,84 @@ These files extend these docs. Read them when indicated — they are not loaded 
 - I/O between components MUST use file paths, never inline content >50 lines
 - New components MUST pass `component-linter` before being merged
 - CLAUDE.md MUST pass `claude-md-linter` before being merged
+- Every agent MUST declare an explicit `model:` field in frontmatter. Without it the agent inherits the session default — unpredictable cost and quality.
 
 ## Workflows
 
-**To bootstrap a new project's CLAUDE.md:**
+### Gestión de CLAUDE.md y componentes
+
+**Bootstrap o migración de CLAUDE.md:**
 > "Use claude-md-architect to set up CLAUDE.md for this project."
 
-**To migrate a messy CLAUDE.md:**
+**Migrar un CLAUDE.md desordenado:**
 > "Use claude-md-architect to migrate my CLAUDE.md to the architecture-guide format."
 
-**To create a new agent or skill:**
+**Crear un agente o skill nuevo:**
 > "Use component-factory to scaffold a [skill|agent] that [capability]."
 
-**To audit CLAUDE.md health (e.g., in CI):**
+**Auditar el CLAUDE.md (e.g., en CI):**
 > Run `claude-md-linter` directly on the file.
+
+---
+
+### Pipeline de implementación
+
+Referencia completa: `.claude/skills/workflow.md` y `.claude/skills/pipeline-flows/SKILL.md`
+
+Usa el primer flujo que aplique:
+
+| Situación | Flujo |
+|-----------|-------|
+| Algo roto en producción, sin nueva migración ni endpoint | **Flujo D (Bug fix)** → implementador → `test-writer` → `code-reviewer` |
+| Cambio en una sola superficie, sin nuevos modelos ni endpoints | **Flujo E (Lightweight)** → implementador → `code-reviewer` |
+| Ticket Linear con AC claros | **Flujo C (Ticket)** → `/start-task` → implementadores → `test-writer` → `/pr-create` |
+| Feature nueva con ambas superficies o nuevo modelo de dominio | **Flujo A o B** — ver `pipeline-flows` |
+
+**Para ejecutar un flujo configurado:**
+> "Use pipeline-runner to execute Flow [A–I] for [description]."
+
+---
+
+### Pipeline de análisis de negocio (proceso → especificación)
+
+Punto de entrada: cuando se quiere analizar, mejorar, o especificar un proceso antes de implementar.
+
+```
+1. process-analyst     → as-is document
+                         [HSTOP: usuario confirma antes del siguiente paso]
+
+2. process-optimizer   → to-be document
+                         [HSTOP: resolver [NECESITA CONTEXTO] antes de continuar]
+
+3. systems-analyst     → functional spec (hersa-especificaciones-funcionales.md)
+                         [HSTOP: resolver [BLOCKER] antes de continuar]
+
+4. pm-writer           → executive PM document   [HSTOP: aprobación — hard stop]
+
+5. ux-designer         → ux-spec
+                         [HSTOP: resolver [FRICCIÓN ALTA] antes de continuar]
+
+6. ui-designer         → ui-spec
+
+7. prd-writer          → PRD                     [HSTOP: usuario aprueba — hard stop]
+
+8. → continuar con Flujo A o B para ingeniería
+```
+
+**Puntos de entrada configurables:**
+
+| Punto de entrada | Cuándo usarlo |
+|---|---|
+| `process-analyst` (paso 1) | Proceso no documentado; se empieza desde cero |
+| `systems-analyst` (paso 3) | to-be limpio ya existe; se necesita spec funcional |
+| `prd-writer` (paso 7) | Spec funcional aprobada; se necesita PRD formal |
+| `tdd-writer` directamente | PRD aprobado; saltar directo a diseño técnico |
+
+---
+
+### Gates disponibles en cualquier punto del pipeline
+
+- `senior-ceo-advisor` → valida realismo de negocio (pre-discovery, post-spec, pre-deploy)
+- `engineering-manager` → sanity-check técnico y de equipo antes de implementación
+- `release-manager` → gate pre-merge obligatorio para PRs a `main`
+- `security-auditor` → revisión de seguridad antes de cualquier deploy con auth/PII/pagos

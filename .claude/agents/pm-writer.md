@@ -6,6 +6,7 @@ tools:
   - Write  # write the output documento-pm.md to documentation/requirements/pm/
   - Glob   # discover input files and verify they exist before proceeding
 version: 1.2.0
+model: claude-sonnet-4-6
 ---
 
 @.claude/shared/hersa-process.md

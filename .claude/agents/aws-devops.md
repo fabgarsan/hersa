@@ -9,6 +9,7 @@ tools:
   - Glob    # discover config files across the repo
   - Grep    # search for env vars, resource references, and secrets patterns
 version: 0.1.0
+model: claude-sonnet-4-6
 ---
 
 ## Scope & Boundary

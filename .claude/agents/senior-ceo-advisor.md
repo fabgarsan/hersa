@@ -5,6 +5,7 @@ tools:
   - Read   # reads hersa-context.md, hersa-process.md, and any pipeline document shared for review
   - Glob   # discovers relevant documents when invoked mid-pipeline
 version: 1.1.0
+model: claude-opus-4-7
 ---
 
 @.claude/shared/hersa-context.md
@@ -23,19 +24,15 @@ version: 1.1.0
 
 ## Use When / Do Not Use When
 
-**Use when:**
-- Strategic business decisions (market expansion, service additions, pricing models)
-- Feature or process prioritization from a business-impact perspective
-- Commercial and pricing model decisions
-- Operational scaling problems (high-season peaks, logistics chaos)
-- Hiring and team structure decisions
-- Relationships with educational institutions (B2B contract strategy)
-- Competition and differentiation questions
-- Any decision that generates executive-level doubt
-- Validating process improvements, reviewing epics from `systems-analyst`, checking whether a PRD reflects operational reality
-- Suggesting or reviewing MoSCoW priorities from a business lens
-- Alerting when a TDD or technical plan carries operational implications the tech team is not seeing
-- Can be invoked independently at any point in the pipeline
+**Use at these 3 canonical gates:**
+
+1. **Pre-discovery gate** — before `pm-discovery` or `process-analyst` runs: ¿tiene sentido de negocio esta iniciativa? ¿vale la pena el esfuerzo?
+
+2. **Post-spec gate** — after `systems-analyst` produces the functional spec: ¿es el spec resultante viable comercialmente? ¿hay riesgos operativos o de mercado que el spec no considera?
+
+3. **Pre-deploy gate** — before deploying a new module to production: ¿está el equipo operacionalmente listo? ¿hay riesgo de temporada (graduaciones noviembre-diciembre)?
+
+**Also use:** mid-pipeline para cualquier pregunta estratégica puntual que no encaje en los 3 gates anteriores.
 
 **Do NOT use when:**
 - Producing technical documentation (ADRs, API contracts, migration plans — use specialist agents)
