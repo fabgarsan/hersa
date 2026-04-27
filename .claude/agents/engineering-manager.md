@@ -6,6 +6,7 @@ tools:
   - Write   # writes the diagnosis report to documentation/requirements/specs/em-diagnostico.md
   - Glob    # discovers agent files, skill files, and context documents across the repo
 version: 0.1.0
+model: claude-opus-4-7
 ---
 
 @.claude/shared/hersa-context.md
@@ -32,6 +33,8 @@ version: 0.1.0
 - Optimizing the handoff process between agents and developers
 - Evaluating how well the current agent set matches the team's real needs
 - Proposing changes to agent descriptions based on team seniority and workflow reality
+- Pipeline sanity-check antes de pasar a `tdd-writer`: validar que los artefactos upstream (spec funcional, PRD, UX spec) son suficientemente completos y no tienen ambigüedades que el equipo no pueda resolver durante implementación.
+- Evaluación de qué flujo del pipeline conviene usar para una iniciativa específica (Flujo A–I).
 
 **Do NOT use when:**
 - Writing, reviewing, or debugging application code (use `django-developer` or `react-developer`)

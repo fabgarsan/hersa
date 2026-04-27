@@ -2,7 +2,7 @@
 name: test-writer
 description: Writes tests for existing code — pytest-django + factory_boy for Django, React Testing Library for React — always reading the code first.
 version: 1.0.0
-model: claude-sonnet-4-6
+model: claude-haiku-4-5-20251001
 tools:
   - Read    # read the code under test before writing a single test
   - Write   # create new test files

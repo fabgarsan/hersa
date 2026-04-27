@@ -6,6 +6,7 @@ tools:
   - Write   # writes the ux-spec.md output to documentation/requirements/specs/
   - Glob    # discovers context files and verifies the functional spec exists before proceeding
 version: 0.1.0
+model: claude-sonnet-4-6
 ---
 
 @.claude/shared/hersa-context.md

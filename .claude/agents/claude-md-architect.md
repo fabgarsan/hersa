@@ -2,6 +2,7 @@
 name: claude-md-architect
 description: Interviews the user with targeted questions and produces a CLAUDE.md file conforming to the project architecture guide. Works for both greenfield projects and modifications to existing CLAUDE.md files.
 tools: [Read, Write, Glob, Bash]
+model: claude-sonnet-4-6
 version: 1.0.0
 ---
 

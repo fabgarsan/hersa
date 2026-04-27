@@ -6,6 +6,7 @@ tools:
   - Write   # write the to-be report to documentation/process/to-be/hersa-proceso-operativo-to-be.md
   - Glob    # discover context files and verify the as-is document exists
 version: 1.2.0
+model: claude-sonnet-4-6
 ---
 
 @.claude/shared/hersa-process.md

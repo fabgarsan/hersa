@@ -6,6 +6,7 @@ tools:
   - Write   # write the as-is process report to documentation/process/as-is/
   - Glob    # discover existing process documents and context files across the repo
 version: 1.2.0
+model: claude-sonnet-4-6
 ---
 
 @.claude/shared/hersa-process.md
