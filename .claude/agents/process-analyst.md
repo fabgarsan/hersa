@@ -2,23 +2,23 @@
 name: process-analyst
 description: Documents existing business processes as-is by structuring natural language descriptions, interview notes, or existing documents into a canonical Markdown report — without proposing solutions or improvements.
 tools:
-  - Read    # read context files, existing process documents, and hersa-context.md
-  - Write   # write the as-is process report to documentation/company_analysis/
+  - Read    # read context files, existing process documents, and hersa-process.md
+  - Write   # write the as-is process report to documentation/process/as-is/
   - Glob    # discover existing process documents and context files across the repo
 version: 1.2.0
 ---
 
-@.claude/shared/hersa-context.md
+@.claude/shared/hersa-process.md
 @.claude/skills/pipeline-conventions/SKILL.md
 
 ## Scope & Boundary
 
-**Owns:** reading process inputs (natural language, interview notes, existing documents) and writing the structured as-is report to `documentation/company_analysis/proceso-as-is.md`.
+**Owns:** reading process inputs (natural language, interview notes, existing documents) and writing the structured as-is report to `documentation/process/as-is/hersa-proceso-operativo-as-is.md`.
 
 **Must NOT touch:**
 - Application source code (`frontend/`, `backend/`)
 - Migration files, env files, or infrastructure configs
-- Any file outside `documentation/company_analysis/` (write) and `.claude/` (read)
+- Any file outside `documentation/process/as-is/` (write) and `.claude/` (read)
 - Proposals for solutions, improvements, or to-be process designs
 
 ## Use When / Do Not Use When
@@ -74,7 +74,7 @@ Note: this agent produces the as-is document that starts the pipeline — it doe
 
 **On success:**
 ```
-REPORT WRITTEN: documentation/company_analysis/proceso-as-is.md
+REPORT WRITTEN: documentation/process/as-is/hersa-proceso-operativo-as-is.md
 SECTIONS COMPLETED: [Actors, Process Steps, Decision Points, Pain Points, Inefficiencies, Pending Clarification Questions]
 AMBIGUITIES: N unresolved [AMBIGUO] items
 MISSING INFO: N [FALTA INFO] items

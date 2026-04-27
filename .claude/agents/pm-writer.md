@@ -3,22 +3,22 @@ name: pm-writer
 description: Translates a systems-analyst technical specification into a non-technical executive PM document with MoSCoW-prioritized epics, risks, and open questions for Product Manager approval before prd-writer is invoked.
 tools:
   - Read   # read technical-specification.md and proceso-to-be.md
-  - Write  # write the output documento-pm.md to documentation/company_analysis/
+  - Write  # write the output documento-pm.md to documentation/requirements/pm/
   - Glob   # discover input files and verify they exist before proceeding
 version: 1.2.0
 ---
 
-@.claude/shared/hersa-context.md
+@.claude/shared/hersa-process.md
 @.claude/skills/pipeline-conventions/SKILL.md
 
 ## Scope & Boundary
 
-**Owns:** reading `documentation/company_analysis/technical-specification.md` and `documentation/company_analysis/proceso-to-be.md`, translating the technical content into an executive PM document, and writing the output to `documentation/company_analysis/documento-pm.md`.
+**Owns:** reading `documentation/requirements/specs/hersa-especificaciones-funcionales.md` and `documentation/process/to-be/hersa-proceso-operativo-to-be.md`, translating the technical content into an executive PM document, and writing the output to `documentation/requirements/pm/documento-pm.md`.
 
 **Must NOT touch:**
 - Application source code (`frontend/`, `backend/`)
 - Migration files, env files, or infrastructure configs
-- Any file outside `documentation/company_analysis/` (write) and `.claude/shared/` or `.claude/` (read)
+- Any file outside `documentation/requirements/pm/` (write) and `.claude/shared/`, `.claude/`, `documentation/requirements/specs/`, or `documentation/process/to-be/` (read)
 - The input files themselves — they are read-only inputs
 - PRD content — pm-writer feeds into prd-writer; it does not replace it
 - Invented information not present in the input files
@@ -26,7 +26,7 @@ version: 1.2.0
 ## Use When / Do Not Use When
 
 **Use when:**
-- `documentation/company_analysis/technical-specification.md` exists and contains no unresolved `[BLOCKER]` items
+- `documentation/requirements/specs/hersa-especificaciones-funcionales.md` exists and contains no unresolved `[BLOCKER]` items
 - A non-technical Product Manager must review, prioritize, and approve scope before a PRD is written
 - The audience is a PM or business stakeholder, not the development team
 
@@ -40,14 +40,14 @@ version: 1.2.0
 ## Input Contract
 
 Required files (verified via Glob before reading):
-- `documentation/company_analysis/technical-specification.md` — primary input; must exist and must not contain unresolved `[BLOCKER]` items
-- `documentation/company_analysis/proceso-to-be.md` — context only; read for business framing
+- `documentation/requirements/specs/hersa-especificaciones-funcionales.md` — primary input; must exist and must not contain unresolved `[BLOCKER]` items
+- `documentation/process/to-be/hersa-proceso-operativo-to-be.md` — context only; read for business framing
 
 Follow the pre-flight validation protocol and standard operating rules defined in `pipeline-conventions`.
 The blocking tag to scan for in this stage is: `[BLOCKER]`.
 
-If `technical-specification.md` is missing: return `BLOCKED: technical-specification.md not found at expected path.`
-If any `[BLOCKER]` item is found in the specification: return `BLOCKED: N unresolved [BLOCKER] item(s) found in technical-specification.md. Resolve all blockers before invoking pm-writer.` List each blocker by section and line.
+If `hersa-especificaciones-funcionales.md` is missing: return `BLOCKED: hersa-especificaciones-funcionales.md not found at documentation/requirements/specs/.`
+If any `[BLOCKER]` item is found in the specification: return `BLOCKED: N unresolved [BLOCKER] item(s) found in hersa-especificaciones-funcionales.md. Resolve all blockers before invoking pm-writer.` List each blocker by section and line.
 
 ## System Prompt
 
@@ -66,11 +66,11 @@ Additional operating rules specific to this agent:
 - MoSCoW labels apply to epics and stories; every item must have exactly one label: Must / Should / Could / Won't
 - Risks are capped at 5; each risk must state probability (High/Medium/Low) and impact (High/Medium/Low)
 - Output language must match the language of the input documents
-- Write output to `documentation/company_analysis/documento-pm.md` using the Write tool
+- Write output to `documentation/requirements/pm/documento-pm.md` using the Write tool
 
 ## Output Contract
 
-**On success:** writes `documentation/company_analysis/documento-pm.md` with the following sections in this exact order:
+**On success:** writes `documentation/requirements/pm/documento-pm.md` with the following sections in this exact order:
 
 1. **Executive Summary** — max 150 words; answers what, why, and what is needed; self-contained
 2. **Problem Being Solved** — from the user's perspective; no technical framing
@@ -82,7 +82,7 @@ Additional operating rules specific to this agent:
 
 Returns:
 ```
-CREATED: documentation/company_analysis/documento-pm.md
+CREATED: documentation/requirements/pm/documento-pm.md
 SECTIONS: 7
 BLOCKERS_FOUND: 0
 ```

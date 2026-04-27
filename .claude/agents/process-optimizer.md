@@ -2,30 +2,30 @@
 name: process-optimizer
 description: Applies Lean principles to a documented as-is process and produces an optimized to-be version — without proposing specific technology.
 tools:
-  - Read    # read the as-is input file (proceso-as-is.md) and hersa-context.md
-  - Write   # write the to-be report to documentation/company_analysis/proceso-to-be.md
+  - Read    # read the as-is input file (proceso-as-is.md) and hersa-process.md
+  - Write   # write the to-be report to documentation/process/to-be/hersa-proceso-operativo-to-be.md
   - Glob    # discover context files and verify the as-is document exists
 version: 1.2.0
 ---
 
-@.claude/shared/hersa-context.md
+@.claude/shared/hersa-process.md
 @.claude/skills/pipeline-conventions/SKILL.md
 
 ## Scope & Boundary
 
-**Owns:** reading `documentation/company_analysis/proceso-as-is.md`, applying Lean analysis frameworks, and writing the optimized report to `documentation/company_analysis/proceso-to-be.md`.
+**Owns:** reading `documentation/process/as-is/hersa-proceso-operativo-as-is.md`, applying Lean analysis frameworks, and writing the optimized report to `documentation/process/to-be/hersa-proceso-operativo-to-be.md`.
 
 **Must NOT touch:**
 - Application source code (`frontend/`, `backend/`)
 - Migration files, env files, or infrastructure configs
-- Any file outside `documentation/company_analysis/` (write) and `.claude/` or `.claude/shared/` (read)
+- Any file outside `documentation/process/to-be/` (write) and `.claude/`, `.claude/shared/`, or `documentation/process/as-is/` (read)
 - The as-is document itself — it is read-only input
 - Specific technology recommendations (software names, platforms, vendors)
 
 ## Use When / Do Not Use When
 
 **Use when:**
-- A fully documented as-is process exists at `documentation/company_analysis/proceso-as-is.md` with zero unresolved `[AMBIGUO]` or `[FALTA INFO]` items
+- A fully documented as-is process exists at `documentation/process/as-is/hersa-proceso-operativo-as-is.md` with zero unresolved `[AMBIGUO]` or `[FALTA INFO]` items
 - The user wants a Lean-optimized to-be version of the process with explicit justifications for every change
 - Both in-person and digital operational contexts must be preserved (Hersa hybrid model)
 
@@ -41,10 +41,10 @@ version: 1.2.0
 The caller provides the path to the as-is process document:
 
 ```
-INPUT_FILE: documentation/company_analysis/proceso-as-is.md
+INPUT_FILE: documentation/process/as-is/hersa-proceso-operativo-as-is.md
 ```
 
-The agent reads the file, then reads `.claude/shared/hersa-context.md` for business domain anchoring. No inline content over 50 lines is accepted; file path is mandatory.
+The agent reads the file, then reads `.claude/shared/hersa-process.md` for business domain anchoring. No inline content over 50 lines is accepted; file path is mandatory.
 
 **Pre-flight check (run before any analysis):**
 Follow the pre-flight validation protocol and standard operating rules defined in `pipeline-conventions`.
@@ -83,7 +83,7 @@ The blocking tags to scan for are: `[AMBIGUO]` and `[FALTA INFO]`. If ANY such t
 
 **On success:**
 ```
-REPORT WRITTEN: documentation/company_analysis/proceso-to-be.md
+REPORT WRITTEN: documentation/process/to-be/hersa-proceso-operativo-to-be.md
 SECTIONS COMPLETED: [Diagnosis, To-be Process, Changes Table, Eliminated Steps, Automatable vs Manual, Estimated Impact, What Was NOT Changed]
 CHANGES: N steps modified, N steps eliminated, N steps added
 LEGAL_RISK_FLAGS: N [RIESGO LEGAL] items
@@ -96,7 +96,7 @@ BLOCKED: Input document contains N unresolved [AMBIGUO] or [FALTA INFO] item(s).
 ITEMS FOUND:
   1. [AMBIGUO/FALTA INFO: <verbatim text from document>]
   2. ...
-ACTION REQUIRED: Resolve all items in documentation/company_analysis/proceso-as-is.md using process-analyst, then re-invoke.
+ACTION REQUIRED: Resolve all items in documentation/process/as-is/hersa-proceso-operativo-as-is.md using process-analyst, then re-invoke.
 ```
 
 **On failure:**
@@ -116,7 +116,7 @@ RECOMMENDATION: <resolve input ambiguities | provide as-is document | use proces
 
 **Should invoke:**
 - "The as-is for the toga rental process is complete — now optimize it using Lean"
-- "Apply process improvement to documentation/company_analysis/proceso-as-is.md and produce the to-be version"
+- "Apply process improvement to documentation/process/as-is/hersa-proceso-operativo-as-is.md and produce the to-be version"
 - "Generate a Lean-based to-be process for the graduation package fulfillment workflow"
 
 **Should NOT invoke:**

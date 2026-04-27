@@ -16,7 +16,7 @@ when_to_use:
 
 ## How to Include This Skill
 
-Add the following line to any pipeline agent's frontmatter include block, directly after `@.claude/shared/hersa-context.md`:
+Add the following line to any pipeline agent's frontmatter include block, directly after `@.claude/shared/hersa-process.md`:
 
 ```
 @.claude/skills/pipeline-conventions/SKILL.md
@@ -70,7 +70,7 @@ Every pipeline agent follows these rules during execution:
 - **Artifact paths only** — never pass inline content larger than 50 lines between steps; always pass file paths
 - **Progress summaries** — after each major analysis step or tool execution, write a one-line progress note
 - **Stay in scope** — never touch files outside the agent's declared scope boundary
-- **Output path** — all pipeline output goes to `documentation/company_analysis/`
+- **Output path** — each pipeline stage writes to its own subdirectory: `process-analyst` → `documentation/process/as-is/`, `process-optimizer` → `documentation/process/to-be/`, `systems-analyst` → `documentation/requirements/specs/`, `pm-writer` → `documentation/requirements/pm/`, `prd-writer` → `documentation/requirements/prd/`, `tdd-writer` → `documentation/requirements/tdd/`
 
 ---
 
@@ -106,7 +106,7 @@ This is the canonical list of annotation tags used across the pipeline. Each age
 
 ## Outputs
 
-This is a reference skill — it does not write files. It defines the protocol that pipeline agents execute. The agent using this skill writes its own output to `documentation/company_analysis/`.
+This is a reference skill — it does not write files. It defines the protocol that pipeline agents execute. Each agent writes its output to its own designated subdirectory under `documentation/` (see the Output path rule in Protocol 2 above).
 
 ## Failure Modes
 
