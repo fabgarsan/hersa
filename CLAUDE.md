@@ -104,7 +104,7 @@ These files extend these docs. Read them when indicated — they are not loaded 
 | `code-reviewer` | Read-only post-implementation review | After completing a feature or before committing |
 | `security-auditor` | Read-only security audit | Before deploying; after auth or sensitive-data work |
 | `release-manager` | Pre-merge quality gate: orchestrates code review, security audit, and docs check before any PR merges to main | Before merging any non-trivial PR to `main`; final gate in Flows A and B before `aws-devops` |
-| `docs-writer` | Docstrings, CLAUDE.md updates, API endpoint docs | After completing a module or before a release |
+| `docs-writer` | Docstrings, API endpoint docs | After completing a module or before a release |
 | `component-factory` | Generate new agents and skills under `.claude/` | "scaffold/create/generate an agent or skill" |
 | `claude-md-architect` | Interview-driven CLAUDE.md generation and migration | "set up CLAUDE.md", "bootstrap this repo", "migrate my CLAUDE.md" |
 | `aws-devops` | AWS infrastructure: EB, RDS, S3, CloudFront, CI/CD, secrets | Any deployment, infra config, or AWS resource management task |
@@ -124,6 +124,7 @@ These agents are available but do not participate in the standard feature pipeli
 | Agent | Scope | When to use |
 |---|---|---|
 | `ethical-hacker` | Penetration testing, OWASP, API/network/cloud/OSINT security, CTF | Authorized pentests, CTF challenges, security research, red-team exercises |
+| `communications-writer` | Transforms internal artifacts (diagnostics, specs, reports, process documents, strategic recommendations) into polished stakeholder communications: slide decks, executive memos, service proposals, and briefs | After any pipeline agent produces an artifact that must be communicated externally — school directors, parents, students, internal board, or investors |
 
 ## Skill Registry
 

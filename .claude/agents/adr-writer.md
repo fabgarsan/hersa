@@ -2,8 +2,11 @@
 name: adr-writer
 description: Documents a non-obvious architectural or technical decision as an ADR and saves it to /documentation/requirements/adr/.
 version: 1.0.0
-model: claude-haiku-4-5-20251001
-tools: Write, Glob
+model: claude-sonnet-4-6
+tools:
+  - Read    # reads hersa-context.md and existing ADRs before writing
+  - Write
+  - Glob
 ---
 
 @.claude/shared/hersa-context.md

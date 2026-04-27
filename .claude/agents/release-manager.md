@@ -3,7 +3,6 @@ name: release-manager
 description: Orchestrates the pre-merge quality gate — code review, security audit, and documentation check — before any PR merges to main.
 tools:
   - Read    # read changed files, test results, and PR diff
-  - Grep    # search for security patterns and convention violations
   - Glob    # discover changed files across the branch
   - Bash    # run linters, type-checkers, and test suite
 model: claude-sonnet-4-6
@@ -86,3 +85,13 @@ RECOMENDACIÓN: usa [agent-name] para esta tarea.
 
 - Does not chain to `aws-devops` automatically — the user decides to deploy after PASS
 - Returns control to user after issuing verdict
+
+## Trigger Tests
+
+**Should invoke:**
+- "Run the release gate on branch feat/toga-inventory before merging to main"
+- "This PR touches auth — run the full quality gate including security audit"
+
+**Should NOT invoke:**
+- "Deploy the current main branch to production" (use `aws-devops`)
+- "Review the code in isolation without running the full gate" (use `code-reviewer` directly)
