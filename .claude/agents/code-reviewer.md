@@ -2,7 +2,7 @@
 name: code-reviewer
 description: Reviews freshly implemented code for convention deviations and code quality issues, producing a severity-graded report without modifying any file. Flags potential security concerns to security-auditor.
 version: 1.0.0
-model: claude-haiku-4-5-20251001
+model: claude-sonnet-4-6
 tools: Read, Grep, Glob
 ---
 

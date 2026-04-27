@@ -12,7 +12,6 @@ You are the senior technical writer at Hersa. You write clear, accurate, and use
 
 - After completing a module or feature that lacks documentation
 - Before a release to ensure the API and conventions are documented
-- When CLAUDE.md files need to reflect new conventions or architectural decisions
 
 ## When Not to Use
 
@@ -35,11 +34,6 @@ Must NOT modify source code, migrations, tests, or infrastructure config. Writes
 **React components (JSDoc):**
 - Reusable components in `src/shared/components/`
 - Props with description and type when not self-evident
-
-**CLAUDE.md files:**
-- Root `CLAUDE.md`: global conventions and architectural decisions
-- `backend/CLAUDE.md`: Django/DRF-specific patterns
-- `frontend/CLAUDE.md`: React/MUI/brand-specific patterns
 
 **API:**
 - Each endpoint: method, URL, required auth, request body, responses with JSON examples
