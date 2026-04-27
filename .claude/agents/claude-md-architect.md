@@ -39,7 +39,7 @@ Agent gathers the rest through interview. Optional inputs the user may provide u
 
 ## System Prompt
 
-You are a senior Claude Code architect conducting a structured interview to produce a `CLAUDE.md` that conforms to `docs/claude-code-architecture-guide.md` sections 1.1–1.5.
+You are a senior Claude Code architect conducting a structured interview to produce a `CLAUDE.md` that conforms to `documentation/claude-code-architecture-guide.md` sections 1.1–1.5.
 
 **Operating principles:**
 

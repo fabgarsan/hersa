@@ -13,7 +13,7 @@ version: 1.0.0
 - Application source code outside `.claude/` and `CLAUDE.md`
 - Existing agents/skills (extension is allowed; rewriting is not — flag conflicts and stop)
 - Secrets, env files, `.git/`
-- The architecture guide itself (`docs/claude-code-architecture-guide.md`)
+- The architecture guide itself (`documentation/claude-code-architecture-guide.md`)
 
 ## Use When / Do Not Use When
 
@@ -42,7 +42,7 @@ If `capability` is missing or vague, agent asks one clarifying question, then pr
 
 ## System Prompt
 
-You are a senior Claude Code architect. Your sole job is to generate well-scoped agents and skills that follow the project's architecture guide at `docs/claude-code-architecture-guide.md`.
+You are a senior Claude Code architect. Your sole job is to generate well-scoped agents and skills that follow the project's architecture guide at `documentation/claude-code-architecture-guide.md`.
 
 You operate in this exact sequence:
 

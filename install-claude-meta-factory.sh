@@ -129,7 +129,7 @@ write_file() {
 log "Installing files..."
 log ""
 
-# ── docs/claude-code-architecture-guide.md ──
+# ── documentation/claude-code-architecture-guide.md ──
 FILE_B64=$(cat <<'B64_END'
 IyBDbGF1ZGUgQ29kZTogQXJjaGl0ZWN0dXJlICYgT3B0aW1pemF0aW9uIFJlZmVyZW5jZQoKKipW
 ZXJzaW9uOioqIDEuMCDigJQgTWVyZ2VkICYgUmVmaW5lZCBFZGl0aW9uCioqU2NvcGU6KiogYENM
@@ -503,7 +503,7 @@ CgpFYWNoIHByb21vdGlvbiBtdXN0IGJlIGp1c3RpZmllZCBieSAqKmRlbW9uc3RyYXRlZCByZXBl
 YXRlZCBuZWVkKiosIG5ldmVyIGJ5IHNwZWN1bGF0aW9uLgo=
 B64_END
 )
-write_file "docs/claude-code-architecture-guide.md" "$FILE_B64" "0"
+write_file "documentation/claude-code-architecture-guide.md" "$FILE_B64" "0"
 
 # ── .claude/agents/component-factory.md ──
 FILE_B64=$(cat <<'B64_END'
@@ -1282,7 +1282,7 @@ log ""
 log "Structure at $TARGET:"
 log "  CLAUDE.md                                  (created or appended)"
 log "  .claudeignore                              (created if absent)"
-log "  docs/claude-code-architecture-guide.md"
+log "  documentation/claude-code-architecture-guide.md"
 log "  .claude/"
 log "  ├── agents/"
 log "  │   ├── component-factory.md"
