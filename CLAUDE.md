@@ -107,6 +107,11 @@ These files extend these docs. Read them when indicated — they are not loaded 
 | `claude-md-architect` | Interview-driven CLAUDE.md generation and migration | "set up CLAUDE.md", "bootstrap this repo", "migrate my CLAUDE.md" |
 | `aws-devops` | AWS infrastructure: EB, RDS, S3, CloudFront, CI/CD, secrets | Any deployment, infra config, or AWS resource management task |
 | `ethical-hacker` | Penetration testing, OWASP, API/network/cloud/OSINT security, CTF | Authorized pentests, CTF challenges, security research, red-team exercises |
+| `process-analyst` | As-is documentation of existing business processes | When documenting how a process works today, before any improvement or redesign |
+| `process-optimizer` | Lean-based to-be process optimization from a complete as-is document | After `process-analyst` produces a clean as-is (zero unresolved ambiguities); before implementation planning |
+| `systems-analyst` | Translate a complete to-be process into functional specifications: epics, user stories, AC, data entities, API contracts | After `process-optimizer` produces a clean to-be (zero unresolved `[NECESITA CONTEXTO]` items); before any implementation begins |
+| `pm-writer` | Translate a technical specification into a non-technical executive PM document with MoSCoW prioritization and BLOCKER guard | After `systems-analyst` produces a clean technical spec (zero unresolved `[BLOCKER]` items); before `prd-writer` is invoked |
+| `senior-ceo-advisor` | Strategic executive advisory for Hersa business decisions; pipeline sanity-checks from a business lens | Any strategic, commercial, operational, or prioritization decision; at any point in the pipeline to validate business realism |
 
 ## Skill Registry
 
@@ -117,10 +122,11 @@ These files extend these docs. Read them when indicated — they are not loaded 
 | `reuse-checker` | Used by `component-factory` before generation | Decides NEW vs EXTEND vs INLINE |
 | `component-linter` | Used by `component-factory` after generation | Structural validation against architecture rules |
 | `claude-md-linter` | Used by `claude-md-architect`, or directly in CI | Validates CLAUDE.md against architecture guide §1.1–§1.5 |
+| `pipeline-conventions` | Used by all document-pipeline agents | Shared pre-flight validation, operating rules, and blocking tag vocabulary for the process pipeline |
 
 ## Conventions for Agents and Skills
 
-- Architecture rules: see `@docs/claude-code-architecture-guide.md` (do not duplicate here)
+- Architecture rules: see `@documentation/claude-code-architecture-guide.md` (do not duplicate here)
 - Naming: agents are `kebab-case` verb-noun; skills are `kebab-case` noun
 - Every agent/skill MUST declare both `when_to_use` and `when_not_to_use`
 - Tool grants follow least-privilege; >5 tools requires per-tool justification
