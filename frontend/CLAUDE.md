@@ -31,6 +31,20 @@ React 19 + TypeScript + Vite. Loaded only when Claude works on files inside this
 | Implementing an API integration | `.claude/skills/api-contract.md` |
 | Handling loading / error / success states | `.claude/skills/error-handling.md` |
 
+## Brand System — load before any visual work
+
+| When you are... | Load |
+|-----------------|------|
+| Implementing colors, typography, logo, or photo styling | `documentation/brand/brand-manual.md` |
+| Implementing any UI component (contrast, spacing, buttons, overlays, motion) | `documentation/brand/digital-guidelines.md` |
+| Writing UI copy, labels, empty states, errors, or notifications | `documentation/brand/tone-of-voice.md` |
+
+**Key brand rules for react-developer:**
+- `src/shared/styles/_variables.scss` must stay in sync with `brand-manual.md` — never change tokens without updating the brand doc
+- Playfair Display: student portal B2C only, approved screens only — see `digital-guidelines.md §3` for which screens and the implementation snippet
+- `prefers-reduced-motion` must be respected globally — see `digital-guidelines.md §8` for the CSS block
+- Photo backgrounds require `rgba(11, 31, 58, 0.65)` overlay before placing any text — see `mui-conventions.md` Brand Rules section
+
 ## Internal structure
 
 ```

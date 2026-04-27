@@ -1,7 +1,8 @@
-# Theme Tokens — Togas HERSA
+# Theme Tokens — Eventos Hersa
 
-> **Agents:** react-developer, tdd-writer
+> **Agents:** react-developer, tdd-writer, ui-designer
 > **Load when:** Styling components, defining the MUI theme, or adding new brand assets
+> **Brand authority:** `documentation/brand/brand-manual.md` — read that first for visual rationale; this file is the implementation reference
 > **Summary:** Brand identity, color palette, typography, and logo rules for the Hersa design system
 
 The application follows the **Togas HERSA** brand identity. Always use these tokens when styling components; never introduce arbitrary colors.
@@ -68,6 +69,8 @@ export const hersaTheme = createTheme({
 
 ## Typography
 
+Two-font system: **Inter** (functional, all UI and B2B) + **Playfair Display** (celebratory, B2C headlines only).
+
 ```ts
 typography: {
   fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
@@ -75,8 +78,13 @@ typography: {
   h2: { fontWeight: 600, color: '#0B1F3A' },
   h3: { fontWeight: 500, color: '#0B1F3A' },
   button: { textTransform: 'none', fontWeight: 500 }, // no automatic uppercase
+  // Playfair Display — celebratory display variant for B2C portal only
+  // Usage: welcome screens, graduation confirmation, photo delivery, package delivery
+  // Load via Google Fonts: family=Playfair+Display:wght@400;700
 },
 ```
+
+**Playfair Display** is NOT in the theme yet — add it before using in B2C surfaces. See `documentation/brand/digital-guidelines.md §3` for the implementation snippet. Never use Playfair Display in the B2B institutional portal.
 
 ## Brand rules
 

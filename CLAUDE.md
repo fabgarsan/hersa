@@ -89,6 +89,9 @@ These files extend these docs. Read them when indicated — they are not loaded 
 | `.claude/skills/mui-conventions.md` | Choosing MUI components, using Grid2, or wiring up RHF forms |
 | `.claude/skills/react-conventions.md` | Writing axios interceptors, React Query hooks, or managing auth/state |
 | `.claude/skills/pipeline-flows/SKILL.md` | Starting any non-trivial work; picking which pipeline flow (A–I) to use |
+| `documentation/brand/brand-manual.md` | Designing any UI screen or component for Hersa — ui-designer must read before producing any ui-spec |
+| `documentation/brand/tone-of-voice.md` | Writing any external-facing document — communications-writer must read before producing proposals, memos, or briefs |
+| `documentation/brand/digital-guidelines.md` | Implementing or reviewing the React visual theme — react-developer and ui-designer read this before any visual implementation |
 
 ## Agent Registry
 
@@ -114,6 +117,7 @@ These files extend these docs. Read them when indicated — they are not loaded 
 | `pm-writer` | Translate a technical specification into a non-technical executive PM document with MoSCoW prioritization and BLOCKER guard | After `systems-analyst` produces a clean technical spec (zero unresolved `[BLOCKER]` items); before `prd-writer` is invoked |
 | `senior-ceo-advisor` | Strategic executive advisory for Hersa business decisions; pipeline sanity-checks from a business lens | Any strategic, commercial, operational, or prioritization decision; at any point in the pipeline to validate business realism |
 | `engineering-manager` | Engineering team diagnosis: roles, processes, gaps, hiring, and agent pipeline integration | When analyzing team structure or processes, making hiring decisions, or defining how pipeline agents integrate with the dev team |
+| `brand-designer` | Brand identity system: strategy, visual identity manual, tone of voice, and digital guidelines — the brand foundation that ui-designer and communications-writer build on | Before any UI design work begins; when brand guidelines are missing or inconsistent; when launching a new digital product |
 | `ux-designer` | User flows, navigation, information hierarchy, screen structure, friction analysis, and text wireframes for any Hersa feature | After `systems-analyst` produces a clean spec (zero `[BLOCKER]` tags); before any visual design or frontend implementation begins |
 | `ui-designer` | Visual design specification: design tokens, component inventory, per-screen layout, accessibility guide, and MUI implementation notes | After `ux-designer` produces a clean `ux-spec.md` (zero unresolved `[FRICCIÓN ALTA]` items); before `react-developer` begins implementation |
 
@@ -194,6 +198,9 @@ Usa el primer flujo que aplique:
 Punto de entrada: cuando se quiere analizar, mejorar, o especificar un proceso antes de implementar.
 
 ```
+0. brand-designer      → brand strategy + visual system + tone of voice
+                         [HSTOP: validar brand strategy antes de continuar]
+
 1. process-analyst     → as-is document
                          [HSTOP: usuario confirma antes del siguiente paso]
 
