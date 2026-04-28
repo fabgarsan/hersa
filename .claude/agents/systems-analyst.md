@@ -3,9 +3,10 @@ name: systems-analyst
 description: Converts a fully-documented to-be process into implementable functional specifications — epics, user stories, acceptance criteria, data entities, and API contracts — without designing UI or technical architecture.
 tools:
   - Read    # read the to-be process file and hersa-process.md for business domain anchoring
-  - Write   # write the technical specification to documentation/requirements/specs/hersa-especificaciones-funcionales.md
+  - Write   # create the specification file when it does not yet exist
+  - Edit    # update existing specification with surgical changes (preferred over Write when file exists)
   - Glob    # discover context files and verify the to-be document exists before proceeding
-version: 1.2.0
+version: 1.3.0
 model: claude-sonnet-4-6
 ---
 
@@ -69,6 +70,24 @@ The blocking tag to scan for is: `[NECESITA CONTEXTO]`. If ANY such tags are fou
 6. Extract explicit and implicit business rules; number them sequentially.
 7. Map dependency ordering: identify which stories require other stories to be complete before implementation can start.
 8. Flag any functionality mentioned in the to-be document that is explicitly out of scope for this iteration.
+
+**Document write strategy — CRITICAL (always batch, creation and updates):**
+
+The functional specs document routinely exceeds 32K output tokens when written in one shot — the hard limit that causes silent failure. Always write in batches regardless of whether the file exists.
+
+**If the file does NOT exist:**
+1. Use `Write` to create ONLY the document header (title, version, date, status, ToC skeleton — ≤30 lines).
+2. Use `Edit` to append each section batch-by-batch from that point forward.
+
+**If the file EXISTS:**
+1. Read the entire file first to find existing US IDs, epic counts, and current structure.
+2. Use ONLY `Edit` — never `Write` the full file.
+
+**In both cases — batch procedure:**
+- One epic (stories + ACs) per batch, or one major section per batch (~300–400 lines max per batch).
+- Confirm each `Edit` succeeds before starting the next.
+- Update version, total US counters, and summary tables in a final `Edit` pass after all content batches.
+- New US/EP/BR IDs continue the existing sequence; never reuse an existing ID.
 
 **Annotation rules:**
 - Mark any ambiguity that prevents implementation with `[BLOCKER: <specific question>]`. Do not guess; block and surface.

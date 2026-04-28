@@ -1,8 +1,8 @@
 # Hersa — Especificaciones Funcionales del Sistema
 
-**Version:** 2.0
-**Fecha:** 2026-04-27
-**Basado en:** `documentation/process/to-be/hersa-proceso-operativo-to-be.md` v2.0
+**Version:** 2.2
+**Fecha:** 2026-04-28
+**Basado en:** `documentation/process/to-be/hersa-proceso-operativo-to-be.md` v2.1
 **Contexto de dominio:** `.claude/shared/hersa-context.md`
 **Estado:** Listo para planificacion de implementacion
 
@@ -25,21 +25,22 @@
 
 | Epic ID | Nombre | Descripcion | Historias |
 |---------|--------|-------------|-----------|
-| EP-01 | Agendamiento y Vinculacion de Promocion | Registro de visitas, creacion de Promocion (institucion + grado + jornada + ano), parametros del contrato, paquete negociado con snapshot automatico, fechas tentativas y contactos. | 6 |
+| EP-01 | Agendamiento y Vinculacion de Promocion | Registro de visitas, creacion de Promocion (institucion + grado + jornada + ano), parametros del contrato, paquete negociado con snapshot automatico, fechas tentativas y contactos, creacion bulk de Promociones. | 8 |
 | EP-02 | Auto-registro y Registro Presencial de Estudiantes | Flujo de incorporacion del estudiante al sistema: auto-registro asincrono via QR/enlace y registro presencial por cajero. Vinculado a Promocion. | 3 |
 | EP-03 | Notificaciones Automaticas del Sistema | Envio automatico de notificaciones por email/SMS ante eventos del sistema: registro de fechas, cambios de fecha, recordatorios de saldo, ausencias. | 5 |
 | EP-04 | Sesion de Cobro y Cierre Automatico de Caja | Apertura multi-cajero, registro de pagos con justificacion flexible, add-ons, descuentos, autorizacion fotografica por sistema y generacion automatica del reporte de cierre con excepciones. | 6 |
 | EP-05 | Gestion Fotografica | Autorizacion del fotografo por estado del sistema, paralelizacion del retoque, control de ausentes, gestion de sesion Varios. | 4 |
-| EP-06 | Dia de Grado — Logistica y Entrega | Pre-validacion de saldos, cobro en sala, entrega de paquetes, dotacion de personal anticipada, escalaciones con trazabilidad, cancelacion masiva de QR. | 6 |
-| EP-07 | Gestion de Inconformidades | Registro, notificacion automatica al afectado, gestion por el gerente y cierre con notificacion. | 4 |
-| EP-08 | Administracion del Sistema | Gestion de usuarios/colaboradores con roles multiples, perfil de colaborador con datos geograficos, catalogo de items, paquetes base, historial de incidentes, reportes globales, tablas maestras geograficas. | 7 |
-| EP-09 | Pool de Personal Externo y Postulacion | Gestion del pool de candidatos externos, envio masivo de invitaciones de postulacion, formulario publico de actualizacion de perfil, seguimiento del estado de postulacion. | 4 |
+| EP-06 | Dia de Grado — Logistica y Entrega | Pre-validacion de saldos, cobro en sala, entrega de paquetes, dotacion de personal anticipada, escalaciones con trazabilidad, cancelacion masiva de QR, obsequio de boletas, proceso de reintegro asincrono. | 11 |
+| EP-07 | Gestion de Inconformidades | Registro, notificacion automatica al afectado, gestion por el gerente y cierre con notificacion. SLA configurable con snapshot por inconformidad. | 5 |
+| EP-08 | Administracion del Sistema | Gestion de usuarios/colaboradores con roles multiples, perfil de colaborador con datos geograficos, catalogo de items, paquetes base, historial de incidentes, reportes globales, tablas maestras geograficas, parametros globales configurables con historial de cambios. | 9 |
+| EP-09 | Pool de Personal Externo y Postulacion | Gestion del pool de candidatos externos, envio masivo de invitaciones de postulacion, formulario publico de actualizacion de perfil, seguimiento del estado de postulacion, calendario bidireccional de slots de eventos para postulacion directa de candidatos. | 9 |
 | EP-10 | Asignacion Bulk de Personal y Rutas de Conductores | Creacion y aplicacion de reglas de asignacion masiva por auditorio o rango de fechas, asignacion de rutas de conductores, trazabilidad del origen (bulk vs. individual). | 4 |
 | EP-11 | Notificacion de Cambios a Colaboradores | Proceso manual del administrador para notificar a colaboradores asignados a un evento, con resumen previo al envio, control de duplicados y registro de envios. | 3 |
 | EP-12 | Calendario de Eventos para Colaboradores | Vista autenticada de eventos por colaborador: eventos propios y todos los eventos de la empresa, categorizados por tipo, con indicador de cambios recientes. | 2 |
+| EP-13 | Cotizador de Paquetes | Herramienta pre-venta para armar cotizaciones formales con ítems del catálogo, generar PDF y convertirlas en Promociones al cerrar la negociación. Opcional — no es prerrequisito de una Promoción. | 7 |
 
-**Total epicos:** 12
-**Total user stories:** 54
+**Total epicos:** 13
+**Total user stories:** 76
 
 ---
 
@@ -55,6 +56,8 @@
 | US-004 | Registrar contactos vinculados a la Promocion | Como comercial, quiero registrar los contactos del representante de padres y del delegado estudiantil asociados a la Promocion, para que el sistema pueda enviarles notificaciones automaticas. | Must |
 | US-005 | Actualizar fecha de evento de la Promocion | Como comercial, quiero poder actualizar cualquier fecha registrada (toma fotografica, Prom, Varios, grado) sin perder los datos existentes, para reflejar cambios operativos sin afectar el historial. | Must |
 | US-006 | Seleccionar paquete base y crear snapshot para la Promocion | Como comercial, quiero seleccionar un paquete base del catalogo, agregar o quitar items para la negociacion con la Promocion especifica, y que el sistema cree automaticamente un snapshot del paquete resultante, para que las modificaciones no afecten al paquete base ni a otras Promociones. | Must |
+| US-055 | Creacion bulk de Promociones | Como comercial, quiero crear multiples Promociones de una institucion en un solo paso, para evitar repetir el formulario cuando una institucion tiene varios grados con el mismo paquete. | Must |
+| US-056 | Vista previa y validacion del lote bulk | Como comercial, quiero ver un resumen de validacion antes de confirmar la creacion bulk, para corregir errores sin perder la configuracion ya ingresada. | Must |
 
 ---
 
@@ -113,7 +116,12 @@
 | US-027 | Validar saldo del estudiante en sala y cobrar si aplica | Como cajero en el dia de grado, quiero validar el saldo del estudiante al momento de la entrega y, si tiene saldo pendiente, cobrar el total antes de que el coordinador entregue el paquete, para garantizar que ningun paquete se entregue sin pago completo. | Must |
 | US-028 | Entregar paquete fotografico con pago completo | Como coordinador de grado, quiero confirmar en el sistema la entrega del paquete fotografico al estudiante una vez el cajero ha verificado que el saldo es cero, para tener trazabilidad de las entregas realizadas. | Must |
 | US-029 | Registrar escalacion del gerente en sala | Como gerente, quiero registrar en el sistema cualquier escalacion que deba resolver en el dia de grado (con marca de tiempo, motivo y actor involucrado), para que quede en el historial de incidentes de la Promocion aunque el contacto con el afectado sea manual. | Should |
-| US-030 | Cancelar masivamente tickets QR por no-graduacion | Como sistema, quiero cancelar e invalidar automaticamente todos los tickets QR de un estudiante tan pronto se confirme su no-graduacion (via subida de comprobante), para evitar accesos no autorizados al evento. | Must |
+| US-030 | Cancelar masivamente tickets QR por no-graduacion | Como sistema, quiero cancelar e invalidar automaticamente todos los tickets QR de un estudiante tan pronto se confirme su no-graduacion (via subida de comprobante), para evitar accesos no autorizados al evento. El reembolso del 50% y la entrega del paquete fotografico se gestionan mediante el proceso de reintegro asincrono (SolicitudReembolso). | Must |
+| US-057 | Autorizar obsequio de boletas adicionales | Como Gerente (o usuario con permiso `autorizar_obsequio_boletas`), quiero poder obsequiar boletas de invitacion sobrantes a estudiantes de una Promocion, para aprovechar las invitaciones no distribuidas sin que queden sin uso. | Should |
+| US-058 | Visualizar tokens por tipo en reportes de invitaciones | Como Gerente o Administrador, quiero ver los tokens de invitacion de un estudiante diferenciados por tipo, para distinguir los tokens negociados de los tokens de obsequio. | Should |
+| US-059 | Iniciar solicitud de reintegro por reprobacion | Como estudiante no graduado (o su representante), quiero poder iniciar una solicitud de reintegro despues del dia del grado, para recibir el reembolso del 50% y el paquete fotografico. | Must |
+| US-060 | Gestionar ciclo de vida de solicitud de reintegro | Como Gerente, quiero revisar, aprobar o rechazar solicitudes de reintegro, para controlar el proceso de devolucion y entrega de materiales. | Must |
+| US-061 | Registrar procesamiento del reembolso y entrega del paquete | Como Gerente o Administrador, quiero registrar el pago del reembolso y la entrega del paquete fotografico, para cerrar el ciclo de la solicitud de reintegro con trazabilidad completa. | Must |
 
 ---
 
@@ -122,9 +130,10 @@
 | ID | Titulo | Como / Quiero / Para | Prioridad |
 |----|--------|----------------------|-----------|
 | US-031 | Registrar inconformidad | Como cualquier usuario interno, quiero registrar una inconformidad con categoria predefinida, campo libre de descripcion, Promocion y estudiante asociados, para que el gerente reciba una notificacion automatica y el afectado reciba un acuse de recibo con numero de referencia. | Must |
-| US-032 | Recibir acuse de recibo como afectado | Como estudiante o padre afectado, quiero recibir automaticamente una notificacion por email o SMS al momento de registrarse la inconformidad, con un numero de referencia y el plazo de resolucion (48 horas habiles), para saber que mi caso fue recibido. | Must |
+| US-032 | Recibir acuse de recibo como afectado | Como estudiante o padre afectado, quiero recibir automaticamente una notificacion por email o SMS al momento de registrarse la inconformidad, con un numero de referencia y el plazo de resolucion (el SLA configurado en el sistema, por defecto: 3 dias calendario), para saber que mi caso fue recibido. | Must |
 | US-033 | Gestionar y cerrar inconformidad | Como gerente, quiero investigar la inconformidad, contactar al afectado directamente (fuera del sistema) y cerrar la inconformidad en el sistema con el resumen de la resolucion, para que el sistema notifique automaticamente al afectado con el cierre. | Must |
 | US-034 | Recibir notificacion de cierre de inconformidad | Como estudiante o padre afectado, quiero recibir automaticamente una notificacion por email o SMS cuando el gerente cierre la inconformidad, con el resumen de la resolucion, para tener confirmacion formal del cierre. | Must |
+| US-062 | Registrar SLA vigente al crear una inconformidad | Como sistema, quiero guardar el valor de SLA activo al momento de registrar una inconformidad, para que cambios futuros en la configuracion no alteren las metricas historicas ni los SLAs ya comprometidos. | Must |
 
 ---
 
@@ -139,6 +148,8 @@
 | US-039 | Consultar reportes globales de cobro | Como gerente o administrador, quiero consultar los reportes de cierre de caja de cualquier sesion de cobro, incluyendo los pagos con excepcion (menores al 50%) y sus justificaciones, filtrando por fecha, cajero, Promocion o evento, para supervisar la operacion financiera y auditar excepciones. | Must |
 | US-040 | Gestionar tablas maestras geograficas | Como administrador, quiero gestionar via la interfaz de administracion del sistema las entidades Pais, Departamento y Ciudad (CRUD), para mantener actualizadas las opciones de seleccion geografica en los perfiles de colaboradores. | Must |
 | US-041 | Registrar evento Cena de Profesores | Como administrador o jefe de logistica, quiero registrar una Cena de Profesores asociada a una Promocion, con fecha, hora y sede (Hersa Casa Campestre), sabiendo que el sistema advertira si se intenta registrar una segunda cena en el mismo ciclo de Promocion, para gestionar este tipo de evento dentro del flujo normal. | Must |
+| US-063 | Gestionar parametros globales del sistema | Como administrador, quiero poder ver y editar los parametros de configuracion global del sistema desde un panel dedicado, para ajustar comportamientos del sistema sin requerir cambios en el codigo. | Must |
+| US-064 | Ver historial de cambios de configuracion | Como administrador, quiero ver el historial de cambios de cada parametro de configuracion, para auditar cuando y por quien se modificaron los valores del sistema. | Must |
 
 ---
 
@@ -150,6 +161,11 @@
 | US-043 | Enviar invitacion de postulacion masiva | Como administrador, quiero seleccionar un subconjunto de candidatos del pool (por rol o disponibilidad), generar un enlace unico de formulario por candidato y enviar simultaneamente el mensaje de postulacion por email y/o SMS, para reducir el tiempo de convocatoria frente al contacto individual. | Must |
 | US-044 | Completar formulario de actualizacion de datos (candidato externo) | Como candidato externo, quiero acceder al formulario de actualizacion de datos mediante el enlace unico recibido (sin necesidad de login), completar mis datos de perfil obligatorios (nombre completo, telefono, numero de documento, pais, departamento, ciudad) y enviar el formulario, para quedar disponible para asignacion a eventos. | Must |
 | US-045 | Consultar estado de postulaciones enviadas | Como administrador, quiero ver para cada envio de postulacion el estado del formulario (pendiente, completado) y la fecha de completado, para saber que candidatos estan listos para asignacion sin tener que contactarlos individualmente. | Should |
+| US-065 | Publicar un slot de evento para postulacion | Como administrador, quiero publicar slots de eventos en el calendario de postulaciones, para que los candidatos externos puedan ver los eventos disponibles y postularse. | Must |
+| US-066 | Gestionar estado y postulaciones de un slot | Como administrador, quiero revisar y gestionar las postulaciones recibidas en un slot, para confirmar la asignacion de personal externo a los eventos. | Must |
+| US-067 | Duplicar un slot de evento | Como administrador, quiero duplicar un slot existente para crear uno nuevo con los mismos datos, para evitar ingresar la misma configuracion repetidamente cuando el mismo tipo de cobertura se repite en fechas distintas. | Should |
+| US-068 | Ver calendario de slots disponibles y postularse | Como candidato externo (autenticado), quiero ver el calendario de eventos disponibles y postularme a los que me convengan, para participar en los eventos de Hersa sin esperar una convocatoria directa. | Must |
+| US-069 | Actualizar perfil de candidato externo | Como candidato externo, quiero poder actualizar mi perfil en cualquier momento, para mantener mis datos actualizados y seguir siendo elegible para asignaciones. | Must |
 
 ---
 
@@ -180,6 +196,20 @@
 |----|--------|----------------------|-----------|
 | US-053 | Ver calendario de eventos propios | Como colaborador autenticado, quiero ver en un calendario los eventos a los que estoy asignado, categorizados por tipo de evento (toma fotografica, prom, grado, varios, cena profesores), con el estado de cada evento y un indicador visual cuando el evento fue modificado en las ultimas 48 horas, para planificar mi trabajo y detectar rapidamente cambios recientes. | Must |
 | US-054 | Ver calendario de todos los eventos de la empresa | Como colaborador autenticado, quiero acceder a una vista secundaria que muestre todos los eventos de la empresa (no solo mis asignados), para tener contexto del calendario operativo completo de Hersa. | Should |
+
+---
+
+### EP-13 — Cotizador de Paquetes
+
+| ID | Titulo | Como / Quiero / Para | Prioridad |
+|----|--------|----------------------|-----------|
+| US-070 | Crear cotizacion | Como comercial, quiero crear una cotizacion seleccionando institucion y opcionalmente un paquete base, para iniciar una negociacion formal pre-venta. | Must |
+| US-071 | Agregar/quitar items a la cotizacion | Como comercial, quiero personalizar los items del catalogo en la cotizacion, para ajustar la propuesta a las necesidades de la institucion. | Must |
+| US-072 | Generar PDF de cotizacion | Como comercial, quiero generar un PDF con los detalles de la cotizacion para presentar al cliente, para formalizar la propuesta de forma profesional. | Must |
+| US-073 | Convertir cotizacion en Promocion | Como comercial, quiero convertir la cotizacion aceptada en la Promocion formal con un solo paso, para evitar duplicar la carga de datos al cerrar la negociacion. | Must |
+| US-074 | Gestionar estados de cotizacion | Como comercial, quiero cambiar el estado de la cotizacion (enviada, aceptada, rechazada), para tener trazabilidad del avance de cada negociacion. | Must |
+| US-075 | Ver dashboard de cotizaciones | Como Gerente, quiero tener visibilidad de todas las cotizaciones activas y su estado, para supervisar el pipeline comercial. | Should |
+| US-076 | Duplicar cotizacion | Como comercial, quiero duplicar una cotizacion enviada para crear una version modificada, para renegociar sin perder la propuesta original. | Should |
 
 ---
 
@@ -323,6 +353,8 @@
 
 ### US-016 — Registrar pago de estudiante con pago minimo flexible
 
+**Nota de flujo:** El vestidor mide fisicamente la talla de toga del estudiante ANTES de que este pase al cajero. El vestidor no registra nada en el sistema; es el cajero el unico actor que registra la talla en el formulario de pago.
+
 **Given** que el cajero tiene una sesion de cobro abierta y ha localizado al estudiante en el sistema,
 **When** el cajero registra el monto pagado en efectivo:
 - Si el monto es >= 50% del paquete: el sistema registra el pago sin requerir justificacion.
@@ -330,6 +362,13 @@
 **Then** el sistema registra la transaccion con marca de tiempo, actor (cajero), monto y comentario (si aplica); actualiza el saldo del estudiante en tiempo real; cambia el estado del estudiante a "autorizado para toma"; y dispara la notificacion de pago (US-012).
 
 **Negative path:** Si el monto ingresado es menor al 50% del paquete y el campo de justificacion esta vacio, el sistema muestra un error especifico y bloquea el guardado.
+
+**Criterios de aceptacion — talla de toga:**
+- [ ] El formulario de registro de pago incluye un campo "talla de toga" requerido
+- [ ] Si el estudiante ya tiene talla registrada de una sesion anterior, el campo aparece pre-cargado y es editable
+- [ ] Si el estudiante no tiene talla registrada y el cajero no ingresa una, el sistema bloquea el guardado del pago con mensaje de error claro: "Debes ingresar la talla de toga para continuar"
+- [ ] El rol `vestidor` NO tiene permiso de escritura sobre el campo `talla_toga`; solo el cajero (y roles superiores) pueden escribir este campo
+- [ ] Si el estudiante estuvo ausente en la toma original y paga en el Prom o en la sesion Varios, el campo talla_toga es requerido de la misma forma en esa sesion
 
 ---
 
@@ -451,7 +490,9 @@
 
 **Given** que se ha confirmado la no-graduacion de un estudiante (via subida del comprobante),
 **When** el sistema procesa la confirmacion,
-**Then** el sistema cancela e invalida automaticamente todos los tickets QR de invitacion de ese estudiante; cualquier intento de escaneo posterior de esos tickets es rechazado; el flujo de reembolso del 50% es iniciado.
+**Then** el sistema cancela e invalida automaticamente todos los tickets QR de invitacion de ese estudiante; cualquier intento de escaneo posterior de esos tickets es rechazado.
+
+**Nota de flujo:** La cancelacion masiva de QR ocurre de forma inmediata el dia del grado. El reembolso del 50% del monto pagado y la entrega del paquete fotografico NO ocurren el dia del grado; se gestionan mediante el proceso de reintegro asincrono posterior (SolicitudReembolso — ver US-059, US-060, US-061). El endpoint `POST /api/estudiantes/{id}/no-graduacion/` confirma la no-graduacion y cancela los QR; la SolicitudReembolso se crea en un paso separado e independiente.
 
 ---
 
@@ -459,7 +500,7 @@
 
 **Given** que un usuario interno ha identificado una inconformidad,
 **When** el usuario completa el formulario de inconformidad (categoria predefinida, descripcion libre, Promocion, estudiante o padre afectado) y lo guarda,
-**Then** el sistema asigna un numero de referencia unico, notifica automaticamente al gerente, notifica automaticamente al afectado con el numero de referencia y el plazo de resolucion (48 horas habiles), y registra la fecha, hora y usuario que registro.
+**Then** el sistema asigna un numero de referencia unico, notifica automaticamente al gerente, notifica automaticamente al afectado con el numero de referencia y el plazo de resolucion (el SLA configurado en el sistema, por defecto: 3 dias calendario), y registra la fecha, hora y usuario que registro.
 
 ---
 
@@ -467,7 +508,7 @@
 
 **Given** que se ha registrado una inconformidad que involucra a un estudiante o padre con contacto registrado,
 **When** el sistema procesa exitosamente el registro,
-**Then** el sistema envia automaticamente por email y/o SMS al afectado un mensaje con: numero de referencia, descripcion breve del caso, plazo de resolucion (48 horas habiles) e informacion de contacto de Hersa para consultas urgentes; el envio queda registrado con marca de tiempo.
+**Then** el sistema envia automaticamente por email y/o SMS al afectado un mensaje con: numero de referencia, descripcion breve del caso, plazo de resolucion (el SLA configurado en el sistema, por defecto: 3 dias calendario) e informacion de contacto de Hersa para consultas urgentes; el envio queda registrado con marca de tiempo.
 
 ---
 
@@ -486,6 +527,20 @@
 **Given** que el gerente ha cerrado una inconformidad con resumen de resolucion registrado,
 **When** el sistema procesa el cierre,
 **Then** el sistema envia automaticamente por email y/o SMS al afectado un mensaje con: numero de referencia, estado "resuelta", resumen de la resolucion y marca de tiempo del cierre; el envio queda registrado con marca de tiempo en el historial de notificaciones de esa inconformidad.
+
+---
+
+### US-062 — Registrar SLA vigente al crear una inconformidad
+
+- **Como** sistema
+- **Quiero** guardar el valor de SLA activo al momento de registrar una inconformidad
+- **Para** que cambios futuros en la configuracion no alteren las metricas historicas ni los SLAs ya comprometidos
+
+**Criterios de aceptacion:**
+- [ ] Al crear una `Inconformidad`, el sistema registra en el campo `sla_aplicado` el valor actual de `ConfiguracionSistema.inconformidad.sla_dias`
+- [ ] Los calculos de vencimiento y alerta de esa inconformidad usan `sla_aplicado`, no el valor actual de configuracion
+- [ ] El campo `sla_aplicado` es inmutable una vez registrado
+- [ ] El reporte de inconformidades muestra el SLA con el que fue registrada cada una
 
 ---
 
@@ -545,6 +600,41 @@
 
 ---
 
+### US-063 — Gestionar parametros globales del sistema
+
+- **Como** Administrador
+- **Quiero** poder ver y editar los parametros de configuracion global del sistema desde un panel dedicado
+- **Para** ajustar comportamientos del sistema sin requerir cambios en el codigo
+
+**Criterios de aceptacion:**
+- [ ] Solo el rol `administrador` tiene acceso al panel de configuracion
+- [ ] El panel muestra todos los parametros disponibles con su valor actual, tipo, descripcion y valor por defecto
+- [ ] El administrador puede editar el valor de un parametro y guardarlo
+- [ ] El sistema valida el valor antes de guardar: no nulo, tipo correcto (entero positivo para dias/horas), dentro de rangos razonables
+- [ ] Al guardar, el cambio aplica unicamente a registros creados DESPUES de la modificacion; los registros existentes conservan su valor de SLA capturado en `sla_aplicado`
+- [ ] Cada cambio queda registrado en un historial de configuracion: parametro, valor anterior, valor nuevo, usuario, timestamp
+
+**Parametros iniciales obligatorios:**
+| Clave | Tipo | Default | Descripcion |
+|---|---|---|---|
+| `inconformidad.sla_dias` | Entero positivo | 3 | Dias calendario para resolver una inconformidad |
+| `inconformidad.alerta_horas_antes_vencimiento` | Entero positivo | 24 | Horas antes del vencimiento para disparar la alerta interna |
+
+---
+
+### US-064 — Ver historial de cambios de configuracion
+
+- **Como** Administrador
+- **Quiero** ver el historial de cambios de cada parametro de configuracion
+- **Para** auditar cuando y por quien se modificaron los valores del sistema
+
+**Criterios de aceptacion:**
+- [ ] El historial muestra: parametro, valor anterior, valor nuevo, usuario que hizo el cambio, fecha y hora
+- [ ] El historial es de solo lectura; no se puede editar ni borrar
+- [ ] Se puede filtrar por parametro y por rango de fechas
+
+---
+
 ### US-042 — Gestionar pool de candidatos externos
 
 **Given** que el administrador accede al pool de personal externo,
@@ -576,6 +666,188 @@
 **Given** que el administrador necesita saber que candidatos completaron el formulario,
 **When** el administrador accede a la lista de postulaciones enviadas filtrada por fecha de envio o estado (pendiente, completado),
 **Then** el sistema muestra para cada postulacion: nombre del candidato, canal utilizado, fecha de envio, estado del formulario y fecha de completado (si aplica); los candidatos con estado "completado" aparecen marcados como disponibles para asignacion.
+
+---
+
+### US-065 — Publicar un slot de evento para postulacion
+
+- **Como** Administrador
+- **Quiero** publicar slots de eventos en el calendario de postulaciones
+- **Para** que los candidatos externos puedan ver los eventos disponibles y postularse
+
+**Criterios de aceptacion:**
+- [ ] El administrador puede crear un `SlotEvento` con: rol requerido, capacidad (numero de personas), hora de llegada, hora de salida estimada, descripcion, tipo de cobertura (evento especifico | dia completo en localidad), y fecha o evento asociado (opcional)
+- [ ] El slot se crea en estado `disponible`
+- [ ] Un slot puede estar vinculado a un `FechaEvento` especifico o a una localidad y fecha sin evento especifico asociado
+- [ ] Solo usuarios con rol `administrador` o `jefe_logistica` pueden publicar slots
+
+---
+
+### US-066 — Gestionar estado y postulaciones de un slot
+
+- **Como** Administrador
+- **Quiero** revisar y gestionar las postulaciones recibidas en un slot
+- **Para** confirmar la asignacion de personal externo a los eventos
+
+**Criterios de aceptacion:**
+- [ ] El administrador puede ver la lista de candidatos postulados a cada slot con su estado actual: `postulado`, `aceptado`, `rechazado`, `cancelado_por_candidato`
+- [ ] Puede aceptar o rechazar postulaciones individualmente
+- [ ] Al aceptar una postulacion, el sistema crea automaticamente la `AsignacionPersonalEvento` correspondiente con `origen = postulacion_slot`
+- [ ] Antes de crear la asignacion, el sistema verifica si el candidato ya tiene una `AsignacionPersonalEvento` en el mismo horario; si hay conflicto, muestra una alerta (sin bloquear) y el administrador confirma explicitamente
+- [ ] El administrador puede cambiar el estado del slot: `disponible` → `completo` → `cerrado` → `cancelado`
+- [ ] Al cancelar un slot, todos los candidatos con postulacion en estado `postulado` reciben notificacion por email/SMS
+
+---
+
+### US-067 — Duplicar un slot de evento
+
+- **Como** Administrador
+- **Quiero** duplicar un slot existente para crear uno nuevo con los mismos datos
+- **Para** evitar ingresar la misma configuracion repetidamente cuando el mismo tipo de cobertura se repite en fechas distintas
+
+**Criterios de aceptacion:**
+- [ ] La accion "Duplicar" copia todos los campos del slot (rol, capacidad, horario, descripcion, tipo) a un nuevo slot en estado `borrador`
+- [ ] El administrador puede editar el slot duplicado antes de publicarlo
+- [ ] El slot duplicado no hereda las postulaciones del original
+
+---
+
+### US-068 — Ver calendario de slots disponibles y postularse
+
+- **Como** candidato externo (autenticado)
+- **Quiero** ver el calendario de eventos disponibles y postularme a los que me convengan
+- **Para** participar en los eventos de Hersa sin esperar una convocatoria directa
+
+**Criterios de aceptacion:**
+- [ ] El candidato autenticado puede ver el calendario de slots publicados con estado `disponible`
+- [ ] Puede ver: rol requerido, fecha, hora de llegada y salida, descripcion, plazas disponibles (capacidad - aceptados)
+- [ ] Puede postularse a un slot con un clic; su postulacion queda en estado `postulado`
+- [ ] No puede postularse dos veces al mismo slot
+- [ ] No puede postularse a slots con estado `cerrado` o `cancelado`
+- [ ] Puede cancelar su propia postulacion si el slot aun esta `disponible`
+- [ ] Recibe notificacion por email/SMS cuando su postulacion cambia a `aceptado` o `rechazado`
+- [ ] Puede ver el estado de todas sus postulaciones activas en su perfil
+
+---
+
+### US-069 — Actualizar perfil de candidato externo
+
+- **Como** candidato externo
+- **Quiero** poder actualizar mi perfil en cualquier momento
+- **Para** mantener mis datos actualizados y seguir siendo elegible para asignaciones
+
+**Criterios de aceptacion:**
+- [ ] El candidato puede editar los 6 campos obligatorios de su perfil: nombre, telefono, documento, pais, departamento, ciudad
+- [ ] Al guardar, el sistema registra `fecha_ultima_actualizacion_perfil` con timestamp actual
+- [ ] El sistema envia una notificacion/invitacion anual al candidato recordandole actualizar su perfil (campana automatica)
+- [ ] El administrador puede filtrar candidatos cuyo perfil no ha sido actualizado en mas de N meses (parametro configurable)
+
+**Estados de SlotEvento:** `disponible`, `completo`, `cerrado`, `cancelado`
+**Estados de PostulacionSlot:** `postulado`, `aceptado`, `rechazado`, `cancelado_por_candidato`
+
+---
+
+### US-070 — Crear cotizacion
+
+- **Como** comercial
+- **Quiero** crear una cotizacion seleccionando institucion y opcionalmente un paquete base
+- **Para** iniciar una negociacion formal pre-venta
+
+**Criterios de aceptacion:**
+- [ ] El comercial puede crear una `Cotizacion` seleccionando una institucion (registrada o prospecto aun sin Promocion formal)
+- [ ] Puede seleccionar opcionalmente un paquete base como punto de partida; si no selecciona ninguno, empieza con items vacios
+- [ ] Define: precio por estudiante, numero estimado de estudiantes; el sistema calcula el total estimado
+- [ ] La cotizacion se crea en estado `borrador`
+- [ ] Puede guardar y retomar la cotizacion en borrador sin perder los datos
+
+---
+
+### US-071 — Agregar/quitar items a la cotizacion
+
+- **Como** comercial
+- **Quiero** personalizar los items del catalogo en la cotizacion
+- **Para** ajustar la propuesta a las necesidades de la institucion
+
+**Criterios de aceptacion:**
+- [ ] El comercial puede anadir items del catalogo global a la cotizacion o quitarlos
+- [ ] Puede ajustar la cantidad y el precio unitario de cada item
+- [ ] Los precios de items en la cotizacion son un snapshot al momento de guardar: cambios posteriores en el catalogo NO afectan cotizaciones ya guardadas
+- [ ] El subtotal de la cotizacion se recalcula en tiempo real al modificar items
+
+---
+
+### US-072 — Generar PDF de cotizacion
+
+- **Como** comercial
+- **Quiero** generar un PDF con los detalles de la cotizacion para presentar al cliente
+- **Para** formalizar la propuesta de forma profesional
+
+**Criterios de aceptacion:**
+- [ ] El comercial puede generar un PDF de la cotizacion en cualquier estado (borrador o posterior)
+- [ ] El PDF incluye: logo de Hersa, nombre de la institucion, listado de items con precios, precio por estudiante, total estimado, y datos del comercial
+- [ ] El formato visual del PDF se define durante la implementacion (referencia: brand-manual.md)
+- [ ] El PDF se puede descargar o enviar por email directamente desde el sistema
+
+---
+
+### US-073 — Convertir cotizacion en Promocion
+
+- **Como** comercial
+- **Quiero** convertir la cotizacion aceptada en la Promocion formal con un solo paso
+- **Para** evitar duplicar la carga de datos al cerrar la negociacion
+
+**Criterios de aceptacion:**
+- [ ] La accion "Convertir en Promocion" solo esta disponible cuando la cotizacion esta en estado `aceptada`
+- [ ] Al ejecutar la conversion, el sistema:
+  - a. Crea la `Promocion` con los atributos definidos en la cotizacion (institucion, grado, jornada, ano)
+  - b. Crea el `PaquetePromocion` (snapshot) usando los items y precios de la cotizacion
+  - c. Establece vinculo bidireccional: `Cotizacion.promocion_resultante` → FK a la nueva Promocion
+  - d. Cambia el estado de la cotizacion a `convertida_a_promocion`
+- [ ] La conversion falla con mensaje de error claro si ya existe una Promocion con la misma combinacion (institucion + grado + jornada + ano)
+- [ ] La creacion directa de una Promocion sin cotizacion previa sigue siendo valida (el cotizador es herramienta auxiliar, no prerrequisito)
+
+---
+
+### US-074 — Gestionar estados de cotizacion
+
+- **Como** comercial
+- **Quiero** cambiar el estado de la cotizacion (enviada, aceptada, rechazada)
+- **Para** tener trazabilidad del avance de cada negociacion
+
+**Criterios de aceptacion:**
+- [ ] El comercial puede marcar la cotizacion como `enviada` (indica que fue presentada al cliente)
+- [ ] Puede marcar como `aceptada` o `rechazada` segun la respuesta del cliente
+- [ ] Una cotizacion enviada NO es editable: para modificarla debe duplicarse (US-076)
+- [ ] Una cotizacion puede tener fecha de vencimiento; al superarla, el sistema la marca automaticamente como `vencida`
+- [ ] Una institucion puede tener multiples cotizaciones activas simultaneamente (distintas negociaciones o distintos grados)
+
+---
+
+### US-075 — Ver dashboard de cotizaciones
+
+- **Como** Gerente
+- **Quiero** tener visibilidad de todas las cotizaciones activas y su estado
+- **Para** supervisar el pipeline comercial
+
+**Criterios de aceptacion:**
+- [ ] El Gerente puede ver todas las cotizaciones agrupadas por estado con: institucion, comercial asignado, total estimado, fecha de creacion y fecha de vencimiento
+- [ ] Puede filtrar por estado, comercial, institucion y rango de fechas
+- [ ] Puede ver el detalle de cualquier cotizacion
+
+---
+
+### US-076 — Duplicar cotizacion
+
+- **Como** comercial
+- **Quiero** duplicar una cotizacion enviada para crear una version modificada
+- **Para** renegociar sin perder la propuesta original
+
+**Criterios de aceptacion:**
+- [ ] El comercial puede duplicar cualquier cotizacion (en cualquier estado) para crear una nueva en estado `borrador`
+- [ ] La cotizacion duplicada copia todos los campos (institucion, items, precios snapshot, precio por estudiante) pero no copia el estado ni el vinculo con Promocion
+- [ ] Los precios del duplicado son un nuevo snapshot al momento de la duplicacion (no del original)
+
+**Estados de Cotizacion:** `borrador` → `enviada` → `aceptada` → `convertida_a_promocion` | `rechazada` | `vencida`
 
 ---
 
@@ -648,6 +920,112 @@
 **Given** que un colaborador autenticado accede al calendario,
 **When** el colaborador activa la vista general (todos los eventos de la empresa),
 **Then** el sistema muestra todos los FechaEvento activos de Hersa, categorizados por tipo, independientemente de si el colaborador esta asignado o no; el indicador de "modificado recientemente" aplica igualmente.
+
+---
+
+### US-055 — Creacion bulk de Promociones
+
+- **Como** comercial
+- **Quiero** crear multiples Promociones de una institucion en un solo paso
+- **Para** evitar repetir el formulario cuando una institucion tiene varios grados con el mismo paquete
+
+**Criterios de aceptacion:**
+- [ ] El formulario bulk permite seleccionar una institucion y un paquete base
+- [ ] El comercial puede marcar multiples combinaciones (grado + jornada) para crear en el mismo lote
+- [ ] Cada combinacion tiene un campo de precio editable individualmente
+- [ ] Antes de confirmar, el sistema muestra un resumen de las N Promociones a crear: nombre, precio individual y estado de validacion (valido / duplicado / error)
+- [ ] La creacion es atomica: si cualquier combinacion ya existe (duplicado) o tiene datos invalidos, no se crea ninguna y el sistema indica cual fallo y por que
+- [ ] Cada Promocion creada tiene su propio snapshot de paquete independiente (`PaquetePromocion`), nunca compartido con otras del mismo lote
+- [ ] El resultado muestra confirmacion de cuantas Promociones se crearon exitosamente
+
+---
+
+### US-056 — Vista previa y validacion del lote bulk
+
+- **Como** comercial
+- **Quiero** ver un resumen de validacion antes de confirmar la creacion bulk
+- **Para** corregir errores sin perder la configuracion ya ingresada
+
+**Criterios de aceptacion:**
+- [ ] El resumen muestra: nombre de la Promocion, precio ingresado, y estado (valido / duplicado / error con descripcion)
+- [ ] Una combinacion marcada como duplicada o invalida puede corregirse en el mismo formulario sin reiniciar el lote
+- [ ] El boton de confirmacion solo esta habilitado cuando todos los registros del lote estan en estado valido
+
+---
+
+### US-057 — Autorizar obsequio de boletas adicionales
+
+- **Como** Gerente (o usuario con permiso `autorizar_obsequio_boletas`)
+- **Quiero** poder obsequiar boletas de invitacion sobrantes a estudiantes de una Promocion
+- **Para** aprovechar las invitaciones no distribuidas sin que queden sin uso
+
+**Criterios de aceptacion:**
+- [ ] La accion de obsequio de boletas solo esta disponible para usuarios con permiso `autorizar_obsequio_boletas`
+- [ ] El usuario puede elegir entre dos modalidades: individual (selecciona estudiantes especificos de la lista de la Promocion) o general (todos los estudiantes de la Promocion)
+- [ ] El usuario define cuantas boletas adicionales recibira cada estudiante seleccionado
+- [ ] El sistema genera los nuevos tokens QR con campo `origen = obsequio_prom`
+- [ ] Cada token de obsequio queda registrado con: estudiante, autorizador (usuario), fecha y hora de emision
+- [ ] Si la sede tiene aforo registrado y la suma de tokens activos (negociacion_inicial + obsequio_prom) supera ese aforo, el sistema muestra una alerta visible pero NO bloquea la operacion
+- [ ] Los tokens de obsequio son de un solo uso e invalidables mediante los mismos mecanismos que los tokens normales
+
+---
+
+### US-058 — Visualizar tokens por tipo en reportes de invitaciones
+
+- **Como** Gerente o Administrador
+- **Quiero** ver los tokens de invitacion de un estudiante diferenciados por tipo
+- **Para** distinguir los tokens negociados de los tokens de obsequio
+
+**Criterios de aceptacion:**
+- [ ] El reporte de tokens por estudiante muestra dos secciones: "Negociados" y "Obsequio"
+- [ ] Cada token de obsequio muestra: cantidad, autorizador, fecha de emision
+- [ ] El total de tokens activos (ambos tipos) se muestra en el resumen de la Promocion
+
+---
+
+### US-059 — Iniciar solicitud de reintegro por reprobacion
+
+- **Como** estudiante no graduado (o su representante)
+- **Quiero** poder iniciar una solicitud de reintegro despues del dia del grado
+- **Para** recibir el reembolso del 50% y el paquete fotografico
+
+**Criterios de aceptacion:**
+- [ ] La solicitud de reintegro (`SolicitudReembolso`) se puede crear despues del dia del grado para el estudiante correspondiente
+- [ ] El solicitante debe adjuntar el comprobante de no-graduacion (formatos aceptados: PDF, JPG, PNG)
+- [ ] El comprobante es obligatorio para crear la solicitud; sin el el sistema bloquea el guardado
+- [ ] Al crear la solicitud, el estado es `solicitado` y el Gerente recibe una notificacion automatica
+- [ ] La solicitud queda vinculada al estudiante y a la Promocion
+
+---
+
+### US-060 — Gestionar ciclo de vida de solicitud de reintegro
+
+- **Como** Gerente
+- **Quiero** revisar, aprobar o rechazar solicitudes de reintegro
+- **Para** controlar el proceso de devolucion y entrega de materiales
+
+**Criterios de aceptacion:**
+- [ ] El Gerente puede ver todas las solicitudes de reintegro pendientes con: nombre del estudiante, Promocion, fecha de solicitud, comprobante adjunto
+- [ ] Solo el Gerente puede cambiar el estado de `solicitado` a `en_revision`, `aprobado` o `rechazado`
+- [ ] Al aprobar, el sistema calcula automaticamente el monto del reembolso (50% del total pagado por el estudiante); este monto no es editable manualmente
+- [ ] Al rechazar, el Gerente debe ingresar un comentario explicando el motivo
+- [ ] El estudiante o representante recibe notificacion (email/SMS) al cambiar el estado de su solicitud
+
+---
+
+### US-061 — Registrar procesamiento del reembolso y entrega del paquete
+
+- **Como** Gerente o Administrador
+- **Quiero** registrar el pago del reembolso y la entrega del paquete fotografico
+- **Para** cerrar el ciclo de la solicitud de reintegro con trazabilidad completa
+
+**Criterios de aceptacion:**
+- [ ] Al confirmar el pago fisico del reembolso, el usuario registra la referencia de la transferencia o pago y el estado cambia a `procesado`
+- [ ] La entrega del paquete fotografico y album se registra con timestamp inmutable en el sistema
+- [ ] La entrega se puede registrar independientemente del estado del reembolso monetario (puede entregarse el paquete aunque el reembolso aun este en proceso)
+- [ ] El historial completo de cambios de estado queda registrado con usuario y timestamp en cada transicion
+
+**Estados validos de SolicitudReembolso:** `solicitado` → `en_revision` → `aprobado` → `procesado` | `rechazado`
 
 ---
 
@@ -866,8 +1244,9 @@
 | evento_fecha | FK → FechaEvento | Not null |
 | usuario | FK → Usuario | Not null |
 | rol_asignado | Enum [coordinador, cajero, vestidor, jefe_logistica, bodega, secretaria, maestro_ceremonias, fotografo, conductor, grupo_musical, alimentos, mesero, vestidor_adicional] | Not null |
-| origen | Enum [individual, bulk] | Not null, default individual |
+| origen | Enum [individual, bulk, postulacion_slot] | Not null, default individual |
 | regla_bulk | FK → ReglaAsignacionBulk | Nullable, requerido si origen = bulk |
+| postulacion_slot | FK → PostulacionSlot | Nullable, requerido si origen = postulacion_slot |
 | confirmado_en | DateTime | Auto |
 | confirmado_por | FK → Usuario | Not null |
 | horas_anticipacion | Integer | Calculado al guardar |
@@ -892,8 +1271,78 @@
 | resolucion | Text | Nullable, requerido al cerrar |
 | cerrado_por | FK → Usuario | Nullable |
 | cerrado_en | DateTime | Nullable |
-| sla_limite | DateTime | Auto, = registrado_en + 48 h habiles |
-| alerta_36h_enviada | Boolean | Not null, default false |
+| sla_aplicado | Integer | Not null, inmutable; valor de `ConfiguracionSistema.inconformidad.sla_dias` al momento del registro |
+| sla_limite | DateTime | Auto, = registrado_en + sla_aplicado dias calendario |
+| alerta_enviada | Boolean | Not null, default false |
+
+---
+
+### ConfiguracionSistema
+
+| Campo | Tipo | Restriccion |
+|-------|------|-------------|
+| id | UUID | PK |
+| clave | String | Not null, unique (ej. `inconformidad.sla_dias`) |
+| valor | String | Not null |
+| tipo | Enum [entero_positivo] | Not null |
+| descripcion | Text | Not null |
+| valor_defecto | String | Not null |
+| actualizado_por | FK → Usuario | Nullable |
+| actualizado_en | DateTime | Auto |
+
+**Regla:** Solo el rol `administrador` puede escribir este modelo. La lectura puede ser realizada por el sistema internamente sin restriccion de rol.
+
+---
+
+### HistorialConfiguracion
+
+| Campo | Tipo | Restriccion |
+|-------|------|-------------|
+| id | UUID | PK |
+| configuracion | FK → ConfiguracionSistema | Not null |
+| valor_anterior | String | Not null |
+| valor_nuevo | String | Not null |
+| cambiado_por | FK → Usuario | Not null |
+| cambiado_en | DateTime | Auto |
+
+**Regla:** Inmutable; ningun actor puede editar ni borrar registros de este modelo.
+
+---
+
+### SlotEvento
+
+| Campo | Tipo | Restriccion |
+|-------|------|-------------|
+| id | UUID | PK |
+| rol_requerido | String | Not null |
+| capacidad | Integer | Not null, > 0 |
+| hora_llegada | Time | Not null |
+| hora_salida_estimada | Time | Not null |
+| descripcion | Text | Nullable |
+| tipo_cobertura | Enum [evento_especifico, dia_completo_localidad] | Not null |
+| fecha_evento | FK → FechaEvento | Nullable |
+| fecha | Date | Nullable (requerido si fecha_evento es null) |
+| localidad | String | Nullable |
+| estado | Enum [borrador, disponible, completo, cerrado, cancelado] | Not null, default disponible |
+| creado_por | FK → Usuario | Not null |
+| creado_en | DateTime | Auto |
+
+**Relaciones:** Un SlotEvento tiene muchas PostulacionSlot.
+
+---
+
+### PostulacionSlot
+
+| Campo | Tipo | Restriccion |
+|-------|------|-------------|
+| id | UUID | PK |
+| slot | FK → SlotEvento | Not null |
+| candidato | FK → CandidatoExterno | Not null |
+| estado | Enum [postulado, aceptado, rechazado, cancelado_por_candidato] | Not null, default postulado |
+| postulado_en | DateTime | Auto |
+| actualizado_en | DateTime | Auto |
+
+**Restriccion:** (slot + candidato) debe ser unico; un candidato no puede postularse dos veces al mismo slot.
 
 ---
 
@@ -1037,6 +1486,7 @@
 | estado | Enum [interesado, contactado, activo, inactivo] | Not null, default interesado |
 | fuente | Enum [graduado_hersa, referido, externo] | Not null |
 | creado_en | DateTime | Auto |
+| fecha_ultima_actualizacion_perfil | DateTime | Nullable; se actualiza al guardar cambios en los 6 campos obligatorios |
 
 **Relacion M2M:** CandidatoExterno tiene muchos Roles disponibles a traves de CandidatoExternoRol.
 
@@ -1133,6 +1583,46 @@
 | departamento | FK → Departamento | Not null |
 
 **Restriccion:** (nombre + departamento) debe ser unico.
+
+---
+
+### Cotizacion
+
+| Campo | Tipo | Restriccion |
+|-------|------|-------------|
+| id | UUID | PK |
+| institucion | FK → InstitucionEducativa | Not null |
+| paquete_base_origen | FK → PaqueteBase | Nullable (solo referencia, no vinculacion viva) |
+| grado_estimado | Enum [Preescolar, Primaria, Secundaria, Bachillerato, General] | Nullable |
+| jornada_estimada | Enum [Diurna, Nocturna, Sabatina] | Nullable |
+| ano_estimado | Integer | Nullable |
+| estudiantes_estimados | Integer | Not null, > 0 |
+| precio_por_estudiante | Decimal | Not null, >= 0 |
+| total_estimado | Decimal | Calculado: precio_por_estudiante × estudiantes_estimados |
+| estado | Enum [borrador, enviada, aceptada, rechazada, vencida, convertida_a_promocion] | Not null, default borrador |
+| fecha_vencimiento | Date | Nullable |
+| promocion_resultante | FK → Promocion | Nullable (se setea al convertir) |
+| creada_por | FK → Usuario | Not null |
+| creada_en | DateTime | Auto |
+| actualizada_en | DateTime | Auto |
+
+**Relaciones:** Una Cotizacion pertenece a una InstitucionEducativa; tiene muchos CotizacionItem; puede estar vinculada a una Promocion resultante.
+
+---
+
+### CotizacionItem
+
+| Campo | Tipo | Restriccion |
+|-------|------|-------------|
+| id | UUID | PK |
+| cotizacion | FK → Cotizacion | Not null |
+| item_catalogo | FK → ItemCatalogo | Not null |
+| nombre_snapshot | String | Not null (copia del nombre al momento de cotizar) |
+| precio_unitario_snapshot | Decimal | Not null (copia del precio al momento de cotizar) |
+| cantidad | Integer | Not null, > 0 |
+| subtotal | Decimal | Calculado: precio_unitario_snapshot × cantidad |
+
+**Regla:** Los campos `nombre_snapshot` y `precio_unitario_snapshot` son inmutables una vez guardados; cambios posteriores en el catalogo no los afectan.
 
 ---
 
@@ -1236,6 +1726,9 @@
 | POST | /api/items-catalogo/ | Crear item del catalogo | nombre, descripcion, categoria, precio_cop, activo | {id, nombre, precio_cop} 201 |
 | PATCH | /api/items-catalogo/{id}/ | Editar o desactivar item del catalogo | nombre, descripcion, precio_cop, activo | {id, activo} 200 |
 | GET | /api/items-catalogo/ | Listar items activos del catalogo | ?categoria= | [{id, nombre, precio_cop, activo}] 200 |
+| GET | /api/configuracion/ | Listar todos los parametros de configuracion del sistema (solo admin) | — | [{clave, valor, tipo, descripcion, valor_defecto, actualizado_en}] 200 |
+| PATCH | /api/configuracion/{clave}/ | Editar valor de un parametro de configuracion (solo admin) | valor | {clave, valor_anterior, valor_nuevo} 200 |
+| GET | /api/configuracion/{clave}/historial/ | Ver historial de cambios de un parametro (solo admin) | — | [{valor_anterior, valor_nuevo, cambiado_por, cambiado_en}] 200 |
 
 ---
 
@@ -1245,11 +1738,19 @@
 |--------|------|-------------|------------------------|----------------------------|
 | POST | /api/candidatos-externos/ | Registrar candidato en el pool | nombre_completo, email, telefono, roles_disponibles[], estado, fuente | {id, nombre_completo, estado} 201 |
 | GET | /api/candidatos-externos/ | Listar candidatos del pool con filtros | ?rol=&estado= | [{id, nombre_completo, estado, roles[]}] 200 |
-| PATCH | /api/candidatos-externos/{id}/ | Actualizar datos del candidato | nombre_completo, email, telefono, estado | {id, estado} 200 |
+| PATCH | /api/candidatos-externos/{id}/ | Actualizar datos del candidato (autenticado) | nombre_completo, telefono, numero_documento, pais_id, departamento_id, ciudad_id | {id, estado, fecha_ultima_actualizacion_perfil} 200 |
 | POST | /api/postulaciones/enviar-masivo/ | Enviar invitacion de postulacion masiva | candidatos_ids[], canal, mensaje | {enviadas_count, tokens_generados: true} 201 |
 | GET | /api/postulaciones/ | Consultar estado de postulaciones enviadas | ?estado=&desde= | [{id, candidato_nombre, canal, estado_formulario, completado_en}] 200 |
 | GET | /api/postulaciones/formulario/{token}/ | Acceso publico al formulario de actualizacion (sin auth) | — | {candidato_nombre, campos_requeridos[]} 200 |
 | POST | /api/postulaciones/formulario/{token}/ | Envio del formulario de actualizacion de datos (sin auth) | nombre_completo, telefono, numero_documento, pais_id, departamento_id, ciudad_id | {estado: "completado"} 200 |
+| POST | /api/slots/ | Publicar un slot de evento (admin/jefe_logistica) | rol_requerido, capacidad, hora_llegada, hora_salida_estimada, descripcion, tipo_cobertura, fecha_evento_id (opcional), fecha (opcional), localidad (opcional) | {id, estado} 201 |
+| GET | /api/slots/ | Listar slots (admin ve todos; candidato ve solo disponibles) | ?estado=&rol=&desde= | [{id, rol_requerido, fecha, hora_llegada, hora_salida_estimada, plazas_disponibles, estado}] 200 |
+| PATCH | /api/slots/{id}/ | Actualizar estado de un slot (admin/jefe_logistica) | estado | {id, estado} 200 |
+| POST | /api/slots/{id}/duplicar/ | Duplicar un slot en estado borrador (admin/jefe_logistica) | — | {id, estado: "borrador"} 201 |
+| GET | /api/slots/{id}/postulaciones/ | Listar postulaciones de un slot (admin/jefe_logistica) | — | [{candidato_id, nombre, estado, postulado_en}] 200 |
+| PATCH | /api/slots/{id}/postulaciones/{postulacion_id}/ | Aceptar o rechazar una postulacion (admin/jefe_logistica) | estado (aceptado, rechazado) | {id, estado, asignacion_creada (si aceptado)} 200 |
+| POST | /api/slots/{id}/postular/ | Candidato se postula a un slot (candidato autenticado) | — | {id, estado: "postulado"} 201 |
+| DELETE | /api/slots/{id}/postular/ | Candidato cancela su propia postulacion | — | {estado: "cancelado_por_candidato"} 200 |
 
 ---
 
@@ -1283,6 +1784,26 @@
 |--------|------|-------------|------------------------|----------------------------|
 | GET | /api/calendario/mis-eventos/ | Eventos del colaborador autenticado | ?desde=&hasta= | [{id, tipo, fecha, promocion, estado, modificado_recientemente}] 200 |
 | GET | /api/calendario/todos-los-eventos/ | Todos los eventos de la empresa | ?desde=&hasta=&tipo= | [{id, tipo, fecha, promocion, estado, modificado_recientemente}] 200 |
+
+---
+
+### EP-13 — Cotizador de Paquetes
+
+| Metodo | Path | Descripcion | Request (campos clave) | Response (campos + status) |
+|--------|------|-------------|------------------------|----------------------------|
+| POST | /api/cotizaciones/ | Crear cotizacion | institucion_id, paquete_base_origen_id (opcional), grado_estimado, jornada_estimada, ano_estimado, estudiantes_estimados, precio_por_estudiante, fecha_vencimiento (opcional) | {id, estado: "borrador", total_estimado} 201 |
+| GET | /api/cotizaciones/ | Listar cotizaciones con filtros | ?estado=&comercial_id=&institucion_id=&desde=&hasta= | [{id, institucion, estado, total_estimado, creada_por, fecha_vencimiento}] 200 |
+| GET | /api/cotizaciones/{id}/ | Detalle de cotizacion | — | {id, institucion, estado, items[], total_estimado, creada_por, promocion_resultante} 200 |
+| PATCH | /api/cotizaciones/{id}/ | Editar cotizacion en borrador | estudiantes_estimados, precio_por_estudiante, fecha_vencimiento | {id, total_estimado} 200 |
+| POST | /api/cotizaciones/{id}/enviar/ | Marcar cotizacion como enviada | — | {id, estado: "enviada"} 200 |
+| POST | /api/cotizaciones/{id}/aceptar/ | Marcar cotizacion como aceptada | — | {id, estado: "aceptada"} 200 |
+| POST | /api/cotizaciones/{id}/rechazar/ | Marcar cotizacion como rechazada | — | {id, estado: "rechazada"} 200 |
+| POST | /api/cotizaciones/{id}/convertir-promocion/ | Convertir cotizacion aceptada en Promocion | grado, jornada, ano (confirmar o sobreescribir estimados) | {id, estado: "convertida_a_promocion", promocion_id} 200 |
+| POST | /api/cotizaciones/{id}/duplicar/ | Duplicar cotizacion como nueva en borrador | — | {id, estado: "borrador"} 201 |
+| GET | /api/cotizaciones/{id}/pdf/ | Generar y descargar PDF de la cotizacion | — | archivo PDF 200 |
+| POST | /api/cotizaciones/{id}/items/ | Anadir item a la cotizacion | item_catalogo_id, cantidad, precio_unitario_snapshot | {id, nombre_snapshot, subtotal} 201 |
+| PATCH | /api/cotizaciones/{id}/items/{item_id}/ | Editar item de la cotizacion | cantidad, precio_unitario_snapshot | {id, subtotal} 200 |
+| DELETE | /api/cotizaciones/{id}/items/{item_id}/ | Quitar item de la cotizacion | — | 204 |
 
 ---
 
@@ -1338,7 +1859,7 @@ Gestionadas exclusivamente via Django Admin. No se exponen endpoints publicos de
 
 **RN-19** — El sistema genera automaticamente la pre-lista de estudiantes con saldo pendiente entre 48 y 24 horas antes del dia de grado. El sistema notifica automaticamente a los estudiantes y padres con saldo pendiente en ese mismo ventana. *(US-026, US-014)*
 
-**RN-20** — El SLA de resolucion de inconformidades es de 48 horas habiles desde el registro. A las 36 horas habiles sin cierre, el sistema emite una alerta de escalacion interna. *(US-033, Entidad Inconformidad)*
+**RN-20** — El SLA de resolucion de inconformidades es configurable en el sistema (por defecto: 3 dias calendario desde el registro). Cada `Inconformidad` almacena el valor de SLA vigente al momento de su creacion en el campo `sla_aplicado`; cambios posteriores en la configuracion no afectan inconformidades ya abiertas. El tiempo de alerta de escalacion interna tambien es configurable (`inconformidad.alerta_horas_antes_vencimiento`, por defecto: 24 horas antes del vencimiento). *(US-031, US-062, US-063, Entidad Inconformidad)*
 
 **RN-21** — Solo el gerente puede cerrar una inconformidad. Ningun otro rol tiene permisos para cambiar el estado a "cerrada". *(US-033)*
 
@@ -1444,6 +1965,14 @@ Gestionadas exclusivamente via Django Admin. No se exponen endpoints publicos de
 | US-052 | US-051 | El reenvio forzado requiere que exista un envio previo registrado |
 | US-053 | US-035 | El calendario requiere un usuario autenticado con sesion activa |
 | US-054 | US-053 | La vista general es una extension de la vista de calendario |
+| US-062 | US-031 | El snapshot de SLA se captura en el momento de crear la inconformidad |
+| US-063 | US-035 | El panel de configuracion requiere rol administrador activo |
+| US-064 | US-063 | El historial se genera como efecto de los cambios registrados en US-063 |
+| US-065 | US-035 | Los slots requieren rol administrador o jefe_logistica activo |
+| US-066 | US-065, US-042 | La gestion de postulaciones opera sobre slots publicados y candidatos existentes |
+| US-067 | US-065 | Solo se puede duplicar un slot existente |
+| US-068 | US-042, US-065 | El candidato debe estar autenticado y existir slots en estado disponible |
+| US-069 | US-042 | El perfil a actualizar debe pertenecer a un CandidatoExterno existente |
 
 ---
 
@@ -1475,4 +2004,4 @@ Las siguientes funcionalidades son mencionadas en el to-be o en el contexto de d
 
 ---
 
-*Especificaciones funcionales generadas por `systems-analyst`. Version 2.0. Todos los [BLOCKER] han sido resueltos. Este documento esta listo para implementacion. Para continuar con el plan de proyecto ejecutivo, invocar `pm-writer`. Para iniciar implementacion tecnica, invocar `tdd-writer`, `django-developer` o `react-developer` en una sesion nueva.*
+*Especificaciones funcionales generadas por `systems-analyst`. Version 2.1 (revisada 2.2 por lotes quirúrgicos). Todos los [BLOCKER] han sido resueltos. Este documento esta listo para implementacion. Para continuar con el plan de proyecto ejecutivo, invocar `pm-writer`. Para iniciar implementacion tecnica, invocar `tdd-writer`, `django-developer` o `react-developer` en una sesion nueva.*

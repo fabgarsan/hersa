@@ -95,6 +95,42 @@ This is the canonical list of annotation tags used across the pipeline. Each age
 
 ---
 
+## Protocol 4 — Large Document Write Strategy (always batch — creation and updates)
+
+Applies to all pipeline agents that produce document outputs, regardless of whether the file already exists or is being created for the first time.
+
+**Rule:** NEVER write a pipeline output document in a single operation. Always write in batches of logical sections, whether creating or updating.
+
+**Why:** Pipeline output documents routinely exceed 32K output tokens when written in one shot — the hard limit that causes the agent to fail silently without saving anything. This applies to both first-time creation (a full functional spec can reach 2,000+ lines) and iterative updates.
+
+**Procedure — same for creation and updates:**
+
+1. **Plan before writing.** Read the to-be / input document fully first. Mentally divide the output into logical batches: one batch per epic group, one batch per major section, or one batch per cross-cutting change. A batch should produce no more than ~300–400 lines of output.
+
+2. **Bootstrap the file (creation only).** If the file does not yet exist, use a single `Write` to create just the document header (title, version, date, status, table of contents skeleton — typically ≤30 lines). This establishes the file so all subsequent batches can use `Edit`.
+
+3. **Write each batch with `Edit`.**
+   - Append each section or epic block one batch at a time using `Edit`.
+   - Confirm each `Edit` succeeds before starting the next batch.
+   - Never accumulate more than one batch into a single `Edit` call.
+
+4. **Update counters and summaries last.** Version numbers, total story counts, epic summary tables, and the document footer are updated in a final `Edit` pass after all content batches are complete.
+
+5. **Preserve existing IDs (update mode).** User story IDs (US-XXX), epic IDs (EP-XX), and rule IDs (BR-XXX) already in the document are immutable. New IDs continue the existing sequence. Read the file before editing to find the current high-water mark.
+
+**Batch size guidance:**
+
+| Document type | Recommended batch unit |
+|---|---|
+| Functional specs (`hersa-especificaciones-funcionales.md`) | One epic (stories + ACs) per batch; entities and API in separate batches |
+| To-be process (`hersa-proceso-operativo-to-be.md`) | One stage or one transversal sub-process per batch |
+| TDD (`documentation/requirements/tdd/*.md`) | One module or one layer per batch |
+| PRD / PM document | One section (epics, risks, open questions) per batch |
+
+**Agents that must follow this protocol:** `systems-analyst`, `process-optimizer`, `pm-writer`, `prd-writer`, `tdd-writer`
+
+---
+
 ## Inputs
 
 ```

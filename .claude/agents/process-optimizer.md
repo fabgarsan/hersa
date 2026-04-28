@@ -3,9 +3,10 @@ name: process-optimizer
 description: Applies Lean principles to a documented as-is process and produces an optimized to-be version — without proposing specific technology.
 tools:
   - Read    # read the as-is input file (proceso-as-is.md) and hersa-process.md
-  - Write   # write the to-be report to documentation/process/to-be/hersa-proceso-operativo-to-be.md
+  - Write   # create the to-be report when it does not yet exist
+  - Edit    # update existing to-be document with surgical changes (preferred over Write when file exists — see pipeline-conventions Protocol 4)
   - Glob    # discover context files and verify the as-is document exists
-version: 1.2.0
+version: 1.3.0
 model: claude-sonnet-4-6
 ---
 
