@@ -1,0 +1,63 @@
+@use '../styles/variables' as v;
+
+.root {
+  position: fixed;
+  top: var(--app-header-height, 64px);
+  left: 0;
+  width: 100%;
+  // MUI permanent Drawer paper is z-index 1200 — must be above it to span full width
+  z-index: 1201;
+  display: flex;
+  align-items: center;
+  padding: 0 v.sp(2);
+  gap: v.sp(0.5);
+  transition: opacity 250ms ease-in-out, visibility 250ms ease-in-out;
+  will-change: opacity;
+
+  // Mobile default: 32px height
+  height: 32px;
+
+  // Desktop: 40px height
+  @media (min-width: v.$breakpoint-md) {
+    height: 40px;
+  }
+}
+
+.rootHidden {
+  display: none;
+}
+
+.rootOffline {
+  background-color: v.$error-main;
+  color: #ffffff;
+}
+
+.rootReconnected {
+  background-color: v.$success-main;
+  color: #ffffff;
+  opacity: 1;
+}
+
+.rootFadingOut {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.icon {
+  font-size: 16px !important;
+  flex-shrink: 0;
+}
+
+.text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  // Inherited color: white (set by parent state class)
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .root {
+    transition: none !important;
+  }
+}

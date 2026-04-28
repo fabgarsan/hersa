@@ -67,3 +67,13 @@ export interface SubmitButtonProps {
 export interface AuthGuardProps {
   children: ReactNode;
 }
+
+export interface OfflineSnackbarProps {
+  open: boolean;
+  onClose: () => void;
+}
+
+export interface OfflineMutationDialogProps {
+  open: boolean;
+  onClose: () => void;
+}

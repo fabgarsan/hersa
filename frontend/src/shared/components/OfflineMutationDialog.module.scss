@@ -1,0 +1,54 @@
+@use '../styles/variables' as v;
+
+.dialogPaper {
+  padding: v.sp(2);
+
+  // Desktop: max-width 360px
+  @media (min-width: v.$breakpoint-sm) {
+    max-width: 360px !important;
+    width: 360px;
+    padding: v.sp(3);
+  }
+
+  // Mobile: full-width minus 32px margins
+  @media (max-width: #{v.$breakpoint-sm - 1px}) {
+    width: calc(100vw - #{v.sp(4)}) !important;
+    max-width: calc(100vw - #{v.sp(4)}) !important;
+    margin: 0 v.sp(2);
+  }
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  // Reset MUI DialogContent default padding; padding is on dialogPaper
+  padding: 0 !important;
+}
+
+.iconWrapper {
+  display: flex;
+  justify-content: center;
+  margin-bottom: v.sp(2);
+}
+
+.wifiIcon {
+  font-size: 24px !important;
+  // $primary-main navy — formal, not alarming (per UI spec §3.3 icon colour rationale)
+  color: v.$primary-main;
+}
+
+.title {
+  margin-bottom: v.sp(1);
+}
+
+.body {
+  margin-bottom: v.sp(3);
+  color: v.$text-primary;
+}
+
+.actions {
+  // Reset MUI DialogActions default padding; handled by dialogPaper
+  padding: 0 !important;
+  width: 100%;
+}

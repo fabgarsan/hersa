@@ -5,11 +5,13 @@ import Toolbar from "@mui/material/Toolbar";
 
 import { AppHeader } from "./AppHeader";
 import { NavSidebar } from "./NavSidebar";
+import { useConnectivityIndicatorHeight } from "./ConnectivityIndicator";
 import type { LayoutProps } from "./types";
 import styles from "./Layout.module.scss";
 
 export function Layout({ children }: LayoutProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const indicatorHeight = useConnectivityIndicatorHeight();
 
   const handleDrawerToggle = () => setMobileOpen((prev) => !prev);
 
@@ -31,7 +33,16 @@ export function Layout({ children }: LayoutProps) {
         <NavSidebar />
       </Drawer>
 
-      <Box component="main" className={styles.main}>
+      {/*
+       * indicatorHeight compensates for the ConnectivityIndicator fixed bar when it
+       * is visible, preventing the bar from overlapping the main content area.
+       * Transitions synchronised with the bar's 250ms fade-out via CSS on the indicator.
+       */}
+      <Box
+        component="main"
+        className={styles.main}
+        style={{ paddingTop: indicatorHeight > 0 ? indicatorHeight : undefined }}
+      >
         <Toolbar />
         <Box className={styles.content}>{children}</Box>
       </Box>
