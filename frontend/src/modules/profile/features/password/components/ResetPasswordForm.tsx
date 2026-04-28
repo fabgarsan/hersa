@@ -11,7 +11,8 @@ import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 
 import { isApiErrorData } from "@api/client";
-import { PasswordTextField, SubmitButton } from "@shared/components";
+import { isNetworkError } from "@api/offlineMutationEvents";
+import { MutationButton, PasswordTextField } from "@shared/components";
 import { ROUTES } from "@shared/constants/routes";
 import { UI } from "@modules/profile/constants/ui";
 import { useResetPasswordMutation } from "../api/resetPasswordMutation";
@@ -43,12 +44,15 @@ export function ResetPasswordForm({ uid, token }: ResetPasswordFormProps) {
       {
         onSuccess: () => setSuccess(true),
         onError: (err) => {
+          if (isNetworkError(err)) return;
           if (axios.isAxiosError(err) && isApiErrorData(err.response?.data)) {
             const data = err.response.data;
             if (data["confirmPassword"]) {
               setError("confirmPassword", { message: String(data["confirmPassword"]) });
             } else if (data["newPassword"]) {
-              const msg = Array.isArray(data["newPassword"]) ? data["newPassword"][0] : data["newPassword"];
+              const msg = Array.isArray(data["newPassword"])
+                ? data["newPassword"][0]
+                : data["newPassword"];
               setError("newPassword", { message: String(msg) });
             } else {
               setErrorMessage(String(data["detail"] ?? UI.password.RESET_LINK_INVALID));
@@ -106,7 +110,7 @@ export function ResetPasswordForm({ uid, token }: ResetPasswordFormProps) {
           error={errors.confirmPassword}
         />
 
-        <SubmitButton
+        <MutationButton
           isPending={isPending}
           label={UI.password.RESET_BUTTON}
           pendingLabel={UI.password.RESETTING}

@@ -1,5 +1,7 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { useMutation } from '@tanstack/react-query';
+import { useCallback, useEffect, useRef, useState } from "react";
+import { useMutation } from "@tanstack/react-query";
+
+import { isNetworkError } from "@api/offlineMutationEvents";
 
 export interface UseOfflineMutationOptions<TData, TVariables> {
   mutationFn: (variables: TVariables) => Promise<TData>;
@@ -20,14 +22,6 @@ export interface UseOfflineMutationReturn<TVariables> {
   isResubmitBlocked: boolean;
 }
 
-function isNetworkError(error: Error): boolean {
-  if (!navigator.onLine) return true;
-  const axiosCode = (error as Error & { code?: string }).code;
-  if (axiosCode === 'ERR_NETWORK') return true;
-  if (error.message.includes('Network Error')) return true;
-  return false;
-}
-
 export function useOfflineMutation<TData, TVariables>({
   mutationFn,
   onSuccess,
@@ -46,8 +40,8 @@ export function useOfflineMutation<TData, TVariables>({
       }
       setIsResubmitBlocked(false);
     };
-    window.addEventListener('online', handleOnline);
-    return () => window.removeEventListener('online', handleOnline);
+    window.addEventListener("online", handleOnline);
+    return () => window.removeEventListener("online", handleOnline);
   }, []);
 
   const { mutate: rawMutate, isPending } = useMutation<TData, Error, TVariables>({

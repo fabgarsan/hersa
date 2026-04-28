@@ -4,7 +4,7 @@ import { apiClient } from "@api/client";
 import { API } from "./constants/api";
 import type { LoginCredentials, TokenPair } from "./types";
 
-const login = async (credentials: LoginCredentials): Promise<TokenPair> => {
+export const login = async (credentials: LoginCredentials): Promise<TokenPair> => {
   const { data } = await apiClient.post<TokenPair>(API.TOKEN, credentials);
   return data;
 };

@@ -57,11 +57,19 @@ export interface PasswordTextFieldProps<TFieldValues extends FieldValues> {
   autoFocus?: boolean;
 }
 
+export interface MutationButtonProps {
+  isPending: boolean;
+  label: string;
+  pendingLabel: string;
+  fullWidth?: boolean;
+}
+
 export interface SubmitButtonProps {
   isPending: boolean;
   label: string;
   pendingLabel: string;
   fullWidth?: boolean;
+  disabled?: boolean;
 }
 
 export interface AuthGuardProps {

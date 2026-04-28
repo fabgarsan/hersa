@@ -7,7 +7,8 @@ import TextField from "@mui/material/TextField";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
 
-import { SubmitButton } from "@shared/components";
+import { isNetworkError } from "@api/offlineMutationEvents";
+import { MutationButton } from "@shared/components";
 import { UI } from "@modules/profile/constants/ui";
 import { useForgotPasswordMutation } from "../api/forgotPasswordMutation";
 import { forgotPasswordSchema } from "../schemas";
@@ -33,7 +34,10 @@ export function ForgotPasswordForm() {
     setErrorMessage("");
     mutate(values, {
       onSuccess: () => setSubmitted(true),
-      onError: () => setErrorMessage(UI.password.FORGOT_ERROR),
+      onError: (err) => {
+        if (isNetworkError(err)) return;
+        setErrorMessage(UI.password.FORGOT_ERROR);
+      },
     });
   };
 
@@ -65,7 +69,7 @@ export function ForgotPasswordForm() {
           )}
         />
 
-        <SubmitButton
+        <MutationButton
           isPending={isPending}
           label={UI.password.SEND_LINK_BUTTON}
           pendingLabel={UI.password.SENDING}
