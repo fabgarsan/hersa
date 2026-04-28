@@ -3,12 +3,12 @@ import { useState } from "react";
 import Alert from "@mui/material/Alert";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
+import MuiLink from "@mui/material/Link";
 import Stack from "@mui/material/Stack";
-import Typography from "@mui/material/Typography";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
 import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
 
 import { isApiErrorData } from "@api/client";
 import { isNetworkError } from "@api/offlineMutationEvents";
@@ -84,14 +84,14 @@ export function ResetPasswordForm({ uid, token }: ResetPasswordFormProps) {
         {errorMessage && (
           <Stack spacing={1}>
             <Alert severity="error">{errorMessage}</Alert>
-            <Typography
+            <MuiLink
+              component={RouterLink}
+              to={ROUTES.FORGOT_PASSWORD}
               variant="body2"
-              color="primary"
               className={styles.requestNewLink}
-              onClick={() => navigate(ROUTES.FORGOT_PASSWORD)}
             >
               {UI.password.REQUEST_NEW_LINK}
-            </Typography>
+            </MuiLink>
           </Stack>
         )}
 

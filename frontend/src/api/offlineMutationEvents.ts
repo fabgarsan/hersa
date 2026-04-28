@@ -3,10 +3,9 @@ type OpenDialogCallback = () => void;
 let _openDialog: OpenDialogCallback | null = null;
 
 export function isNetworkError(error: Error): boolean {
-  if (!navigator.onLine) return true;
   const axiosCode = (error as Error & { code?: string }).code;
   if (axiosCode === "ERR_NETWORK") return true;
-  if (error.message.includes("Network Error")) return true;
+  if (error.message === "Network Error") return true;
   return false;
 }
 
