@@ -1,7 +1,9 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryClient } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
+import { createSyncStoragePersister } from "@tanstack/query-sync-storage-persister";
 import { BrowserRouter } from "react-router-dom";
 import { ThemeProvider } from "@mui/material";
 import { CacheProvider } from "@emotion/react";
@@ -17,8 +19,15 @@ const queryClient = new QueryClient({
     queries: {
       staleTime: 1000 * 60,
       retry: 1,
+      // Datos del caché offline se mantienen válidos 24 horas
+      gcTime: 1000 * 60 * 60 * 24,
     },
   },
+});
+
+const persister = createSyncStoragePersister({
+  storage: window.localStorage,
+  key: "hersa-rq-cache",
 });
 
 // prepend: true makes Emotion inject its styles at the top of <head>,
@@ -31,7 +40,10 @@ if (!root) throw new Error("Root element not found");
 createRoot(root).render(
   <StrictMode>
     <CacheProvider value={emotionCache}>
-      <QueryClientProvider client={queryClient}>
+      <PersistQueryClientProvider
+        client={queryClient}
+        persistOptions={{ persister, maxAge: 1000 * 60 * 60 * 24 }}
+      >
         <BrowserRouter>
           <AuthProvider>
             <ThemeProvider theme={hersaTheme}>
@@ -41,7 +53,7 @@ createRoot(root).render(
           </AuthProvider>
         </BrowserRouter>
         {import.meta.env.DEV && <ReactQueryDevtools initialIsOpen={false} />}
-      </QueryClientProvider>
+      </PersistQueryClientProvider>
     </CacheProvider>
   </StrictMode>,
 );

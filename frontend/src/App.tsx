@@ -1,6 +1,7 @@
 import { Navigate, Outlet, Route, Routes } from "react-router-dom";
 
 import { AuthGuard } from "@shared/components/AuthGuard";
+import { ConnectivityIndicator } from "@shared/components/ConnectivityIndicator";
 import { Layout } from "@shared/components/Layout";
 import { ModuleGuard } from "@shared/components/ModuleGuard";
 import { ROUTES } from "@shared/constants/routes";
@@ -23,7 +24,9 @@ function ProtectedLayout() {
 
 export default function App() {
   return (
-    <AuthGuard>
+    <>
+      <ConnectivityIndicator />
+      <AuthGuard>
       <Routes>
         {/* Public routes — no layout */}
         <Route path={ROUTES.LOGIN} element={<AuthModal />} />
@@ -61,5 +64,6 @@ export default function App() {
         </Route>
       </Routes>
     </AuthGuard>
+    </>
   );
 }
