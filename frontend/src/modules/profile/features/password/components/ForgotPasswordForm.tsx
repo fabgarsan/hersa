@@ -68,14 +68,16 @@ export function ForgotPasswordForm() {
             />
           )}
         />
+      </Stack>
 
+      <Box className={styles.formActions}>
         <MutationButton
           isPending={isPending}
           label={UI.password.SEND_LINK_BUTTON}
           pendingLabel={UI.password.SENDING}
           fullWidth
         />
-      </Stack>
+      </Box>
     </Box>
   );
 }

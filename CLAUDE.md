@@ -87,6 +87,7 @@ These files extend these docs. Read them when indicated — they are not loaded 
 | `.claude/skills/backend-conventions.md` | Creating Django models, views, serializers, or scaffolding a new app |
 | `.claude/skills/theme-tokens.md` | Defining or applying Hersa brand colors, typography, or logo rules |
 | `.claude/skills/mui-conventions.md` | Choosing MUI components, using Grid2, or wiring up RHF forms |
+| `.claude/skills/ui-patterns.md` | Implementing any form, modal, drawer, loading state, empty state, page layout, or data table — global interaction and visual conventions |
 | `.claude/skills/react-conventions.md` | Writing axios interceptors, React Query hooks, or managing auth/state |
 | `.claude/skills/pipeline-flows/SKILL.md` | Starting any non-trivial work; picking which pipeline flow (A–I) to use |
 | `documentation/brand/brand-manual.md` | Designing any UI screen or component for Hersa — ui-designer must read before producing any ui-spec |
@@ -145,6 +146,7 @@ These agents are available but do not participate in the standard feature pipeli
 | `developer-conventions` | Used by `django-developer`, `react-developer`, `tdd-writer`, `test-writer` | Shared operating rules for all implementation agents |
 | `review-conventions` | Used by `code-reviewer`, `security-auditor` | Shared severity scale, output format, and read-only discipline |
 | `pipeline-trace-linter` | After `tdd-writer` produces a TDD; before implementation begins | Cross-document consistency validator: spec → PRD → TDD |
+| `ui-patterns` | `react-developer` and `ui-designer` load when implementing any recurring UI pattern | Global interaction + visual conventions: forms, modals, drawers, loading, empty states, page layout, tables |
 
 ## Conventions for Agents and Skills
 

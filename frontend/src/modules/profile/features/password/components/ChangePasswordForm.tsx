@@ -65,7 +65,7 @@ export function ChangePasswordForm({ onSuccess }: ChangePasswordFormProps) {
 
   return (
     <Box component="form" onSubmit={handleSubmit(onSubmit)} noValidate className={styles.form}>
-      <Stack spacing={2.5}>
+      <Stack spacing={2}>
         {successMessage && <Alert severity="success">{successMessage}</Alert>}
         {errorMessage && <Alert severity="error">{errorMessage}</Alert>}
 
@@ -89,14 +89,16 @@ export function ChangePasswordForm({ onSuccess }: ChangePasswordFormProps) {
           label={UI.password.CONFIRM_LABEL}
           error={errors.confirmPassword}
         />
+      </Stack>
 
+      <Box className={styles.formActions}>
         <MutationButton
           isPending={isPending}
           label={UI.password.CHANGE_BUTTON}
           pendingLabel={UI.password.CHANGING}
           fullWidth={false}
         />
-      </Stack>
+      </Box>
     </Box>
   );
 }

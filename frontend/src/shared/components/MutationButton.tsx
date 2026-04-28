@@ -12,7 +12,7 @@ export function MutationButton({ isPending, label, pendingLabel, fullWidth }: Mu
   const isDisabled = isPending || !isOnline;
   const currentLabel = isPending ? pendingLabel : isOnline ? label : "Sin conexión";
   const startIcon = isPending ? (
-    <CircularProgress size={18} color="inherit" />
+    <CircularProgress size={20} color="inherit" />
   ) : isOnline ? null : (
     <WifiOffIcon fontSize="small" />
   );

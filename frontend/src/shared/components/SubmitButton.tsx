@@ -18,7 +18,7 @@ export function SubmitButton({
         variant="contained"
         color="primary"
         disabled={isPending || (disabled ?? false)}
-        startIcon={isPending ? <CircularProgress size={18} color="inherit" /> : null}
+        startIcon={isPending ? <CircularProgress size={20} color="inherit" /> : null}
         fullWidth={fullWidth}
       >
         {isPending ? pendingLabel : label}

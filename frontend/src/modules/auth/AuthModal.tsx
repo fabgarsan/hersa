@@ -67,6 +67,7 @@ export function AuthModal() {
                 {...field}
                 label={UI.auth.USERNAME_LABEL}
                 autoFocus
+                fullWidth
                 error={Boolean(fieldState.error)}
                 helperText={fieldState.error?.message}
               />
@@ -80,6 +81,7 @@ export function AuthModal() {
                 {...field}
                 label={UI.auth.PASSWORD_LABEL}
                 type="password"
+                fullWidth
                 error={Boolean(fieldState.error)}
                 helperText={fieldState.error?.message}
               />
