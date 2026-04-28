@@ -1,5 +1,6 @@
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
+import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 
 import { usePermissions } from "@shared/hooks/usePermissions";
 import type { ModuleGuardProps } from "./types";
@@ -15,11 +16,12 @@ export function ModuleGuard({ module, children }: ModuleGuardProps) {
   if (!hasAccess(module)) {
     return (
       <Box className={styles.accessDenied}>
-        <Typography variant="h4" className={styles.accessDeniedTitle}>
-          Acceso restringido
+        <LockOutlinedIcon className={styles.accessDeniedIcon} />
+        <Typography variant="h6" className={styles.accessDeniedTitle}>
+          No tienes acceso a esta sección
         </Typography>
-        <Typography variant="body1" className={styles.accessDeniedMessage}>
-          No tienes permiso para acceder a este módulo.
+        <Typography variant="body2" className={styles.accessDeniedMessage}>
+          Contacta al administrador si necesitas acceso.
         </Typography>
       </Box>
     );

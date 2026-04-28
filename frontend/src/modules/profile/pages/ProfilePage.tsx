@@ -21,7 +21,7 @@ export default function ProfilePage() {
 
   return (
     <Container maxWidth="lg" className={styles.container}>
-      <Typography variant="h4" className={styles.pageTitle}>
+      <Typography variant="h5" className={styles.pageTitle}>
         Mi perfil
       </Typography>
 

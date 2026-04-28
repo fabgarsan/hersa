@@ -12,10 +12,12 @@ export function OfflineMutationDialog({ open, onClose }: OfflineMutationDialogPr
   return (
     <Dialog
       open={open}
+      maxWidth="sm"
+      fullWidth
       // User must acknowledge via button — no Escape key escape, no backdrop click
       disableEscapeKeyDown
       // Omitting onClose intentionally: clicking backdrop does nothing
-      PaperProps={{ className: styles.dialogPaper }}
+      slotProps={{ paper: { className: styles.dialogPaper } }}
       aria-labelledby="offline-mutation-dialog-title"
     >
       <DialogContent className={styles.content}>
@@ -30,7 +32,7 @@ export function OfflineMutationDialog({ open, onClose }: OfflineMutationDialogPr
         </div>
 
         <Typography
-          variant="h3"
+          variant="h6"
           align="center"
           id="offline-mutation-dialog-title"
           className={styles.title}
@@ -44,7 +46,7 @@ export function OfflineMutationDialog({ open, onClose }: OfflineMutationDialogPr
         </Typography>
       </DialogContent>
 
-      <DialogActions className={styles.actions} disableSpacing>
+      <DialogActions className={styles.actions} disableSpacing sx={{ px: 3, pb: 2 }}>
         {/*
          * size="large" → 48px height, satisfying the 44px touch target minimum.
          * autoFocus: focus moves here immediately on Dialog open (per UI spec §5.4).

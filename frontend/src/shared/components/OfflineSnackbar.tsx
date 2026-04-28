@@ -55,7 +55,7 @@ export function OfflineSnackbar({ open, onClose }: OfflineSnackbarProps) {
   return (
     <Snackbar
       open={open}
-      autoHideDuration={6000}
+      autoHideDuration={null}
       onClose={onClose}
       anchorOrigin={anchorOrigin}
     >

@@ -109,14 +109,16 @@ export function ResetPasswordForm({ uid, token }: ResetPasswordFormProps) {
           label={UI.password.CONFIRM_LABEL}
           error={errors.confirmPassword}
         />
+      </Stack>
 
+      <Box className={styles.formActions}>
         <MutationButton
           isPending={isPending}
           label={UI.password.RESET_BUTTON}
           pendingLabel={UI.password.RESETTING}
           fullWidth
         />
-      </Stack>
+      </Box>
     </Box>
   );
 }

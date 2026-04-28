@@ -5,14 +5,22 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 100%;
-  gap: v.sp(1);
+  text-align: center;
+  padding-block: v.sp(8);
+}
+
+.accessDeniedIcon {
+  font-size: 64px;
+  // $text-disabled is not in _variables.scss; use MUI's theme CSS variable.
+  // This is the standard MUI v6 approach for tokens not mapped to SCSS variables.
+  color: var(--mui-palette-text-disabled);
 }
 
 .accessDeniedTitle {
-  color: v.$text-secondary;
+  margin-top: v.sp(2);
 }
 
 .accessDeniedMessage {
+  margin-top: v.sp(1);
   color: v.$text-secondary;
 }
