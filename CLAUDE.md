@@ -80,6 +80,7 @@ These files extend these docs. Read them when indicated — they are not loaded 
 | File | Read when |
 |------|-----------|
 | `.claude/shared/hersa-context.md` | Understanding what Hersa is, its services portfolio, or its B2B/B2C business model |
+| `.claude/shared/colombia-data-protection-law.md` | Any compliance evaluation, feature touching PII/images/minors, consent flows, or legal-risk assessment — `legal-compliance-advisor` must read before any review |
 | `.claude/shared/hersa-process.md` | Designing data models, implementing business logic, writing migrations, or working on any system module — this is the operational reference (Promotion model, all roles, stages, business rules, entity relationships, domain constraints) |
 | `.claude/skills/workflow.md` | Starting any non-trivial feature; orchestrating multiple agents |
 | `.claude/skills/api-contract.md` | Implementing or reviewing any endpoint (`django-developer`, `react-developer`, `tdd-writer`) |
@@ -106,6 +107,7 @@ These files extend these docs. Read them when indicated — they are not loaded 
 | `django-developer` | All backend work: models, migrations, serializers, views, URLs | Any Python/Django task |
 | `react-developer` | All frontend work: pages, components, hooks, API integration | Any React/TypeScript/MUI task |
 | `test-writer` | Tests for existing code (pytest-django + RTL) | After implementing any feature |
+| `qa-engineer` | End-to-end QA: test planning, regression matrix, pre-season validation; produces test plans (not test code) | After PRD approval; before `release-manager`; before each graduation-season window |
 | `code-reviewer` | Read-only post-implementation review | After completing a feature or before committing |
 | `security-auditor` | Read-only security audit | Before deploying; after auth or sensitive-data work |
 | `release-manager` | Pre-merge quality gate: orchestrates code review, security audit, and docs check before any PR merges to main | Before merging any non-trivial PR to `main`; final gate in Flows A and B before `aws-devops` |
@@ -119,9 +121,11 @@ These files extend these docs. Read them when indicated — they are not loaded 
 | `pm-writer` | Translate a technical specification into a non-technical executive PM document with MoSCoW prioritization and BLOCKER guard | After `systems-analyst` produces a clean technical spec (zero unresolved `[BLOCKER]` items); before `prd-writer` is invoked |
 | `senior-ceo-advisor` | Strategic executive advisory for Hersa business decisions; pipeline sanity-checks from a business lens | Any strategic, commercial, operational, or prioritization decision; at any point in the pipeline to validate business realism |
 | `engineering-manager` | Engineering team diagnosis: roles, processes, gaps, hiring, and agent pipeline integration | When analyzing team structure or processes, making hiring decisions, or defining how pipeline agents integrate with the dev team |
+| `data-analyst` | Operational analytics, conversion/margin analysis, seasonal demand forecasting, metrics catalog; read-only on data | Before major commercial decisions; pre-season demand forecasts (8–12 weeks ahead); metric definition for new features |
 | `brand-designer` | Brand identity system: strategy, visual identity manual, tone of voice, and digital guidelines — the brand foundation that ui-designer and communications-writer build on | Before any UI design work begins; when brand guidelines are missing or inconsistent; when launching a new digital product |
 | `ux-designer` | User flows, navigation, information hierarchy, screen structure, friction analysis, and text wireframes for any Hersa feature | After `systems-analyst` produces a clean spec (zero `[BLOCKER]` tags); before any visual design or frontend implementation begins |
 | `ui-designer` | Visual design specification: design tokens, component inventory, per-screen layout, accessibility guide, and MUI implementation notes | After `ux-designer` produces a clean `ux-spec.md` (zero unresolved `[FRICCIÓN ALTA]` items); before `react-developer` begins implementation |
+| `legal-compliance-advisor` | Ley 1581 compliance, image rights, minors' data, B2B contract review; produces legal-risk assessments (not binding legal opinions) | Any feature touching PII, minors, or images; before approving PRDs that include consent flows; before deploys that add data-collection surfaces |
 
 ## Extra-Pipeline Agents
 
@@ -191,6 +195,10 @@ Usa el primer flujo que aplique:
 | Ticket Linear con AC claros | **Flujo C (Ticket)** → `/start-task` → implementadores → `test-writer` → `/pr-create` |
 | Feature nueva con ambas superficies o nuevo modelo de dominio | **Flujo A o B** — ver `pipeline-flows` |
 
+**Agentes adicionales en Flujos A y B:**
+- `qa-engineer` se ejecuta después de `test-writer` y antes de `release-manager` — obligatorio en toda feature nueva.
+- `legal-compliance-advisor` es un gate condicional antes de `release-manager` — invocar cuando la feature toca PII, menores, o imágenes.
+
 **Para ejecutar un flujo configurado:**
 > "Use pipeline-runner to execute Flow [A–I] for [description]."
 
@@ -201,26 +209,29 @@ Usa el primer flujo que aplique:
 Punto de entrada: cuando se quiere analizar, mejorar, o especificar un proceso antes de implementar.
 
 ```
-0. brand-designer      → brand strategy + visual system + tone of voice
-                         [HSTOP: validar brand strategy antes de continuar]
+0. brand-designer          → brand strategy + visual system + tone of voice
+                             [HSTOP: validar brand strategy antes de continuar]
 
-1. process-analyst     → as-is document
-                         [HSTOP: usuario confirma antes del siguiente paso]
+1. process-analyst         → as-is document
+                             [HSTOP: usuario confirma antes del siguiente paso]
 
-2. process-optimizer   → to-be document
-                         [HSTOP: resolver [NECESITA CONTEXTO] antes de continuar]
+2. process-optimizer       → to-be document
+                             [HSTOP: resolver [NECESITA CONTEXTO] antes de continuar]
 
-3. systems-analyst     → functional spec (hersa-especificaciones-funcionales.md)
-                         [HSTOP: resolver [BLOCKER] antes de continuar]
+3. systems-analyst         → functional spec (hersa-especificaciones-funcionales.md)
+                             [HSTOP: resolver [BLOCKER] antes de continuar]
 
-4. pm-writer           → executive PM document   [HSTOP: aprobación — hard stop]
+3b. legal-compliance-advisor → legal-risk assessment   [CONDICIONAL: solo si la spec
+                             toca PII, menores, imágenes, o flujos de consentimiento]
 
-5. ux-designer         → ux-spec
-                         [HSTOP: resolver [FRICCIÓN ALTA] antes de continuar]
+4. pm-writer               → executive PM document   [HSTOP: aprobación — hard stop]
 
-6. ui-designer         → ui-spec
+5. ux-designer             → ux-spec
+                             [HSTOP: resolver [FRICCIÓN ALTA] antes de continuar]
 
-7. prd-writer          → PRD                     [HSTOP: usuario aprueba — hard stop]
+6. ui-designer             → ui-spec
+
+7. prd-writer              → PRD                     [HSTOP: usuario aprueba — hard stop]
 
 8. → continuar con Flujo A o B para ingeniería
 ```
@@ -240,5 +251,8 @@ Punto de entrada: cuando se quiere analizar, mejorar, o especificar un proceso a
 
 - `senior-ceo-advisor` → valida realismo de negocio (pre-discovery, post-spec, pre-deploy)
 - `engineering-manager` → sanity-check técnico y de equipo antes de implementación
+- `qa-engineer` → validación E2E y regresión antes de `release-manager`; obligatorio en Flujos A y B; también pre-temporada de graduaciones
+- `legal-compliance-advisor` → gate condicional cuando la feature toca PII, menores, imágenes, o flujos de consentimiento; antes de aprobar PRDs y antes de deploys con nuevas superficies de recolección de datos
+- `data-analyst` → análisis pre-comercial y demanda pre-temporada (8–12 semanas de anticipación); invocar antes de decisiones comerciales mayores o al definir métricas de una nueva feature
 - `release-manager` → gate pre-merge obligatorio para PRs a `main`
 - `security-auditor` → revisión de seguridad antes de cualquier deploy con auth/PII/pagos
