@@ -7,6 +7,7 @@ import { ThemeProvider } from "@mui/material";
 import { CacheProvider } from "@emotion/react";
 import createCache from "@emotion/cache";
 import CssBaseline from "@mui/material/CssBaseline";
+import "./shared/styles/global.scss";
 import App from "./App";
 import { AuthProvider } from "@shared/contexts";
 import { hersaTheme } from "@shared/styles/theme";

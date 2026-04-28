@@ -39,20 +39,16 @@ export function AuthModal() {
 
   return (
     <Container maxWidth="xs" className={styles.container}>
-      <Paper elevation={3} className={styles.paper}>
+      <Paper elevation={0} className={styles.paper}>
         <Typography variant="h5" className={styles.title}>
-          Hersa
+          Eventos Hersa
         </Typography>
         {error && (
           <Alert severity="error" className={styles.alert}>
             {UI.auth.WRONG_CREDENTIALS}
           </Alert>
         )}
-        <Box
-          component="form"
-          onSubmit={handleSubmit(onSubmit)}
-          className={styles.form}
-        >
+        <Box component="form" onSubmit={handleSubmit(onSubmit)} className={styles.form}>
           <Controller
             name="username"
             control={control}

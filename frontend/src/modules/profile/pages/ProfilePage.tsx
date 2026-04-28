@@ -49,7 +49,7 @@ export default function ProfilePage() {
               avatar={<PersonIcon color="primary" />}
               title={
                 <Typography variant="h6" className={styles.cardSectionTitle}>
-                  Mi Información
+                  Mi información
                 </Typography>
               }
             />
