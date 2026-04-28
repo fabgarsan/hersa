@@ -77,6 +77,50 @@ export const getRoomsQuery = () =>
 - Never mix query and mutation logic in the same file.
 - Never use generic names like `roomApi.ts`.
 
+## Offline mutation handling
+
+All mutations get offline error detection automatically via `MutationCache.onError` in `main.tsx`. When a network error occurs, a global `<OfflineMutationDialog>` in `App.tsx` is shown — no extra work needed in individual mutation files or components.
+
+### MutationButton — always use for mutation submit buttons
+
+Every form that triggers a mutation must use `<MutationButton>` instead of `<SubmitButton>`. It reads `useOnlineStatus` internally and disables itself automatically when offline, showing a WifiOff icon and the label "Sin conexión".
+
+```typescript
+import { MutationButton } from '@shared/components';
+
+<MutationButton
+  isPending={isPending}
+  label="Guardar"
+  pendingLabel="Guardando…"
+  fullWidth
+/>
+```
+
+Props: `isPending`, `label`, `pendingLabel`, `fullWidth?` — identical API to `SubmitButton`. Never add extra `disabled` logic for connectivity — the component handles it.
+
+`SubmitButton` is still available for non-mutation submits (e.g. search filters, navigation steps) that should not be blocked when offline.
+
+### onError guard for local UI
+
+If a mutation component's `onError` renders local error UI (alerts, `setError`), guard against network errors — the global dialog already handles those:
+
+```typescript
+import { isNetworkError } from '@api/offlineMutationEvents';
+
+mutate(values, {
+  onError: (err) => {
+    if (isNetworkError(err)) return;
+    // ...local error handling
+  },
+});
+```
+
+Components with no `onError` (or only `onSuccess`) require no changes.
+
+**Never:**
+- Render `<OfflineMutationDialog>` inside a component — there is exactly one global instance in `App.tsx`.
+- Use `useOfflineMutation` for new mutations — it exists for specialized cases only.
+
 ## Types — always in types.ts, never inline
 
 **Rule:** All `interface` and `type` definitions must live in `types.ts` — never declared inside `.tsx` or `.ts` logic files.

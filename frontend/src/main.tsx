@@ -1,6 +1,7 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { QueryClient } from "@tanstack/react-query";
+import { MutationCache, QueryClient } from "@tanstack/react-query";
+import { isNetworkError, offlineMutationEvents } from "./api/offlineMutationEvents";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
 import { createSyncStoragePersister } from "@tanstack/query-sync-storage-persister";
@@ -15,6 +16,11 @@ import { AuthProvider } from "@shared/contexts";
 import { hersaTheme } from "@shared/styles/theme";
 
 const queryClient = new QueryClient({
+  mutationCache: new MutationCache({
+    onError: (error) => {
+      if (isNetworkError(error as Error)) offlineMutationEvents.trigger();
+    },
+  }),
   defaultOptions: {
     queries: {
       staleTime: 1000 * 60,

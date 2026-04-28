@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import Alert from "@mui/material/Alert";
 import Box from "@mui/material/Box";
@@ -9,19 +11,22 @@ import Typography from "@mui/material/Typography";
 import { Controller, useForm } from "react-hook-form";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 
+import { isNetworkError } from "@api/offlineMutationEvents";
 import { useAuthContext } from "@shared/contexts";
-import { SubmitButton } from "@shared/components";
+import { MutationButton } from "@shared/components";
 import { ROUTES } from "@shared/constants/routes";
 import { UI } from "./constants/ui";
-import { loginSchema } from "./schemas";
 import { useLoginMutation } from "./loginMutation";
+import { loginSchema } from "./schemas";
 import type { LoginCredentials } from "./types";
 import styles from "./AuthModal.module.scss";
 
 export function AuthModal() {
   const { login } = useAuthContext();
   const navigate = useNavigate();
-  const { mutate, isPending, error } = useLoginMutation();
+  const [hasAuthError, setHasAuthError] = useState(false);
+
+  const { mutate, isPending } = useLoginMutation();
 
   const { control, handleSubmit } = useForm<LoginCredentials>({
     resolver: zodResolver(loginSchema),
@@ -29,10 +34,15 @@ export function AuthModal() {
   });
 
   const onSubmit = (values: LoginCredentials) => {
+    setHasAuthError(false);
     mutate(values, {
       onSuccess: ({ access, refresh }) => {
         login(access, refresh);
         navigate(ROUTES.HOME);
+      },
+      onError: (err) => {
+        if (isNetworkError(err)) return;
+        setHasAuthError(true);
       },
     });
   };
@@ -43,7 +53,7 @@ export function AuthModal() {
         <Typography variant="h5" className={styles.title}>
           Eventos Hersa
         </Typography>
-        {error && (
+        {hasAuthError && (
           <Alert severity="error" className={styles.alert}>
             {UI.auth.WRONG_CREDENTIALS}
           </Alert>
@@ -75,7 +85,7 @@ export function AuthModal() {
               />
             )}
           />
-          <SubmitButton
+          <MutationButton
             isPending={isPending}
             label={UI.auth.LOGIN_BUTTON}
             pendingLabel={UI.auth.LOGGING_IN}

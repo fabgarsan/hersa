@@ -8,7 +8,8 @@ import axios from "axios";
 import { useForm } from "react-hook-form";
 
 import { isApiErrorData } from "@api/client";
-import { PasswordTextField, SubmitButton } from "@shared/components";
+import { isNetworkError } from "@api/offlineMutationEvents";
+import { MutationButton, PasswordTextField } from "@shared/components";
 import { UI } from "@modules/profile/constants/ui";
 import { useChangePasswordMutation } from "../api/changePasswordMutation";
 import { changePasswordSchema } from "../schemas";
@@ -42,12 +43,15 @@ export function ChangePasswordForm({ onSuccess }: ChangePasswordFormProps) {
         onSuccess?.();
       },
       onError: (err) => {
+        if (isNetworkError(err)) return;
         if (axios.isAxiosError(err) && isApiErrorData(err.response?.data)) {
           const data = err.response.data;
           if (data["currentPassword"]) {
             setError("currentPassword", { message: String(data["currentPassword"]) });
           } else if (data["newPassword"]) {
-            const msg = Array.isArray(data["newPassword"]) ? data["newPassword"][0] : data["newPassword"];
+            const msg = Array.isArray(data["newPassword"])
+              ? data["newPassword"][0]
+              : data["newPassword"];
             setError("newPassword", { message: String(msg) });
           } else {
             setErrorMessage(UI.password.CHANGE_ERROR);
@@ -86,7 +90,7 @@ export function ChangePasswordForm({ onSuccess }: ChangePasswordFormProps) {
           error={errors.confirmPassword}
         />
 
-        <SubmitButton
+        <MutationButton
           isPending={isPending}
           label={UI.password.CHANGE_BUTTON}
           pendingLabel={UI.password.CHANGING}

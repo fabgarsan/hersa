@@ -4,7 +4,7 @@ import { apiClient } from "@api/client";
 import { API } from "@modules/profile/constants/api";
 import type { ResetPasswordPayload } from "../types";
 
-const resetPassword = async (payload: ResetPasswordPayload): Promise<void> => {
+export const resetPassword = async (payload: ResetPasswordPayload): Promise<void> => {
   await apiClient.post(API.USERS_RESET_PASSWORD, payload);
 };
 
