@@ -48,6 +48,9 @@ frontend/build/
 # TypeScript
 *.tsbuildinfo
 
+# Generated — regenerated in CI; do not commit
+frontend/src/api/generated/schema.ts
+
 # Docker
 .docker/
 

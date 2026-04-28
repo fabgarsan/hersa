@@ -6,7 +6,8 @@ from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.core.mail import send_mail
 from django.utils.encoding import force_bytes, force_str
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
-from rest_framework import permissions, status
+from drf_spectacular.utils import OpenApiResponse, extend_schema, inline_serializer
+from rest_framework import permissions, serializers, status
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -25,10 +26,20 @@ logger = logging.getLogger(__name__)
 
 _token_generator = PasswordResetTokenGenerator()
 
+# Inline serializer used only for schema documentation of generic {"detail": str} responses.
+_DetailResponseSerializer = inline_serializer(
+    name="DetailResponse",
+    fields={"detail": serializers.CharField()},
+)
+
 
 class MeView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
+    @extend_schema(
+        summary="Get current user",
+        responses={200: UserSerializer},
+    )
     def get(self, request: Request) -> Response:
         assert isinstance(request.user, User)
         serializer = UserSerializer(request.user)
@@ -36,8 +47,29 @@ class MeView(APIView):
 
 
 class MyPermissionsView(APIView):
+    """Returns the sorted list of permission strings for the authenticated user.
+
+    Superusers receive all permissions scoped to Hersa app labels.
+    Regular users receive their own effective permissions via Django's
+    ``get_all_permissions()``.
+    """
+
     permission_classes = [permissions.IsAuthenticated]
 
+    @extend_schema(
+        summary="List my permissions",
+        description=(
+            "Returns a sorted list of permission strings in `<app_label>.<codename>` format. "
+            "Superusers receive all permissions for Hersa apps; regular users receive their "
+            "own effective permissions."
+        ),
+        responses={
+            200: OpenApiResponse(
+                response=serializers.ListSerializer(child=serializers.CharField()),
+                description="Sorted list of permission strings in `<app_label>.<codename>` format.",
+            )
+        },
+    )
     def get(self, request: Request) -> Response:
         assert isinstance(request.user, User)
         if request.user.is_superuser:
@@ -56,6 +88,27 @@ class ChangePasswordView(APIView):
     permission_classes = [permissions.IsAuthenticated]
     throttle_classes = [ChangePasswordThrottle]
 
+    @extend_schema(
+        summary="Change password",
+        description=(
+            "Allows an authenticated, active user to change their own password. "
+            "Requires the current password and a confirmed new password that passes "
+            "Django's password validators."
+        ),
+        request=ChangePasswordSerializer,
+        responses={
+            200: OpenApiResponse(
+                response=_DetailResponseSerializer,
+                description="Password changed successfully.",
+            ),
+            400: OpenApiResponse(
+                description="Validation error — wrong current password or new password fails validation.",
+            ),
+            403: OpenApiResponse(
+                description="Inactive account.",
+            ),
+        },
+    )
     def post(self, request: Request) -> Response:
         assert isinstance(request.user, User)
         if not request.user.is_active:
@@ -79,6 +132,21 @@ class ForgotPasswordView(APIView):
     permission_classes = [permissions.AllowAny]
     throttle_classes = [PasswordResetThrottle]
 
+    @extend_schema(
+        summary="Request password reset",
+        description=(
+            "Accepts a username or email address. If an active account with that identifier "
+            "exists and has an email on file, a password-reset link is sent. "
+            "The response is always 200 to avoid user enumeration."
+        ),
+        request=ForgotPasswordSerializer,
+        responses={
+            200: OpenApiResponse(
+                response=_DetailResponseSerializer,
+                description="Reset email sent (or silently suppressed if account not found).",
+            ),
+        },
+    )
     def post(self, request: Request) -> Response:
         serializer = ForgotPasswordSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -118,6 +186,27 @@ class ResetPasswordView(APIView):
     permission_classes = [permissions.AllowAny]
     throttle_classes = [PasswordResetThrottle]
 
+    @extend_schema(
+        summary="Reset password",
+        description=(
+            "Consumes a uid+token pair from the password-reset email link. "
+            "Validates the token, then sets the new password. "
+            "Returns 400 for an invalid/expired token or a malformed uid."
+        ),
+        request=ResetPasswordSerializer,
+        responses={
+            200: OpenApiResponse(
+                response=_DetailResponseSerializer,
+                description="Password reset successfully.",
+            ),
+            400: OpenApiResponse(
+                description="Invalid or expired reset link, or new password fails validation.",
+            ),
+            403: OpenApiResponse(
+                description="Inactive account.",
+            ),
+        },
+    )
     def post(self, request: Request) -> Response:
         serializer = ResetPasswordSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)

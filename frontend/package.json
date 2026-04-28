@@ -10,7 +10,8 @@
     "lint": "eslint src --max-warnings 0",
     "typecheck": "tsc --noEmit",
     "test": "vitest",
-    "coverage": "vitest run --coverage"
+    "coverage": "vitest run --coverage",
+    "generate:types": "openapi-typescript ../schema.yml -o src/api/generated/schema.ts"
   },
   "dependencies": {
     "@emotion/react": "^11.13.5",
@@ -37,27 +38,28 @@
     ]
   },
   "devDependencies": {
-    "@tanstack/react-query-devtools": "^5.67.2",
     "@eslint/js": "^9.21.0",
+    "@tanstack/react-query-devtools": "^5.67.2",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
     "@testing-library/user-event": "^14.6.1",
     "@types/react": "^19.0.10",
     "@types/react-dom": "^19.0.4",
     "@vitejs/plugin-react": "^4.3.4",
+    "@vitest/coverage-v8": "^4.1.5",
     "eslint": "^9.21.0",
     "eslint-config-prettier": "^10.1.1",
     "eslint-plugin-react-hooks": "^5.1.0",
     "eslint-plugin-react-refresh": "^0.4.19",
     "globals": "^15.15.0",
     "jsdom": "^29.0.2",
+    "openapi-typescript": "^7.13.0",
     "prettier": "^3.5.3",
     "sass": "^1.99.0",
     "typescript": "~5.7.2",
     "typescript-eslint": "^8.24.1",
     "vite": "^6.2.0",
     "vite-plugin-pwa": "^1.2.0",
-    "vitest": "^4.1.5",
-    "@vitest/coverage-v8": "^4.1.5"
+    "vitest": "^4.1.5"
   }
 }
