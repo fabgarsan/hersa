@@ -3,7 +3,8 @@ name: prd-writer
 description: Generates a PRD from a confirmed pm-writer document (full pipeline) or a pm-discovery brief (short path) and saves it to /documentation/requirements/prd/.
 version: 1.1.0
 model: claude-sonnet-4-6
-tools: Read, Write, Glob
+tools: Read, Write, Edit, Glob
+# Write = create PRD when file does not exist; Edit = update existing PRD in batches (see pipeline-conventions Protocol 4)
 ---
 
 @.claude/shared/hersa-process.md

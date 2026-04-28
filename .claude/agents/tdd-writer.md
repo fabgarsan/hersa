@@ -3,7 +3,8 @@ name: tdd-writer
 description: Generates a TDD from an approved PRD, reading the codebase and conventions, and saves it to /documentation/requirements/tdd/.
 version: 1.0.0
 model: claude-sonnet-4-6
-tools: Read, Write, Glob, Grep
+tools: Read, Write, Edit, Glob, Grep
+# Write = create TDD when file does not exist; Edit = update existing TDD in batches (see pipeline-conventions Protocol 4)
 ---
 
 @.claude/shared/hersa-process.md

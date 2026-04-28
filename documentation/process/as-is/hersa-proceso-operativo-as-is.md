@@ -1,13 +1,14 @@
 # Hersa — Proceso Operativo As-Is
 
-**Version:** 1.3
-**Fecha de documentacion:** 2026-04-27
+**Version:** 1.4
+**Fecha de documentacion:** 2026-04-28
 **Estado:** As-is — documenta exclusivamente la operacion actual. No contiene propuestas de mejora ni diseno de estado futuro.
 
 **Fuentes:**
 - Referencia canonica de dominio: `.claude/shared/hersa-context.md`
 - Sesion de advisory ejecutivo (decisiones de negocio cerradas, integradas al cuerpo del proceso, no como anexo)
 - Sesion de validacion con dueno del negocio (nueva informacion confirmada, integrada en v1.3)
+- Sesion de correccion y expansion con dueno del negocio (v1.4): correcciones de flujo Etapa 3 (toga y comprobante), Etapa 6 (reintegro), Etapa 4 (boletas obsequio); expansion de EP-09 y nuevo alcance de cotizador informal
 
 ---
 
@@ -131,9 +132,16 @@ El comercial trabaja sobre un paquete base durante la negociacion con una Promoc
 En temporada de grados, Hersa contrata personas de forma temporal para cubrir roles externos (meseros, vestidores adicionales, y otros). El proceso actual es:
 
 1. Se mantiene un listado en el sistema de personas interesadas en trabajar con la empresa. Incluye estudiantes recien graduados que se postulan y personas externas.
-2. En temporada, se contacta a las personas interesadas por correo electronico y/o SMS con un enlace de postulacion.
-3. Antes de confirmar la asignacion, la persona debe llenar un formulario de actualizacion de datos (actualizacion del perfil de colaborador).
+2. En temporada, se contacta a las personas interesadas por correo electronico y/o SMS con un enlace de postulacion. El contacto se hace candidato por candidato.
+3. Antes de confirmar la asignacion, la persona debe llenar un formulario de actualizacion de datos (actualizacion del perfil de colaborador). La actualizacion se hace cuando la persona lo requiere o cuando el proceso de convocatoria lo exige; no hay un ciclo formal anual de actualizacion.
 4. La persona queda disponible para ser asignada a eventos segun disponibilidad y rol.
+
+**Limitaciones actuales del proceso de personal externo:**
+- No existe un calendario visible para los candidatos donde puedan ver los eventos disponibles y postularse a uno especifico o a un dia especifico.
+- El administrador contacta a los candidatos de forma individual (no masiva); en temporada alta esto genera Muda de movimiento considerable.
+- No hay estados formales de postulacion por evento (Disponible, Aceptado, No aceptado, Cancelado). La confirmacion se gestiona por WhatsApp o llamada.
+- No existe la opcion de duplicar un evento o dia publicado para evitar repetir la informacion de configuracion.
+- El administrador no puede publicar cuantas personas necesita por rol en cada evento de forma estructurada en el sistema.
 
 ---
 
@@ -158,7 +166,7 @@ En temporada de grados, Hersa contrata personas de forma temporal para cubrir ro
 3. **Punto de decision D1 — Seleccion de Hersa:** La institucion decide si selecciona a Hersa como proveedor para la Promocion.
    - Si no es seleccionada: el proceso termina para esa Promocion.
    - Si es seleccionada: continua en el paso 4.
-4. El comercial define y registra los atributos de la Promocion: institucion, grado academico, jornada y ano.
+4. El comercial define y registra los atributos de la Promocion: institucion, grado academico, jornada y ano. Este registro se hace de forma individual para cada Promocion; no existe un panel que permita crear varias Promociones a la vez con el mismo paquete y precio, aunque sea comun que una misma institucion tenga multiples configuraciones de grado con los mismos items y solo variacion de precio.
 5. El comercial recopila los contactos: representante de padres y delegado estudiantil. Los delegados se agregan al grupo de WhatsApp.
 6. El comercial define y registra los siguientes parametros de la Promocion:
    - Fechas tentativas de toma fotografica
@@ -219,17 +227,18 @@ La toma se realiza en Casa Campestre Hersa (Carrera 127 #20-22, Pance). Se organ
 #### Sub-proceso: Registro y cobro en toma fotografica
 
 1. El cajero abre sesion de cobro en el sistema. La sesion solo esta disponible durante las etapas del proceso donde aplica cobro para esa Promocion especifica.
-2. El estudiante se acerca al cajero y proporciona su nombre o numero de documento.
-3. El cajero busca al estudiante en el sistema por Promocion + nombre o numero de documento.
-4. El cajero verifica el precio del paquete (ya definido desde la Etapa 1; el cajero conoce el monto maximo a cobrar).
-5. El estudiante paga al menos un porcentaje del valor total del paquete en efectivo. El minimo por defecto es el 50%, pero puede ser menor. Si el cajero cobra menos del 50%, debe registrar una justificacion escrita en el campo de comentarios del registro de pago. El campo de comentarios tambien puede usarse para otras anotaciones del cajero.
-6. El sistema envia notificacion al estudiante por email y SMS con el valor pagado y el saldo pendiente.
-7. El cajero entrega al estudiante un comprobante impreso.
-8. El estudiante entrega el comprobante impreso al fotografo como autorizacion para proceder con la toma.
-9. El vestidor mide y ajusta la toga del estudiante.
-10. El fotografo realiza la toma fotografica al estudiante.
-11. Se recolectan las preferencias del grupo: colores de bordes, estolas y detalles de la ceremonia.
-12. Al final del dia, el cajero realiza el cierre de caja.
+2. **Antes de acercarse al cajero**, el vestidor mide y ajusta fisicamente la toga del estudiante. El vestidor NO registra ninguna talla en el sistema; solo realiza la medicion y el ajuste fisico. El vestidor comunica la talla al estudiante (o la anota en un papel que el estudiante lleva al cajero).
+3. El estudiante se acerca al cajero y proporciona su nombre o numero de documento.
+4. El cajero busca al estudiante en el sistema por Promocion + nombre o numero de documento.
+5. El cajero verifica el precio del paquete (ya definido desde la Etapa 1; el cajero conoce el monto maximo a cobrar).
+6. El estudiante paga al menos un porcentaje del valor total del paquete en efectivo. El minimo por defecto es el 50%, pero puede ser menor. Si el cajero cobra menos del 50%, debe registrar una justificacion escrita en el campo de comentarios del registro de pago. El campo de comentarios tambien puede usarse para otras anotaciones del cajero.
+7. El cajero registra la talla de toga del estudiante en el sistema al momento de registrar el pago. El cajero es el actor que hace este registro, no el vestidor.
+8. El sistema envia notificacion al estudiante por email y SMS con el valor pagado y el saldo pendiente.
+9. El cajero entrega al estudiante un comprobante impreso. Este comprobante impreso es actualmente el mecanismo de autorizacion del fotografo: el estudiante debe entregarselo al fotografo para que proceda con la toma.
+10. El estudiante entrega el comprobante impreso al fotografo como autorizacion para proceder con la toma. Si el comprobante se pierde, se genera una interrupcion del flujo que requiere intervencion manual.
+11. El fotografo realiza la toma fotografica al estudiante.
+12. Se recolectan las preferencias del grupo: colores de bordes, estolas y detalles de la ceremonia.
+13. Al final del dia, el cajero realiza el cierre de caja de forma manual.
 
 **Add-ons disponibles:**
 - Foto familiar: $20.000 COP
@@ -275,6 +284,8 @@ Realizada en Casa Campestre Hersa.
 5. Se provee servicio de alimentos y bebidas a cargo del proveedor externo "Alimentos".
 
 **Regla — Estudiante ausente en el Prom:** Puede enviar a un companero con carta de autorizacion y el saldo pendiente. El representante puede retirar tanto las tarjetas de invitacion como el paquete fotografico completo.
+
+**Obsequio de boletas sobrantes:** Cuando quedan tarjetas de invitacion sobrantes al final del dia del Prom, el Gerente puede autorizar el obsequio de boletas adicionales a ciertos estudiantes o a todos. Esta decision es discrecional del Gerente (o usuario con permisos equivalentes). Actualmente no existe un registro formal en el sistema de este obsequio ni de a quienes se les otorgaron boletas adicionales.
 
 **Restricciones:**
 - No hay transporte de regreso el dia del grado; el transporte de regreso aplica unicamente el dia del Prom.
@@ -339,10 +350,14 @@ Si un estudiante no se gradua, todos sus codigos QR de invitacion son cancelados
 
 #### Regla — Reembolso y entrega por reprobacion
 
-1. El estudiante (o un representante) sube el comprobante de no-graduacion al sistema.
-2. El sistema procesa el reembolso: se devuelve el 50% del monto pagado.
-3. El paquete fotografico y el album se entregan igualmente al estudiante.
-4. El reembolso y la entrega ocurren unicamente el dia del grado, a traves de un companero con carta de autorizacion y copias de documentos.
+El reembolso NO ocurre el dia del grado. El estudiante o representante debe completar un proceso de reintegro posterior al evento. El proceso actual es:
+
+1. El estudiante (o representante con carta de autorizacion y copias de documentos) inicia el proceso de reintegro despues del dia del grado, en el momento que corresponda segun el procedimiento de Hersa.
+2. Se sube el comprobante de no-graduacion (puede ser un documento, foto o PDF).
+3. Se procesa el reembolso del 50% del monto pagado.
+4. El paquete fotografico y el album se entregan igualmente al estudiante.
+
+**Limitacion actual:** No existe un flujo formalizado ni un modulo en el sistema para gestionar este proceso de reintegro con estados y trazabilidad. Se maneja de forma manual.
 
 ---
 
@@ -423,7 +438,7 @@ Aplica en cualquier etapa del proceso operativo.
 | D4 | Etapa 3 | Ocurre una discrepancia entre los comprobantes de pago | Gerente | Gerente resuelve la discrepancia | Sin accion adicional |
 | D5 | Etapa 4 | El estudiante esta ausente en el Prom | Condicion de hecho | Un companero retira materiales con carta de autorizacion | El estudiante retira sus materiales directamente |
 | D6 | Etapa 6 | El estudiante tiene saldo pendiente en el dia de grado | Sistema (validacion automatica) | El cajero cobra el saldo antes de la entrega | El coordinador entrega el paquete directamente |
-| D7 | Etapa 6 | El estudiante se gradua | Hecho academico de la institucion | Proceso normal de entrega y acceso de familiares | Cancelacion masiva de QR; tramite de reembolso del 50% |
+| D7 | Etapa 6 | El estudiante se gradua | Hecho academico de la institucion | Proceso normal de entrega y acceso de familiares | Cancelacion masiva de QR el dia del grado; tramite de reembolso del 50% y entrega del paquete se inician en el proceso de reintegro posterior, no ese mismo dia |
 | D8 | Cualquier etapa | Se registra una inconformidad | Usuario interno con acceso | Sistema notifica al gerente; gerente gestiona y cierra en 48 h habiles | Sin accion |
 | D9 | Etapa 3 y 6 | El cajero tiene permisos especiales en el sistema | Administrador del sistema (configuracion previa) | Puede abrir sesion de cobro en cualquier momento | Solo puede operar en etapas habilitadas para esa Promocion |
 | D10 | Etapa 3 | El pago es menor al 50% del paquete | Cajero | Se registra el pago con justificacion escrita obligatoria en campo de comentarios | Se registra el pago normalmente sin comentario adicional |
@@ -441,10 +456,10 @@ Aplica en cualquier etapa del proceso operativo.
 | RN-04 | La entrega de paquetes el dia de grado esta condicionada al pago completo. Sin excepciones en sala. |
 | RN-05 | El precio del paquete por estudiante se define en la Etapa 1 como resultado de la negociacion por Promocion. El cajero conoce el maximo a cobrar. |
 | RN-06 | Los descuentos de paquete requieren autorizacion del gerente (u otro usuario con permisos equivalentes). El gerente los registra directamente en el sistema buscando al estudiante; el cajero los encuentra ya aplicados al momento del cobro. |
-| RN-07 | La talla de toga se asigna en la toma fotografica y debe coincidir el dia de grado. El sistema fuerza este vinculo. |
+| RN-07 | La talla de toga se mide fisicamente en la toma fotografica (por el vestidor) y es registrada en el sistema por el cajero al momento del cobro. Debe coincidir el dia de grado. El sistema fuerza este vinculo. |
 | RN-08 | Las tarjetas de invitacion son codigos QR de un solo uso; se invalidan al escanear. La cantidad por estudiante se define en la Etapa 1. |
 | RN-09 | Las tarjetas sobrantes se entregan en su totalidad el dia del Prom; nunca se venden. |
-| RN-10 | Si un estudiante no se gradua: se cancela el 100% de sus QR de forma masiva e inmediata; se reembolsa el 50% del monto pagado; el paquete fotografico y el album se entregan igualmente. Todo ocurre unicamente el dia del grado. |
+| RN-10 | Si un estudiante no se gradua: se cancela el 100% de sus QR de forma masiva e inmediata el dia del grado. El reembolso del 50% del monto pagado y la entrega del paquete fotografico y album NO ocurren el dia del grado; el estudiante o representante inicia el proceso de reintegro posteriormente, siguiendo el procedimiento de Hersa, con comprobante de no-graduacion. |
 | RN-11 | Los buses salen en el horario exacto pactado, sin excepciones. |
 | RN-12 | Alcohol y sustancias prohibidos en todas las actividades de Hersa; Hersa puede negar el servicio. |
 | RN-13 | Ninos menores de 5 anos no son admitidos a la ceremonia. Ninos de 5 anos o mas requieren ticket. |
@@ -496,8 +511,32 @@ Aplica en cualquier etapa del proceso operativo.
 
 ---
 
-## 13. Estado del Documento
+## 13. Proceso de Cotizacion (As-Is)
+
+Actualmente Hersa no cuenta con un modulo formal de cotizacion en el sistema. El proceso de cotizacion es informal:
+
+1. El comercial elabora una cotizacion de forma manual (Word, Excel, papel u otro medio) basandose en el catalogo de items y el paquete base que aplique.
+2. La cotizacion puede incluir items del paquete base mas adiciones o sustracciones segun la negociacion con la institucion.
+3. El precio por estudiante queda a criterio del comercial en este proceso informal.
+4. No existe generacion automatica de PDF de cotizacion ni trazabilidad en el sistema de las cotizaciones enviadas.
+5. No existe un estado de "cotizacion aceptada → convertida en Promocion" en el sistema; el comercial crea la Promocion directamente cuando la negociacion se cierra, sin vinculo con el documento de cotizacion previo.
+
+**Limitacion:** La ausencia de un cotizador formal impide al gerente tener visibilidad de las negociaciones en curso, los margenes aplicados y la consistencia de precios entre comerciales.
+
+---
+
+## 14. Estado del Documento
 
 Todas las preguntas de aclaracion han sido respondidas e integradas al cuerpo del documento. El documento no tiene items `[FALTA INFO]` ni `[AMBIGUO]` abiertos.
+
+**Cambios en v1.4 respecto a v1.3:**
+- Etapa 1: documentada la limitacion de creacion uno a uno de Promociones (sin panel bulk).
+- Etapa 3: corregido el orden del flujo (medicion de toga ANTES del pago); corregido el actor que registra la talla (cajero, no vestidor); clarificado que el comprobante impreso es actualmente el unico mecanismo de autorizacion al fotografo.
+- Etapa 4: documentado el obsequio de boletas sobrantes como practica informal actual.
+- Etapa 6: corregida la regla de reintegro (no ocurre el dia del grado; es un proceso posterior).
+- RN-07 y RN-10: actualizadas para reflejar las correcciones anteriores.
+- D7: actualizado para reflejar la separacion entre cancelacion de QR (dia del grado) y reintegro (proceso posterior).
+- Seccion 4 (Personal Externo Temporal): documentadas las limitaciones actuales del proceso de postulacion.
+- Seccion 13 (nueva): documentado el proceso informal de cotizacion.
 
 Este documento esta listo para ser usado como insumo por el agente `process-optimizer`.

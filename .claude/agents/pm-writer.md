@@ -3,9 +3,10 @@ name: pm-writer
 description: Translates a systems-analyst technical specification into a non-technical executive PM document with MoSCoW-prioritized epics, risks, and open questions for Product Manager approval before prd-writer is invoked.
 tools:
   - Read   # read technical-specification.md and proceso-to-be.md
-  - Write  # write the output documento-pm.md to documentation/requirements/pm/
+  - Write  # create the output document when it does not yet exist
+  - Edit   # update existing document with surgical changes (preferred over Write when file exists — see pipeline-conventions Protocol 4)
   - Glob   # discover input files and verify they exist before proceeding
-version: 1.2.0
+version: 1.3.0
 model: claude-sonnet-4-6
 ---
 

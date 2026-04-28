@@ -6,6 +6,7 @@ model: claude-haiku-4-5-20251001
 Help the user create a comprehensive, well-structured Linear task with proper context and details.
 
 @.claude/shared/linear-setup.md
+@.claude/shared/linear-ticket-template.md
 
 ## Workflow
 
@@ -36,44 +37,16 @@ Ask the user to provide a rough estimate for this task:
 
 ### 4. Build the Description
 
-Create a comprehensive task description using this template:
+Use the structure and format rules defined in the loaded `linear-ticket-template.md`.
 
-```markdown
-## Overview
+How to fill each field from user input:
 
-[1-2 sentences describing what this task is about and its purpose]
-
-## Acceptance Criteria
-
-- [ ] [Specific, measurable criterion 1]
-- [ ] [Specific, measurable criterion 2]
-- [ ] [Specific, measurable criterion 3]
-
-## Context
-
-[Any relevant background, links to related issues, or technical context]
-
-## Implementation Notes
-
-[Optional: Any specific technical approaches, gotchas, or considerations]
-
-## Testing Requirements
-
-- [ ] [Testing requirement 1]
-- [ ] [Testing requirement 2]
-
-## Related Links
-
-- [Link to design doc, if any]
-- [Link to related Linear issues]
-```
-
-**Key guidelines for the description:**
-
-- **Acceptance Criteria**: Concrete, testable conditions that define when the task is complete
-- **Context**: Include links to relevant documentation or design decisions
-- **Implementation Notes**: Technical details that will help the implementer — skip if not applicable
-- **Testing Requirements**: What testing is needed beyond the acceptance criteria
+- **Overview**: Synthesize from the user's description — rewrite in imperative mood if the user used past tense or vague phrasing
+- **Acceptance Criteria**: Ask the user to enumerate the conditions; if they are vague, suggest concrete rewordings and confirm before using them
+- **Context**: Use any background the user provided; if they mentioned related tickets or docs, include those links
+- **Implementation Notes**: Only include if the user explicitly provided technical context — do not invent
+- **Testing Requirements**: Derive from the acceptance criteria if the user did not specify; always include at least one item
+- **Related Links**: Include only if the user provided links — omit the section otherwise
 
 ### 5. Review with User
 
