@@ -10,6 +10,7 @@
 
 .paper {
   padding: v.sp(3);
+  border: 1px solid rgba(0, 0, 0, 0.08);
 
   @media (min-width: v.$breakpoint-sm) {
     padding: v.sp(4);

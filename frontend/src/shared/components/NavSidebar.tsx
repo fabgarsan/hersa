@@ -32,7 +32,12 @@ const NAV_ITEMS: NavItem[] = [
     path: ROUTES.GRADOS,
     module: "modules.access_programador",
   },
-  { label: UI.nav.ADMIN, icon: <AdminPanelSettingsIcon />, path: ROUTES.ADMIN, module: "modules.access_admin" },
+  {
+    label: UI.nav.ADMIN,
+    icon: <AdminPanelSettingsIcon />,
+    path: ROUTES.ADMIN,
+    module: "modules.access_admin",
+  },
   { label: UI.nav.PROFILE, icon: <PersonIcon />, path: ROUTES.PROFILE, module: null },
 ];
 
@@ -51,7 +56,7 @@ export function NavSidebar() {
     <Box className={styles.root}>
       <Toolbar className={styles.toolbar}>
         <Typography variant="h6" className={styles.brandTitle}>
-          HERSA
+          EVENTOS HERSA
         </Typography>
       </Toolbar>
 
