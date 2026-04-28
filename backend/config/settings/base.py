@@ -20,6 +20,8 @@ INSTALLED_APPS = [
     "rest_framework_simplejwt.token_blacklist",
     "corsheaders",
     "storages",
+    "drf_spectacular",
+    "django_filters",
     # Local
     "apps.users",
     "apps.modules",
@@ -90,6 +92,11 @@ REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": [
         "rest_framework.permissions.IsAuthenticated",
     ],
+    "DEFAULT_FILTER_BACKENDS": [
+        "django_filters.rest_framework.DjangoFilterBackend",
+        "rest_framework.filters.SearchFilter",
+        "rest_framework.filters.OrderingFilter",
+    ],
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
     "PAGE_SIZE": 20,
     "DEFAULT_THROTTLE_CLASSES": [
@@ -106,11 +113,19 @@ REST_FRAMEWORK = {
         "password_reset": "5/hour",
         "change_password": "5/hour",
     },
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
 }
 
-CORS_ALLOWED_ORIGINS: list[str] = config(
-    "CORS_ALLOWED_ORIGINS", default="http://localhost:5173", cast=Csv()
-)
+SPECTACULAR_SETTINGS = {
+    "TITLE": "Hersa API",
+    "DESCRIPTION": "API for Hersa graduation event services platform",
+    "VERSION": "1.0.0",
+    "SERVE_INCLUDE_SCHEMA": False,
+}
+
+CORS_ALLOWED_ORIGINS: list[str] = config("CORS_ALLOWED_ORIGINS", cast=Csv())
+
+SECURE_REFERRER_POLICY = "strict-origin-when-cross-origin"
 
 EMAIL_BACKEND: str = config(
     "EMAIL_BACKEND", default="django.core.mail.backends.console.EmailBackend"
@@ -120,7 +135,7 @@ FRONTEND_URL: str = config("FRONTEND_URL", default="http://localhost:5173")
 
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=15),
-    "REFRESH_TOKEN_LIFETIME": timedelta(hours=4),
+    "REFRESH_TOKEN_LIFETIME": timedelta(hours=4),  # tighter than SimpleJWT default (1 day); limits replay window on shared/school devices
     "ROTATE_REFRESH_TOKENS": True,
     "BLACKLIST_AFTER_ROTATION": True,
     "UPDATE_LAST_LOGIN": True,

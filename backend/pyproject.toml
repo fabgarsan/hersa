@@ -29,3 +29,4 @@ django_settings_module = "config.settings.development"
 [tool.pytest.ini_options]
 DJANGO_SETTINGS_MODULE = "config.settings.development"
 python_files = ["tests.py", "test_*.py"]
+addopts = "--cov=apps --cov-report=term-missing --cov-report=html:htmlcov"
