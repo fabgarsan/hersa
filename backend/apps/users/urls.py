@@ -8,6 +8,8 @@ from .views import (
     ResetPasswordView,
 )
 
+app_name = "users"
+
 urlpatterns = [
     path("me/", MeView.as_view(), name="user-me"),
     path("my-permissions/", MyPermissionsView.as_view(), name="user-my-permissions"),

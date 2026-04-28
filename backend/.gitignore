@@ -3,3 +3,24 @@
 .elasticbeanstalk/*
 !.elasticbeanstalk/*.cfg.yml
 !.elasticbeanstalk/*.global.yml
+
+# Test coverage
+htmlcov/
+
+# Python bytecode
+__pycache__/
+*.pyc
+*.pyo
+
+# Linter / type-checker caches
+.mypy_cache/
+.ruff_cache/
+
+# Django generated directories
+media/
+staticfiles/
+
+# Environment files
+.env
+.env.*
+!.env.example

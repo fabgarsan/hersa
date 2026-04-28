@@ -133,6 +133,10 @@ docker compose exec backend pipenv run python manage.py migrate
 docker compose exec backend pipenv run pytest
 docker compose exec backend pipenv run pytest apps/users/tests/
 
+# Coverage runs automatically with every pytest invocation (htmlcov/ for HTML report)
+# First-time setup:
+docker compose exec backend pipenv install pytest-cov --dev
+
 # Install a new dependency (run on HOST inside backend/)
 pipenv install <package>           # production dependency
 pipenv install <package> --dev     # dev-only dependency

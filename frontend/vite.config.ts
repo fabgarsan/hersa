@@ -44,10 +44,12 @@ export default defineConfig({
               cacheName: "api-cache",
               networkTimeoutSeconds: 10,
               expiration: {
-                maxEntries: 200,
-                maxAgeSeconds: 60 * 60 * 24, // 24 horas
+                maxEntries: 100,
+                maxAgeSeconds: 60 * 60, // 1 hora (reducido de 24h por seguridad)
               },
-              cacheableResponse: { statuses: [0, 200] },
+              // Status 0 (opaque responses) removed — opaque responses have
+              // an inflated size quota cost and can cache error states silently.
+              cacheableResponse: { statuses: [200] },
             },
           },
           {
@@ -93,5 +95,11 @@ export default defineConfig({
     environment: "jsdom",
     globals: true,
     setupFiles: ["./tests/setup.ts"],
+    coverage: {
+      provider: "v8",
+      reporter: ["text", "html"],
+      include: ["src/**/*.{ts,tsx}"],
+      exclude: ["src/**/*.d.ts", "src/main.tsx", "src/**/*.module.scss"],
+    },
   },
 });

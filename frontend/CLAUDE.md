@@ -222,6 +222,8 @@ npm run build        # production build
 npm run lint         # ESLint
 npm run lint:fix     # auto-fix lint errors
 npm run format       # Prettier
+npm run coverage    # run tests with coverage (coverage/index.html)
+# First-time setup: npm install
 
 # Install a dependency (no Docker rebuild needed)
 npm install <package>

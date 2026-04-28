@@ -69,7 +69,8 @@ my-project/
 ```bash
 docker compose up                                                    # start everything
 docker compose exec backend pipenv run python manage.py migrate     # run migrations
-docker compose exec backend pipenv run pytest                       # run backend tests
+docker compose exec backend pipenv run pytest                       # run backend tests (coverage runs automatically; HTML report → htmlcov/)
+docker compose exec backend pipenv install pytest-cov --dev              # first time only
 ```
 
 ## Knowledge Files

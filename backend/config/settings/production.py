@@ -38,7 +38,6 @@ STATIC_URL = f"https://{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/static/"
 SECURE_HSTS_SECONDS = 31536000
 SECURE_HSTS_INCLUDE_SUBDOMAINS = True
 SECURE_HSTS_PRELOAD = True
-SECURE_REFERRER_POLICY = "strict-origin-when-cross-origin"
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 # SECURE_SSL_REDIRECT = False intencionalmente — el ALB maneja el redirect HTTP→HTTPS
 
