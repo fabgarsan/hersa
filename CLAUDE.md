@@ -98,43 +98,43 @@ These files extend these docs. Read them when indicated — they are not loaded 
 
 ## Agent Registry
 
-| Agent | Scope | When to use |
-|---|---|---|
-| `pm-discovery` | Discovery interview for new features without a prior process pipeline | New feature idea with no prior `process-analyst` pipeline; skip if the full process pipeline already ran — go directly to `prd-writer` |
-| `prd-writer` | PRD generation from confirmed pm-writer document (full pipeline) or pm-discovery brief (short path) | After `pm-writer` approves the functional spec (full pipeline) OR after `pm-discovery` produces a brief (short path); before `tdd-writer` |
-| `tdd-writer` | TDD generation from approved PRD | After PRD is approved; before any code is written |
-| `adr-writer` | Documents non-obvious architectural decisions as ADRs | After choosing between significant technical approaches |
-| `django-developer` | All backend work: models, migrations, serializers, views, URLs | Any Python/Django task |
-| `react-developer` | All frontend work: pages, components, hooks, API integration | Any React/TypeScript/MUI task |
-| `test-writer` | Tests for existing code (pytest-django + RTL) | After implementing any feature |
-| `qa-engineer` | End-to-end QA: test planning, regression matrix, pre-season validation; produces test plans (not test code) | After PRD approval; before `release-manager`; before each graduation-season window |
-| `code-reviewer` | Read-only post-implementation review | After completing a feature or before committing |
-| `security-auditor` | Read-only security audit | Before deploying; after auth or sensitive-data work |
-| `release-manager` | Pre-merge quality gate: orchestrates code review, security audit, and docs check before any PR merges to main | Before merging any non-trivial PR to `main`; final gate in Flows A and B before `aws-devops` |
-| `docs-writer` | Docstrings, API endpoint docs | After completing a module or before a release |
-| `component-factory` | Generate new agents and skills under `.claude/` | "scaffold/create/generate an agent or skill" |
-| `claude-md-architect` | Interview-driven CLAUDE.md generation and migration | "set up CLAUDE.md", "bootstrap this repo", "migrate my CLAUDE.md" |
-| `aws-devops` | AWS infrastructure: EB, RDS, S3, CloudFront, CI/CD, secrets | Any deployment, infra config, or AWS resource management task |
-| `process-analyst` | As-is documentation of existing business processes | When documenting how a process works today, before any improvement or redesign |
-| `process-optimizer` | Lean-based to-be process optimization from a complete as-is document | After `process-analyst` produces a clean as-is (zero unresolved ambiguities); before implementation planning |
-| `systems-analyst` | Translate a complete to-be process into functional specifications: epics, user stories, AC, data entities, API contracts | After `process-optimizer` produces a clean to-be (zero unresolved `[NECESITA CONTEXTO]` items); before any implementation begins |
-| `pm-writer` | Translate a technical specification into a non-technical executive PM document with MoSCoW prioritization and BLOCKER guard | After `systems-analyst` produces a clean technical spec (zero unresolved `[BLOCKER]` items); before `prd-writer` is invoked |
-| `senior-ceo-advisor` | Strategic executive advisory for Hersa business decisions; pipeline sanity-checks from a business lens | Any strategic, commercial, operational, or prioritization decision; at any point in the pipeline to validate business realism |
-| `engineering-manager` | Engineering team diagnosis: roles, processes, gaps, hiring, and agent pipeline integration | When analyzing team structure or processes, making hiring decisions, or defining how pipeline agents integrate with the dev team |
-| `data-analyst` | Operational analytics, conversion/margin analysis, seasonal demand forecasting, metrics catalog; read-only on data | Before major commercial decisions; pre-season demand forecasts (8–12 weeks ahead); metric definition for new features |
-| `brand-designer` | Brand identity system: strategy, visual identity manual, tone of voice, and digital guidelines — the brand foundation that ui-designer and communications-writer build on | Before any UI design work begins; when brand guidelines are missing or inconsistent; when launching a new digital product |
-| `ux-designer` | User flows, navigation, information hierarchy, screen structure, friction analysis, and text wireframes for any Hersa feature | After `systems-analyst` produces a clean spec (zero `[BLOCKER]` tags); before any visual design or frontend implementation begins |
-| `ui-designer` | Visual design specification: design tokens, component inventory, per-screen layout, accessibility guide, and MUI implementation notes | After `ux-designer` produces a clean `ux-spec.md` (zero unresolved `[FRICCIÓN ALTA]` items); before `react-developer` begins implementation |
-| `legal-compliance-advisor` | Ley 1581 compliance, image rights, minors' data, B2B contract review; produces legal-risk assessments (not binding legal opinions) | Any feature touching PII, minors, or images; before approving PRDs that include consent flows; before deploys that add data-collection surfaces |
+| Agent | Nombre | Scope | When to use |
+|---|---|---|---|
+| `pm-discovery` | — | Discovery interview for new features without a prior process pipeline | New feature idea with no prior `process-analyst` pipeline; skip if the full process pipeline already ran — go directly to `prd-writer` |
+| `prd-writer` | — | PRD generation from confirmed pm-writer document (full pipeline) or pm-discovery brief (short path) | After `pm-writer` approves the functional spec (full pipeline) OR after `pm-discovery` produces a brief (short path); before `tdd-writer` |
+| `tdd-writer` | — | TDD generation from approved PRD | After PRD is approved; before any code is written |
+| `adr-writer` | — | Documents non-obvious architectural decisions as ADRs | After choosing between significant technical approaches |
+| `django-developer` | Chao | All backend work: models, migrations, serializers, views, URLs | Any Python/Django task |
+| `react-developer` | Manuel | All frontend work: pages, components, hooks, API integration | Any React/TypeScript/MUI task |
+| `test-writer` | — | Tests for existing code (pytest-django + RTL) | After implementing any feature |
+| `qa-engineer` | Maria | End-to-end QA: test planning, regression matrix, pre-season validation; produces test plans (not test code) | After PRD approval; before `release-manager`; before each graduation-season window |
+| `code-reviewer` | Melba | Read-only post-implementation review | After completing a feature or before committing |
+| `security-auditor` | Vigilante (Vigi) | Read-only security audit | Before deploying; after auth or sensitive-data work |
+| `release-manager` | — | Pre-merge quality gate: orchestrates code review, security audit, and docs check before any PR merges to main | Before merging any non-trivial PR to `main`; final gate in Flows A and B before `aws-devops` |
+| `docs-writer` | — | Docstrings, API endpoint docs | After completing a module or before a release |
+| `component-factory` | Dios | Generate new agents and skills under `.claude/` | "scaffold/create/generate an agent or skill" |
+| `claude-md-architect` | Jesus | Interview-driven CLAUDE.md generation and migration | "set up CLAUDE.md", "bootstrap this repo", "migrate my CLAUDE.md" |
+| `aws-devops` | Jairo (Jairito) | AWS infrastructure: EB, RDS, S3, CloudFront, CI/CD, secrets | Any deployment, infra config, or AWS resource management task |
+| `process-analyst` | — | As-is documentation of existing business processes | When documenting how a process works today, before any improvement or redesign |
+| `process-optimizer` | — | Lean-based to-be process optimization from a complete as-is document | After `process-analyst` produces a clean as-is (zero unresolved ambiguities); before implementation planning |
+| `systems-analyst` | — | Translate a complete to-be process into functional specifications: epics, user stories, AC, data entities, API contracts | After `process-optimizer` produces a clean to-be (zero unresolved `[NECESITA CONTEXTO]` items); before any implementation begins |
+| `pm-writer` | — | Translate a technical specification into a non-technical executive PM document with MoSCoW prioritization and BLOCKER guard | After `systems-analyst` produces a clean technical spec (zero unresolved `[BLOCKER]` items); before `prd-writer` is invoked |
+| `senior-ceo-advisor` | Francisco (Fran) | Strategic executive advisory for Hersa business decisions; pipeline sanity-checks from a business lens | Any strategic, commercial, operational, or prioritization decision; at any point in the pipeline to validate business realism |
+| `engineering-manager` | Alexandr (Alex) | Engineering team diagnosis: roles, processes, gaps, hiring, and agent pipeline integration | When analyzing team structure or processes, making hiring decisions, or defining how pipeline agents integrate with the dev team |
+| `data-analyst` | Paolo | Operational analytics, conversion/margin analysis, seasonal demand forecasting, metrics catalog; read-only on data | Before major commercial decisions; pre-season demand forecasts (8–12 weeks ahead); metric definition for new features |
+| `brand-designer` | Lina | Brand identity system: strategy, visual identity manual, tone of voice, and digital guidelines — the brand foundation that ui-designer and communications-writer build on | Before any UI design work begins; when brand guidelines are missing or inconsistent; when launching a new digital product |
+| `ux-designer` | Laura (Lau) | User flows, navigation, information hierarchy, screen structure, friction analysis, and text wireframes for any Hersa feature | After `systems-analyst` produces a clean spec (zero `[BLOCKER]` tags); before any visual design or frontend implementation begins |
+| `ui-designer` | Jose | Visual design specification: design tokens, component inventory, per-screen layout, accessibility guide, and MUI implementation notes | After `ux-designer` produces a clean `ux-spec.md` (zero unresolved `[FRICCIÓN ALTA]` items); before `react-developer` begins implementation |
+| `legal-compliance-advisor` | Felix | Ley 1581 compliance, image rights, minors' data, B2B contract review; produces legal-risk assessments (not binding legal opinions) | Any feature touching PII, minors, or images; before approving PRDs that include consent flows; before deploys that add data-collection surfaces |
 
 ## Extra-Pipeline Agents
 
 These agents are available but do not participate in the standard feature pipeline. Invoke them explicitly for their specific purpose.
 
-| Agent | Scope | When to use |
-|---|---|---|
-| `ethical-hacker` | Penetration testing, OWASP, API/network/cloud/OSINT security, CTF | Authorized pentests, CTF challenges, security research, red-team exercises |
-| `communications-writer` | Transforms internal artifacts (diagnostics, specs, reports, process documents, strategic recommendations) into polished stakeholder communications: slide decks, executive memos, service proposals, and briefs | After any pipeline agent produces an artifact that must be communicated externally — school directors, parents, students, internal board, or investors |
+| Agent | Nombre | Scope | When to use |
+|---|---|---|---|
+| `ethical-hacker` | Pecueca | Penetration testing, OWASP, API/network/cloud/OSINT security, CTF | Authorized pentests, CTF challenges, security research, red-team exercises |
+| `communications-writer` | Vicky | Transforms internal artifacts (diagnostics, specs, reports, process documents, strategic recommendations) into polished stakeholder communications: slide decks, executive memos, service proposals, and briefs | After any pipeline agent produces an artifact that must be communicated externally — school directors, parents, students, internal board, or investors |
 
 ## Skill Registry
 
