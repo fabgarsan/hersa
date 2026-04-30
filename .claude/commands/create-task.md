@@ -1,6 +1,6 @@
 ---
 description: Create a well-structured Linear task with guided workflow
-model: claude-haiku-4-5-20251001
+model: haiku
 ---
 # Create Linear Task
 Help the user create a comprehensive, well-structured Linear task with proper context and details.

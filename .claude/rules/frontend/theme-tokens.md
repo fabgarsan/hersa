@@ -1,9 +1,13 @@
+---
+paths:
+  - "frontend/src/shared/styles/theme.ts"
+  - "frontend/src/shared/styles/**/*.scss"
+  - "frontend/src/**/*.module.scss"
+---
+
 # Theme Tokens — Eventos Hersa
 
-> **Agents:** react-developer, tdd-writer, ui-designer
-> **Load when:** Styling components, defining the MUI theme, or adding new brand assets
-> **Brand authority:** `documentation/brand/brand-manual.md` — read that first for visual rationale; this file is the implementation reference
-> **Summary:** Brand identity, color palette, typography, and logo rules for the Hersa design system
+> **Brand authority:** `documentation/brand/brand-manual.md` — read that first for visual rationale; this file is the implementation reference.
 
 The application follows the **Togas HERSA** brand identity. Always use these tokens when styling components; never introduce arbitrary colors.
 

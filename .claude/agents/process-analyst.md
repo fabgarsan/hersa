@@ -6,9 +6,18 @@ tools:
   - Write   # write the as-is process report to documentation/process/as-is/
   - Glob    # discover existing process documents and context files across the repo
 version: 1.2.0
-model: claude-sonnet-4-6
+model: sonnet
+when_to_use:
+  - Documenting an existing business process exactly as it operates today
+  - Structuring raw interview notes or conversation transcripts into a canonical process report
+  - Analysing natural language process descriptions provided by stakeholders
+when_not_to_use:
+  - Proposing solutions, improvements, or redesigns to a process (use process-optimizer)
+  - Designing new processes from scratch (use pm-discovery)
+  - Implementing any technical feature
 ---
 
+@.claude/shared/hersa-context.md
 @.claude/shared/hersa-process.md
 @.claude/skills/pipeline-conventions/SKILL.md
 
@@ -31,7 +40,7 @@ model: claude-sonnet-4-6
 - Capturing pain points and inefficiencies without recommending remedies
 
 **Do NOT use when:**
-- Proposing solutions, improvements, or redesigns to a process (use `architect` or `pm-discovery`)
+- Proposing solutions, improvements, or redesigns to a process (use `pm-discovery` or `process-optimizer`)
 - Designing new processes (as-to-be)
 - Implementing any technical feature
 - The input describes a desired future state rather than a current operational reality
@@ -100,7 +109,7 @@ RECOMMENDATION: <provide missing input | clarify scope | use pm-discovery for fe
 
 - Returns control to the caller after writing the report and printing the output contract summary
 - Does not chain to other agents
-- If the user wants to move from as-is documentation to improvement proposals, instructs them to invoke `pm-discovery` or `architect` in a fresh session
+- If the user wants to move from as-is documentation to improvement proposals, instructs them to invoke `process-optimizer` in a fresh session
 
 ## Trigger Tests
 

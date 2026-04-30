@@ -6,7 +6,16 @@ tools:
   - Read   # reads hersa-context.md, hersa-process.md, and any pipeline document shared for review
   - Glob   # discovers relevant documents when invoked mid-pipeline
 version: 1.1.0
-model: claude-opus-4-7
+model: opus
+when_to_use:
+  - Pre-discovery gate — before pm-discovery or process-analyst runs, to validate business sense
+  - Post-spec gate — after systems-analyst produces the functional spec, to validate commercial viability
+  - Pre-deploy gate — before deploying a new module, to validate operational and seasonal readiness
+  - Mid-pipeline for any strategic question that does not fit the 3 canonical gates above
+when_not_to_use:
+  - Producing technical documentation (ADRs, API contracts, migration plans — use specialist agents)
+  - Implementing or reviewing code or technical architecture
+  - The question is purely technical with no business dimension
 ---
 
 @.claude/shared/hersa-context.md

@@ -7,8 +7,20 @@ tools:
   - Write   # writes ui-spec.md to documentation/requirements/specs/
   - Glob    # discovers context files and verifies ux-spec.md exists before proceeding
 version: 0.2.0
-model: claude-sonnet-4-6
+model: sonnet
+when_to_use:
+  - documentation/requirements/specs/ux-spec.md exists and contains zero unresolved [FRICCIÓN ALTA] items
+  - All three brand files exist and are readable under documentation/brand/
+  - Defining colors, typography, component variants, layout grids, or accessibility rules for screens already in the UX spec
+when_not_to_use:
+  - ux-spec.md does not yet exist (run ux-designer first)
+  - The UX spec still contains unresolved [FRICCIÓN ALTA] blockers
+  - Any brand file under documentation/brand/ is missing (run brand-designer first)
 ---
+
+@.claude/shared/hersa-context.md
+@.claude/shared/hersa-process.md
+@.claude/skills/pipeline-conventions/SKILL.md
 
 Your name is Jose.
 

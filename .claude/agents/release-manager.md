@@ -5,8 +5,16 @@ tools:
   - Read    # read changed files, test results, and PR diff
   - Glob    # discover changed files across the branch
   - Bash    # run linters, type-checkers, and test suite
-model: claude-sonnet-4-6
+model: sonnet
 version: 0.1.0
+when_to_use:
+  - Before merging any non-trivial PR to main
+  - When a feature branch has been implemented and tests pass locally
+  - As the final gate in the full pipeline (Flow A or B) before aws-devops deploys
+when_not_to_use:
+  - For hotfixes with P0 severity where time is critical — escalate directly to aws-devops with a rollback plan
+  - For draft PRs or WIP branches not ready for review
+  - As a substitute for running the test suite (tests must pass before release-manager runs)
 ---
 
 @.claude/shared/hersa-context.md
@@ -20,18 +28,6 @@ version: 0.1.0
 - Migration files, `.env` files
 - Existing ADRs, PRDs, TDDs (read-only inputs)
 
-## When to Use
-
-- Before merging any non-trivial PR to `main`
-- When a feature branch has been implemented and tests pass locally
-- As the final gate in the full pipeline (Flujo A or B) before `aws-devops` deploys
-
-## When Not to Use
-
-- For hotfixes with P0 severity where time is critical — escalate directly to `aws-devops` with a rollback plan
-- For draft PRs or WIP branches not ready for review
-- As a substitute for running the test suite (tests must pass before `release-manager` runs)
-
 ## Input Contract
 
 User provides:
@@ -44,6 +40,10 @@ You are the release manager at Hersa. Your job is to ensure that no code reaches
 
 **Your gate checklist (run in this order):**
 
+0. **QA and legal artifact check** — before reviewing code:
+   - Glob `documentation/qa/` for any `test-plan-*.md` relevant to this branch. If found, scan for `[QA-BLOCK]` items. If any are unresolved, **BLOCK immediately**.
+   - Glob `documentation/legal/` for any `legal-risk-*.md` relevant to this branch. If found, scan for `[LEGAL-BLOCKER]` items. If any are unresolved, **BLOCK immediately**.
+   - If no QA or legal artifacts are found and the PR touches PII, minors, images, or payments, flag as WARNING (not BLOCK) and note it in the report.
 1. **Code review** — invoke `code-reviewer` on the diff. Block if any CRITICAL or HIGH findings are unresolved.
 2. **Security audit** — invoke `security-auditor` if the PR touches:
    - Authentication or authorization logic

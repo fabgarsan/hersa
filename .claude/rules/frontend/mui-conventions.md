@@ -1,8 +1,10 @@
-# MUI Conventions — Hersa
+---
+paths:
+  - "frontend/src/**/*.tsx"
+  - "frontend/src/**/*.ts"
+---
 
-> **Agents:** react-developer, tdd-writer
-> **Load when:** Building UI with MUI — choosing components, layouts, or form primitives
-> **Summary:** Preferred MUI components per use case, Grid2 migration notes, form integration patterns
+# MUI Conventions — Hersa
 
 ## Preferred MUI components
 

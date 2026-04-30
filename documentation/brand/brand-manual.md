@@ -228,10 +228,10 @@ Material Icons (Google) — disponible nativamente en MUI y coherente con el sta
 
 > El **UI Designer** debe leer este manual completo y `documentation/brand/digital-guidelines.md` antes de producir cualquier ui-spec.
 
-**Tokens ya implementados en código:** ver `.claude/skills/theme-tokens.md` — los valores de color e Inter ya están en el tema MUI. No reemplazarlos sin actualizar primero este manual.
+**Tokens ya implementados en código:** ver `.claude/shared/conventions/theme-tokens.md` — los valores de color e Inter ya están en el tema MUI. No reemplazarlos sin actualizar primero este manual.
 
 **Playfair Display** no está en el tema MUI actual. Debe añadirse para headlines celebratorios en el portal B2C (página de bienvenida, confirmación de graduación, pantalla de fotos entregadas). El portal B2B institucional puede operar completamente con Inter.
 
 **Fotografías en UI:** siempre con overlay marino antes de colocar texto. Nunca texto directo sobre foto sin overlay.
 
-**Logo en digital:** usar exclusivamente la versión SVG (cuando esté disponible). Hasta entonces, usar el PNG de mayor resolución disponible en `.claude/shared/LogoHersa.png`.
+**Logo en digital:** usar exclusivamente la versión SVG (cuando esté disponible). Hasta entonces, usar el PNG de mayor resolución disponible en `documentation/brand/assets/LogoHersa.png`.

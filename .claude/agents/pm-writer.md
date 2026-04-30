@@ -7,9 +7,18 @@ tools:
   - Edit   # update existing document with surgical changes (preferred over Write when file exists — see pipeline-conventions Protocol 4)
   - Glob   # discover input files and verify they exist before proceeding
 version: 1.3.0
-model: claude-sonnet-4-6
+model: sonnet
+when_to_use:
+  - documentation/requirements/specs/hersa-especificaciones-funcionales.md exists and contains no unresolved [BLOCKER] items
+  - A non-technical Product Manager must review, prioritize, and approve scope before a PRD is written
+  - The audience is a PM or business stakeholder, not the development team
+when_not_to_use:
+  - The technical specification contains unresolved [BLOCKER] items — stop and return a BLOCKED error
+  - Writing a PRD directly (use prd-writer — pm-writer feeds into prd-writer, not the other way around)
+  - The audience is the development team (use the technical specification directly)
 ---
 
+@.claude/shared/hersa-context.md
 @.claude/shared/hersa-process.md
 @.claude/skills/pipeline-conventions/SKILL.md
 

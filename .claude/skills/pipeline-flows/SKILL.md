@@ -1,7 +1,9 @@
 ---
 name: pipeline-flows
-description: Canonical catalogue of the 9 configurable pipeline flows for Hersa. Defines entry point, agent sequence, exit point, and hard stops for each flow type.
+description: Catalogue of the 10 named pipeline flows (A–J) — picks which flow fits the situation. Read-only reference; does not plan invocations (use pipeline-runner) and does not enforce shared rules (use pipeline-conventions).
 version: 1.0.0
+model: haiku
+allowed-tools: Read
 when_to_use:
   - When picking which flow to use before starting any work
   - When running pipeline-runner to generate an invocation sequence
@@ -26,6 +28,7 @@ Each flow is identified by a letter (A–I). Use the first flow whose condition 
 | G | Process redesign only | `process-analyst` | `senior-ceo-advisor` | Understand and improve an operational process without building software yet |
 | H | Functional definition only | `systems-analyst` | `systems-analyst` | to-be doc exists; need functional spec only |
 | I | Design only | `ux-designer` | `ui-designer` | Functional spec approved; need design before engineering |
+| J | Short discovery | `pm-discovery` | `tdd-writer` | Spec global already exists; need feature-specific discovery brief → PRD → TDD |
 
 ---
 
@@ -177,6 +180,34 @@ systems-analyst          → functional spec (hersa-especificaciones-funcionales
 ux-designer              → ux-spec                 [HSTOP: resolve [FRICCIÓN ALTA]]
 ui-designer              → ui-spec
 ```
+
+---
+
+## Flow J — Short discovery
+
+**Condition:** `hersa-especificaciones-funcionales.md` already exists (produced by `systems-analyst`). A feature maps to a subset of existing epics/user stories and needs a focused discovery brief → PRD → TDD without running the full business analysis pipeline.
+
+**Sequence:**
+```
+pm-discovery         → focused interview on the relevant epic subset
+                       → saves /documentation/requirements/discovery/DISC-00N.md
+                       → [USER CONFIRMS before next step]
+prd-writer           → reads DISC-00N + relevant epics from the global spec
+                       → saves /documentation/requirements/prd/PRD-00N.md
+                       → [USER REVIEWS AND APPROVES — hard stop]
+tdd-writer           → reads approved PRD + codebase + conventions
+                       → saves /documentation/requirements/tdd/TDD-00N.md
+                       → [USER REVIEWS AND APPROVES — hard stop]
+adr-writer           → (conditional: if TDD §8 flags a hard-to-reverse decision)
+/create-task + /start-task
+django-developer / react-developer
+test-writer
+release-manager
+```
+
+**When NOT to use Flow J:**
+- The feature introduces a new domain concept not covered by the existing spec → use Flow A or update the spec first
+- No spec exists yet → run the business analysis pipeline first (steps 1–3 of the pipeline)
 
 ---
 

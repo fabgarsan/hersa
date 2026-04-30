@@ -1,11 +1,17 @@
 ---
 name: pipeline-conventions
-description: Canonical reference for all document-pipeline agents in the Hersa project. Defines the pre-flight validation protocol, standard operating rules, and the blocking tag vocabulary shared across process-analyst, process-optimizer, systems-analyst, pm-writer, and prd-writer.
+description: Shared operating rules for document-pipeline agents — pre-flight validation, blocking tag vocabulary, handoff protocol. Loaded BY each pipeline agent at task start; does not catalogue flows (use pipeline-flows) and does not plan sequences (use pipeline-runner).
 version: 1.0.0
+model: sonnet
+allowed-tools: Read
 when_to_use:
   - Any document-pipeline agent needs to validate its input file before proceeding
   - A pipeline agent is being authored or updated and needs the shared operating rules
   - A new pipeline stage is being added that must participate in the blocking tag protocol
+when_not_to_use:
+  - For agents outside the document pipeline (e.g., django-developer, react-developer, code-reviewer)
+  - As a substitute for agent-specific details (each agent owns its own tag list and BLOCKED recommendation text)
+  - For general code-quality or security linting (use component-linter or security-auditor instead)
 ---
 
 ## When NOT to Use
@@ -70,7 +76,25 @@ Every pipeline agent follows these rules during execution:
 - **Artifact paths only** — never pass inline content larger than 50 lines between steps; always pass file paths
 - **Progress summaries** — after each major analysis step or tool execution, write a one-line progress note
 - **Stay in scope** — never touch files outside the agent's declared scope boundary
-- **Output path** — each pipeline stage writes to its own subdirectory: `process-analyst` → `documentation/process/as-is/`, `process-optimizer` → `documentation/process/to-be/`, `systems-analyst` → `documentation/requirements/specs/`, `pm-writer` → `documentation/requirements/pm/`, `prd-writer` → `documentation/requirements/prd/`, `tdd-writer` → `documentation/requirements/tdd/`
+- **Output path** — each pipeline stage writes to its designated path:
+
+| Agent | Output path |
+|---|---|
+| `process-analyst` | `documentation/process/as-is/` |
+| `process-optimizer` | `documentation/process/to-be/` |
+| `pm-discovery` | `documentation/requirements/discovery/` |
+| `systems-analyst` | `documentation/requirements/specs/hersa-especificaciones-funcionales.md` |
+| `ux-designer` | `documentation/requirements/specs/ux-spec.md` |
+| `ui-designer` | `documentation/requirements/specs/ui-spec.md` |
+| `pm-writer` | `documentation/requirements/pm/` |
+| `prd-writer` | `documentation/requirements/prd/` |
+| `tdd-writer` | `documentation/requirements/tdd/` |
+| `adr-writer` | `documentation/requirements/adr/` |
+| `qa-engineer` | `documentation/qa/` |
+| `legal-compliance-advisor` | `documentation/legal/` |
+| `communications-writer` | `documentation/communications/` |
+
+Note: `documentation/requirements/specs/` is a shared directory for specification artifacts. File naming (hersa-especificaciones-funcionales.md, ux-spec.md, ui-spec.md) differentiates producers.
 
 ---
 
@@ -80,18 +104,24 @@ This is the canonical list of annotation tags used across the pipeline. Each age
 
 | Tag | Meaning | Set by | Scanned by |
 |-----|---------|--------|------------|
-| `[AMBIGUO: ...]` | Ambiguous information in the as-is document | `process-analyst` | `process-optimizer` |
-| `[FALTA INFO: ...]` | Missing critical information needed to proceed | `process-analyst` | `process-optimizer` |
-| `[NECESITA CONTEXTO: ...]` | Business context needed to make a design decision | `process-optimizer` | `systems-analyst` |
-| `[RIESGO LEGAL: ...]` | Potential legal or regulatory risk flagged during optimization | `process-optimizer` | informational only — no agent blocks on this tag |
-| `[BLOCKER: ...]` | Ambiguity that prevents implementation from starting | `systems-analyst` | `pm-writer`, `prd-writer` |
+| `[AMBIGUO]` | Ambiguous information in the as-is document | `process-analyst` | `process-optimizer` |
+| `[FALTA INFO]` | Missing critical information needed to proceed | `process-analyst` | `process-optimizer` |
+| `[NECESITA CONTEXTO]` | Business context needed to make a design decision | `process-optimizer` | `systems-analyst` |
+| `[RIESGO LEGAL]` | Potential legal or regulatory risk | `process-optimizer`, `legal-compliance-advisor` | informational only — no agent blocks on this tag |
+| `[BLOCKER]` | Ambiguity that prevents implementation from starting | `systems-analyst` | `pm-writer`, `prd-writer`, `ux-designer`, `tdd-writer` |
+| `[FRICCIÓN ALTA]` | UX flow has abandonment-risk friction | `ux-designer` | `ui-designer`, `pipeline-trace-linter` |
+| `[FRICCIÓN MEDIA]` | UX friction, informational | `ux-designer` | informational only |
+| `[PANTALLA SOBRECARGADA]` | Screen has multiple competing objectives | `ux-designer` | `ui-designer` |
+| `[LEGAL-BLOCKER]` | CRITICAL legal finding blocking release | `legal-compliance-advisor` | `release-manager`, `prd-writer` |
+| `[QA-BLOCK]` | Acceptance criterion cannot be verified | `qa-engineer` | `release-manager` |
+| `[DATO PENDIENTE]` | Required data missing from source document | `communications-writer` | `communications-writer` |
 
 **Rules for using tags:**
 
 - Tags are written inline in the document at the point of ambiguity.
 - A tag is considered resolved when it is removed from the document by the responsible human or upstream agent.
 - Pipeline agents MUST NOT silently skip, ignore, or override tags — any tag in their scan list triggers the BLOCKED response.
-- The `[RIESGO LEGAL]` tag is surfaced in the output contract summary but does not block any downstream agent.
+- `[RIESGO LEGAL]` and `[FRICCIÓN MEDIA]` are surfaced in the output contract summary but do not block any downstream agent.
 
 ---
 

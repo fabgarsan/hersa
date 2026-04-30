@@ -1,11 +1,18 @@
 ---
 name: skill-scaffold
-description: Generates a new skill directory at .claude/skills/<n>/ with SKILL.md and supporting structure, following the project architecture guide. Use when a new skill has been approved by the reuse-decision step. Do not use for agent generation, for modifying existing skills, or for application code.
-version: 1.0.0
+description: Generates a new skill directory at .claude/skills/<n>/ with SKILL.md and supporting structure, following Claude Code best practices and the 2.1+ skill frontmatter spec. Use when a new skill has been approved by the reuse-decision step. Do not use for agent generation, for modifying existing skills, or for application code.
+version: 1.1.0
+model: sonnet
+allowed-tools: Read Write Edit Glob Bash
 when_to_use:
   - A new skill (not an extension) is being created
   - The capability has passed the reuse-decision check
   - The orchestrator has determined kind=skill
+when_not_to_use:
+  - Modifying or rewriting an existing skill (manual review required)
+  - Generating agents (use agent-scaffold instead)
+  - One-off transformations (recommend inline prompting)
+  - Wrapping a single CLI call with no added logic
 ---
 
 ## When NOT to Use
@@ -29,7 +36,21 @@ when_to_use:
   "failure_modes": [{"condition": "...", "code": "...", "recovery": "..."}, ...],
   "needs_scripts_dir": true|false,            // default false
   "needs_examples_dir": true|false,           // default false
-  "project_root": "<path>"                    // required
+  "project_root": "<path>",                   // required
+  "advanced_fields": {                         // optional (Claude Code 2.1+)
+    "paths": ["<glob>", ...],                  // path-scoped loading
+    "context": "fork",                         // run skill in isolated subagent
+    "agent": "Explore|Plan|general-purpose|<custom>",  // subagent type when context=fork
+    "allowed-tools": "Read Grep Bash(git *)",  // pre-approved tools during skill
+    "disable-model-invocation": true|false,    // manual-only skills
+    "user-invocable": true|false,              // hide from / menu
+    "arguments": ["<name>", ...],              // named arg substitution
+    "argument-hint": "[arg1] [arg2]",          // autocomplete hint
+    "model": "sonnet|opus|haiku|<id>",         // model override
+    "effort": "low|medium|high|xhigh|max",
+    "shell": "bash|powershell",                // default bash
+    "hooks": { ... }                            // lifecycle hooks
+  }
 }
 ```
 
@@ -40,6 +61,14 @@ when_to_use:
 2. **Validate description length** — must be ≤1024 characters. On overrun: return `DESCRIPTION_TOO_LONG: <count>`.
 
 3. **Validate I/O contract** — `inputs_spec` must reference paths or IDs, never inline content. Reject if it contains the words "file content", "blob", "embedded", "paste".
+
+3b. **Validate `advanced_fields` (if provided):**
+   - `context` ∈ {`fork`}
+   - If `context: fork` is set, `agent` must also be set
+   - `effort` ∈ {`low`, `medium`, `high`, `xhigh`, `max`}
+   - `shell` ∈ {`bash`, `powershell`}
+   - `paths` must be a non-empty array of glob strings
+   - On invalid value: return `INVALID_FIELD: <field>=<value>`
 
 4. **Create directory structure:**
    ```
@@ -68,6 +97,20 @@ description: {{description}}
 version: 0.1.0
 when_to_use:
 {{when_to_use_yaml_bullets}}
+# --- Optional Claude Code 2.1+ fields (only emitted when caller provides them) ---
+# paths:                                  # path-scoped loading
+#   - "{{path_glob}}"
+# context: fork                           # run skill in isolated subagent
+# agent: Explore                          # subagent type
+# allowed-tools: Read Grep Bash(git *)    # pre-approved tools
+# disable-model-invocation: true|false
+# user-invocable: true|false
+# arguments: [{{arg_names}}]
+# argument-hint: "[arg1] [arg2]"
+# model: sonnet|opus|haiku
+# effort: low|medium|high|xhigh|max
+# shell: bash|powershell
+# hooks: { ... }
 ---
 
 ## When NOT to Use
@@ -113,6 +156,8 @@ Plus a one-line summary: `Created skill <n> (SKILL.md: N lines, dirs: <list>).`
 | Name collision | `NAME_COLLISION: <n>` | Caller renames or uses EXTEND |
 | Description too long | `DESCRIPTION_TOO_LONG: <count>` | Caller compresses |
 | I/O contract violation | `INLINE_CONTENT_DETECTED` | Caller rewrites I/O to use paths |
+| Invalid advanced field value | `INVALID_FIELD: <field>=<value>` | Caller must use a value in the allowed set |
+| `context: fork` without `agent` | `MISSING_FORK_AGENT` | Caller must set `agent:` when `context: fork` |
 | Filesystem write failure | `WRITE_FAILED: <reason>` | Caller checks permissions |
 
 ## Token Budget

@@ -3,7 +3,7 @@ name: communications-writer
 persona: Vicky
 description: Transforms internal artifacts (diagnostics, specs, reports, process documents, strategic recommendations) into polished stakeholder communications — slide decks, executive memos, service proposals, and briefs — adapting language, structure, and detail level to the target audience.
 version: 0.2.0
-model: claude-sonnet-4-6
+model: sonnet
 tools:
   - Read    # reads the source artifact and business context files
   - Write   # writes the output communication to documentation/communications/
@@ -21,6 +21,8 @@ when_not_to_use:
   - For internal development communications (code, commits, reviews)
   - When the source artifact contains unresolved items ([BLOCKER], [NECESITA CONTEXTO], [DATO PENDIENTE])
 ---
+
+@.claude/shared/hersa-context.md
 
 ## Scope & Boundary
 

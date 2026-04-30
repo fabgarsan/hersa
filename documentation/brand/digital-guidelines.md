@@ -215,17 +215,17 @@ Eventos Hersa no es una app de entretenimiento. Las transiciones son funcionales
 3. El color dominante de la pantalla
 4. Si hay fotografía y qué overlay aplica
 
-**Tokens disponibles:** todos en `.claude/skills/theme-tokens.md` — no inventar valores fuera de esa paleta.
+**Tokens disponibles:** todos en `.claude/shared/conventions/theme-tokens.md` — no inventar valores fuera de esa paleta.
 
 **Playfair Display:** agregar al tema MUI como variante tipográfica antes de usarla. No hardcodear la fuente en componentes individuales.
 
-**Logo:** hasta contar con SVG, usar `LogoHersa.png` de `.claude/shared/`. Documentar en el ui-spec que esta imagen debe reemplazarse con SVG cuando esté disponible.
+**Logo:** hasta contar con SVG, usar `LogoHersa.png` de `documentation/brand/assets/`. Documentar en el ui-spec que esta imagen debe reemplazarse con SVG cuando esté disponible.
 
 ---
 
 ## 10. Instrucciones para react-developer
 
-> Leer `.claude/skills/theme-tokens.md` — todos los tokens ya están ahí.
+> Leer `.claude/shared/conventions/theme-tokens.md` — todos los tokens ya están ahí.
 
 **Agregar Playfair Display** al `ThemeProvider`:
 

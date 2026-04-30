@@ -1,5 +1,6 @@
 import js from "@eslint/js";
 import globals from "globals";
+import reactPlugin from "eslint-plugin-react";
 import reactHooks from "eslint-plugin-react-hooks";
 import reactRefresh from "eslint-plugin-react-refresh";
 import tseslint from "typescript-eslint";
@@ -32,6 +33,7 @@ const hersaStylePlugin = {
 
         const basename = path.basename(filename, ".tsx");
         if (basename === "main") return {};
+        if (basename.endsWith("Provider")) return {};
 
         const expectedModule = `${basename}.module.scss`;
         let hasScssImport = false;
@@ -94,6 +96,7 @@ export default tseslint.config(
       globals: globals.browser,
     },
     plugins: {
+      react: reactPlugin,
       "react-hooks": reactHooks,
       "react-refresh": reactRefresh,
       "hersa-style": hersaStylePlugin,
@@ -103,6 +106,28 @@ export default tseslint.config(
       "react-refresh/only-export-components": [
         "warn",
         { allowConstantExport: true },
+      ],
+      "react/no-array-index-key": "error",
+      "@typescript-eslint/consistent-type-imports": [
+        "error",
+        { prefer: "type-imports", fixStyle: "inline-type-imports" },
+      ],
+      "no-restricted-imports": [
+        "error",
+        {
+          paths: [
+            {
+              name: "@mui/material",
+              message:
+                "Use direct imports: import Box from '@mui/material/Box'",
+            },
+            {
+              name: "@mui/icons-material",
+              message:
+                "Use direct imports: import Add from '@mui/icons-material/Add'",
+            },
+          ],
+        },
       ],
       "hersa-style/require-scss-module": "error",
       "no-restricted-syntax": [

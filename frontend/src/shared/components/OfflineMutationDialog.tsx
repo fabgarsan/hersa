@@ -1,12 +1,12 @@
-import Dialog from '@mui/material/Dialog';
-import DialogContent from '@mui/material/DialogContent';
-import DialogActions from '@mui/material/DialogActions';
-import Button from '@mui/material/Button';
-import Typography from '@mui/material/Typography';
-import WifiOffIcon from '@mui/icons-material/WifiOff';
+import Dialog from "@mui/material/Dialog";
+import DialogContent from "@mui/material/DialogContent";
+import DialogActions from "@mui/material/DialogActions";
+import Button from "@mui/material/Button";
+import Typography from "@mui/material/Typography";
+import WifiOffIcon from "@mui/icons-material/WifiOff";
 
-import type { OfflineMutationDialogProps } from './types';
-import styles from './OfflineMutationDialog.module.scss';
+import type { OfflineMutationDialogProps } from "./types";
+import styles from "./OfflineMutationDialog.module.scss";
 
 export function OfflineMutationDialog({ open, onClose }: OfflineMutationDialogProps) {
   return (
@@ -41,12 +41,12 @@ export function OfflineMutationDialog({ open, onClose }: OfflineMutationDialogPr
         </Typography>
 
         <Typography variant="body1" align="center" className={styles.body}>
-          No hay conexión en este momento. Los datos no fueron enviados. Cuando recuperes la
-          señal, intenta guardar de nuevo.
+          No hay conexión en este momento. Los datos no fueron enviados. Cuando recuperes la señal,
+          intenta guardar de nuevo.
         </Typography>
       </DialogContent>
 
-      <DialogActions className={styles.actions} disableSpacing sx={{ px: 3, pb: 2 }}>
+      <DialogActions className={styles.actions} disableSpacing>
         {/*
          * size="large" → 48px height, satisfying the 44px touch target minimum.
          * autoFocus: focus moves here immediately on Dialog open (per UI spec §5.4).

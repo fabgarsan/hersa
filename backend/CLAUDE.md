@@ -15,14 +15,15 @@ Django REST API. Loaded only when Claude works on files inside this directory.
 | Testing    | pytest, pytest-django, factory_boy, Faker, parameterized |
 | Linting    | ruff, mypy                                       |
 
-## Skills — load on demand
+## Load on demand
 
 | When you are... | Load |
 |-----------------|------|
-| Creating models, views, serializers, or scaffolding a new app | `.claude/skills/backend-conventions.md` |
-| Implementing or reviewing any API endpoint | `.claude/skills/api-contract.md` |
-| Writing views or serializers that handle errors | `.claude/skills/error-handling.md` |
-| Touching auth or sensitive data | `.claude/skills/security-checklist.md` |
+| Implementing or reviewing any API endpoint | `.claude/shared/conventions/api-contract.md` |
+| Writing views or serializers that handle errors | `.claude/shared/conventions/error-handling.md` |
+| Touching auth or sensitive data | `.claude/shared/conventions/security-checklist.md` |
+
+> `backend-conventions.md` is a path-scoped rule in `.claude/rules/backend/` — auto-loaded when editing models, views, serializers, or tests.
 
 ## Internal structure
 
@@ -96,15 +97,12 @@ Every app has two files for auxiliary logic. The distinction is mandatory:
 
 ## API contract
 
-URL conventions, base paths per domain resource, HTTP response codes, pagination, and response/error shapes are defined in `.claude/skills/api-contract.md` (shared between backend and frontend). Django-side specifics:
+URL conventions, base paths per domain resource, HTTP response codes, pagination, and response/error shapes are defined in `.claude/shared/conventions/api-contract.md` (shared between backend and frontend). Django-side specifics:
 
 - Namespace per app: `app_name = 'events'` in each `urls.py`.
 - Use `include()` to group URLs by app in the root `urls.py`.
 
 ## Settings & environment variables
-
-- `DJANGO_SETTINGS_MODULE=config.settings.development` in `.env.local`.
-- `DJANGO_SETTINGS_MODULE=config.settings.production` in EB environment properties.
 
 | File               | Purpose                                     |
 |--------------------|---------------------------------------------|
@@ -112,16 +110,9 @@ URL conventions, base paths per domain resource, HTTP response codes, pagination
 | `.env.production`  | Production values (never commit)            |
 | `.env.example`     | Committed template with all keys, no values |
 
-## Migrations
-
-- Never modify an existing migration — always create a new one with `makemigrations`.
-- Describe the intent in the migration name when it is not obvious from the auto-generated name.
-- Always create `migrations/__init__.py` when scaffolding a new app — `makemigrations` fails without it.
-
 ## Signals
 
-- Defined in a dedicated `signals.py` file per app.
-- Registered in `AppConfig.ready()` of the corresponding app — never at module level.
+- Defined in `signals.py` per app; registered in `AppConfig.ready()` — never at module level.
 
 ## Development commands
 
@@ -150,14 +141,10 @@ docker compose build backend       # rebuild image after Pipfile changes
 | `Dockerfile` | AWS Elastic Beanstalk | `[packages]` only |
 | `Dockerfile.dev` | `docker-compose.yml` (local) | `[packages]` + `[dev-packages]` |
 
-Dev-only tools (e.g. Silk) are in `[dev-packages]` in Pipfile and are never included in the production image.
-
 ## API profiling (Silk)
 
 Silk is active only in `development.py`. Dashboard at http://localhost:8000/silk/ — requires `is_staff=True`.
 
 ## Elastic Beanstalk
 
-- Entry point: `config.wsgi:application`.
-- The `Dockerfile` in this folder is the one EB uses (no dev-packages).
-- Migrations on deploy: configure in `.ebextensions/db-migrate.config`.
+- Entry point: `config.wsgi:application`; uses `Dockerfile` (no dev-packages); migrations via `.ebextensions/db-migrate.config`.

@@ -2,6 +2,10 @@
 name: review-conventions
 description: Shared operating rules for all review agents — code-reviewer and security-auditor. Defines severity scale, output format, read-only discipline, and handoff protocol.
 version: 1.0.0
+model: sonnet
+allowed-tools: Read
+context: fork
+agent: Explore
 when_to_use:
   - code-reviewer or security-auditor loads this at the start of any review task
   - When authoring a new review agent that produces severity-graded findings

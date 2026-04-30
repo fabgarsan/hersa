@@ -1,4 +1,5 @@
 import { useState } from "react";
+import type React from "react";
 import Box from "@mui/material/Box";
 import Drawer from "@mui/material/Drawer";
 import Toolbar from "@mui/material/Toolbar";
@@ -12,6 +13,10 @@ import styles from "./Layout.module.scss";
 export function Layout({ children }: LayoutProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const indicatorHeight = useConnectivityIndicatorHeight();
+  const mainStyle =
+    indicatorHeight > 0
+      ? ({ "--indicator-offset": `${indicatorHeight}px` } as React.CSSProperties)
+      : undefined;
 
   const handleDrawerToggle = () => setMobileOpen((prev) => !prev);
 
@@ -38,11 +43,7 @@ export function Layout({ children }: LayoutProps) {
        * is visible, preventing the bar from overlapping the main content area.
        * Transitions synchronised with the bar's 250ms fade-out via CSS on the indicator.
        */}
-      <Box
-        component="main"
-        className={styles.main}
-        style={{ paddingTop: indicatorHeight > 0 ? indicatorHeight : undefined }}
-      >
+      <Box component="main" className={styles.main} style={mainStyle}>
         <Toolbar />
         <Box className={styles.content}>{children}</Box>
       </Box>

@@ -2,7 +2,7 @@
 
 **Note:** If the Linear MCP tools are not available, help the user install them:
 
-- See docs here: `.claude/shared/mpc.md`
+- See docs here: `documentation/setup/mcp.md`
 - TL;DR - create a Linear API key and run this command:
 
 ```bash

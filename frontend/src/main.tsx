@@ -4,9 +4,9 @@ import { MutationCache, QueryClient } from "@tanstack/react-query";
 import { isNetworkError, offlineMutationEvents } from "./api/offlineMutationEvents";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
-import { createSyncStoragePersister } from "@tanstack/query-sync-storage-persister";
+import { createAsyncStoragePersister } from "@tanstack/query-async-storage-persister";
 import { BrowserRouter } from "react-router-dom";
-import { ThemeProvider } from "@mui/material";
+import { ThemeProvider } from "@mui/material/styles";
 import { CacheProvider } from "@emotion/react";
 import createCache from "@emotion/cache";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -31,7 +31,7 @@ const queryClient = new QueryClient({
   },
 });
 
-const persister = createSyncStoragePersister({
+const persister = createAsyncStoragePersister({
   storage: window.localStorage,
   key: "hersa-rq-cache",
 });
