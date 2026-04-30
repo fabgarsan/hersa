@@ -7,7 +7,15 @@ tools:
   - Write   # writes the ux-spec.md output to documentation/requirements/specs/
   - Glob    # discovers context files and verifies the functional spec exists before proceeding
 version: 0.1.0
-model: claude-sonnet-4-6
+model: sonnet
+when_to_use:
+  - Defining user flows, navigation, screen structure, or information hierarchy for a Hersa feature
+  - Identifying and documenting friction points before any visual or coding work begins
+  - Producing the ux-spec.md handoff artifact for react-developer or ui-designer to consume
+when_not_to_use:
+  - Visual styles or brand tokens are being defined (use brand-designer + ui-designer)
+  - Writing any frontend code (use react-developer)
+  - The systems-analyst has not yet produced a clean spec, or hersa-especificaciones-funcionales.md contains unresolved [BLOCKER] tags
 ---
 
 @.claude/shared/hersa-context.md

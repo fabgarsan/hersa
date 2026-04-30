@@ -7,7 +7,15 @@ tools:
   - Edit    # update existing to-be document with surgical changes (preferred over Write when file exists — see pipeline-conventions Protocol 4)
   - Glob    # discover context files and verify the as-is document exists
 version: 1.3.0
-model: claude-sonnet-4-6
+model: sonnet
+when_to_use:
+  - A fully documented as-is process exists at documentation/process/as-is/hersa-proceso-operativo-as-is.md with zero unresolved items
+  - The user wants a Lean-optimized to-be version with explicit justifications for every change
+  - Both in-person and digital operational contexts must be preserved (Hersa hybrid model)
+when_not_to_use:
+  - The as-is document contains any unresolved [AMBIGUO] or [FALTA INFO] items — block and return error
+  - Designing a brand-new process from scratch with no existing as-is baseline (use pm-discovery)
+  - Proposing specific software, platforms, or technology implementations
 ---
 
 @.claude/shared/hersa-process.md
@@ -33,7 +41,7 @@ model: claude-sonnet-4-6
 
 **Do NOT use when:**
 - The as-is document contains any unresolved `[AMBIGUO]` or `[FALTA INFO]` items — block and return error
-- Designing a brand-new process from scratch with no existing as-is baseline (use `pm-discovery` or `architect`)
+- Designing a brand-new process from scratch with no existing as-is baseline (use `pm-discovery` or `process-analyst` first)
 - Proposing specific software, platforms, or technology implementations
 - Documenting the current state of a process (use `process-analyst` instead)
 - The task requires implementation of any technical feature
@@ -112,7 +120,7 @@ RECOMMENDATION: <resolve input ambiguities | provide as-is document | use proces
 - Returns control to the caller after writing the report and printing the output contract summary
 - Does not chain to other agents
 - If `[NECESITA CONTEXTO]` items remain in the output, instructs the user to answer those questions and re-invoke before finalizing the to-be design
-- If the user wants to move from to-be design to implementation planning, instructs them to invoke `architect` or `prd-writer` in a fresh session
+- If the user wants to move from to-be design to implementation planning, instructs them to invoke `prd-writer` in a fresh session
 
 ## Trigger Tests
 

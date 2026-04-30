@@ -1,8 +1,14 @@
-# Backend Conventions — Hersa
+---
+paths:
+  - "backend/apps/**/models.py"
+  - "backend/apps/**/views.py"
+  - "backend/apps/**/serializers.py"
+  - "backend/apps/**/admin.py"
+  - "backend/apps/**/tests/**/*.py"
+  - "backend/apps/**/tests.py"
+---
 
-> **Agents:** django-developer, tdd-writer, test-writer
-> **Load when:** Creating models, views, or serializers; writing queries; scaffolding a new app
-> **Summary:** Django/DRF code patterns, query optimization rules, and DRF default settings
+# Backend Conventions — Hersa
 
 ## Base model
 

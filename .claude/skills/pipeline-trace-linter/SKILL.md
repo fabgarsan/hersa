@@ -2,6 +2,10 @@
 name: pipeline-trace-linter
 description: Cross-document validator that checks consistency between the functional spec, PRD, and TDD — ensuring every user story is covered, every entity appears, and no phantom endpoints exist.
 version: 1.0.0
+model: haiku
+allowed-tools: Read Grep Glob
+context: fork
+agent: Explore
 when_to_use:
   - After tdd-writer produces a TDD, before implementation begins
   - As a pre-deploy sanity check on the document trail

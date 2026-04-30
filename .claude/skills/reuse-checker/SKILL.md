@@ -2,10 +2,18 @@
 name: reuse-checker
 description: Decides whether a proposed agent or skill should be created NEW, used to EXTEND an existing component, or handled INLINE without creating any component. Runs before generation. Do not use for post-generation review or for application code.
 version: 1.0.0
+model: sonnet
+allowed-tools: Read Grep Glob
+context: fork
+agent: Explore
 when_to_use:
   - Before generating a new agent or skill
   - When a user asks to formalize a recurring workflow
   - When deciding whether to extend an existing component vs create new
+when_not_to_use:
+  - After component generation (use component-linter instead)
+  - For reviewing or refactoring existing components
+  - For application source code decisions
 ---
 
 ## When NOT to Use

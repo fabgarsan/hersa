@@ -1,8 +1,15 @@
-# React Conventions — Hersa
+---
+paths:
+  - "frontend/src/api/**/*.ts"
+  - "frontend/src/**/api/*.ts"
+  - "frontend/src/**/*Query.ts"
+  - "frontend/src/**/*Mutation.ts"
+  - "frontend/src/contexts/**/*.tsx"
+  - "frontend/src/main.tsx"
+  - "frontend/src/App.tsx"
+---
 
-> **Agents:** react-developer, tdd-writer, test-writer
-> **Load when:** Writing data-fetching code, wiring up axios/React Query, or structuring global state
-> **Summary:** Axios instance pattern, React Query file conventions, state management decision tree
+# React Conventions — Hersa
 
 ## HTTP client — axios
 

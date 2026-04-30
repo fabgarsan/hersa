@@ -48,7 +48,6 @@
 }
 
 .actions {
-  // Reset MUI DialogActions default padding; handled by dialogPaper
-  padding: 0 !important;
+  padding: 0 v.sp(3) v.sp(2) !important;
   width: 100%;
 }

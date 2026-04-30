@@ -1,7 +1,9 @@
 ---
 name: pipeline-runner
-description: Reads a flow from pipeline-flows and generates the ordered invocation sequence for a given start and end agent. Emits a declarative plan; does not invoke agents.
+description: Generates the ordered invocation sequence (start → end agent) for a flow defined in pipeline-flows. Emits a declarative plan only — does not invoke agents and does not validate cross-document consistency (use pipeline-trace-linter).
 version: 1.0.0
+model: sonnet
+allowed-tools: Read
 when_to_use:
   - When the user says "execute Flow X from agent Y to agent Z"
   - When starting a non-trivial task and the user wants a step-by-step plan before invocating agents

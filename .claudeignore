@@ -47,3 +47,6 @@ htmlcov/
 
 # Git hooks internals
 .husky/_/
+
+# Agent memory contents (directories committed for documentation; contents are user-local)
+.claude/agent-memory/*/*

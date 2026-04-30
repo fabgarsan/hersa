@@ -1,6 +1,6 @@
 ---
 description: Create a Linear issue from current branch changes, enforce branch naming convention, and optionally commit and push
-model: claude-sonnet-4-6
+model: sonnet
 ---
 
 # Capture Task

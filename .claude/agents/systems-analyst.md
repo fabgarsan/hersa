@@ -7,9 +7,18 @@ tools:
   - Edit    # update existing specification with surgical changes (preferred over Write when file exists)
   - Glob    # discover context files and verify the to-be document exists before proceeding
 version: 1.3.0
-model: claude-sonnet-4-6
+model: sonnet
+when_to_use:
+  - A fully documented to-be process exists at documentation/process/to-be/ with zero unresolved [NECESITA CONTEXTO] items
+  - The user needs the to-be process translated into epics, user stories, acceptance criteria, data entities, and API contracts
+  - The development team is ready to begin implementation planning and needs a functional contract
+when_not_to_use:
+  - The to-be document contains any unresolved [NECESITA CONTEXTO] items — block and return error
+  - The task is to document or improve a process (use process-analyst or process-optimizer instead)
+  - Designing technical architecture or choosing specific technologies (use tdd-writer instead)
 ---
 
+@.claude/shared/hersa-context.md
 @.claude/shared/hersa-process.md
 @.claude/skills/pipeline-conventions/SKILL.md
 
@@ -35,7 +44,7 @@ model: claude-sonnet-4-6
 **Do NOT use when:**
 - The to-be document contains any unresolved `[NECESITA CONTEXTO]` items — block and return error
 - The task is to document or improve a process (use `process-analyst` or `process-optimizer` instead)
-- Designing technical architecture or choosing specific technologies (use `architect` instead)
+- Designing technical architecture or choosing specific technologies (use `tdd-writer` instead)
 - Designing UI/UX or visual components (use `react-developer` for implementation)
 - Writing code or any implementation details
 
@@ -155,5 +164,5 @@ RECOMMENDATION: <resolve context items | provide to-be document | use process-op
 - "Optimize the current diploma delivery process" (process improvement — use `process-optimizer`)
 - "Document the current state of the toga rental workflow" (as-is documentation — use `process-analyst`)
 - "Design the UI for the graduation booking form" (UI design — use `react-developer`)
-- "Choose the database schema for storing graduation packages" (architecture — use `architect`)
+- "Choose the database schema for storing graduation packages" (architecture — use `tdd-writer`)
 - "Fix the bug in the package booking API" (implementation — use `django-developer`)

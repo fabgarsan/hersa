@@ -2,6 +2,8 @@
 name: developer-conventions
 description: Shared operating rules for all implementation agents — django-developer, react-developer, tdd-writer, and test-writer. Defines grep-first discovery, surgical edit discipline, I/O conventions, commit format, and when to load specific convention files.
 version: 1.0.0
+model: sonnet
+allowed-tools: Read
 when_to_use:
   - Any implementation agent (django-developer, react-developer, tdd-writer, test-writer) should load this at the start of a task
   - When authoring a new implementation agent that needs shared operating rules
@@ -40,13 +42,11 @@ Default to zero comments. Write a comment only when the WHY is non-obvious (hidd
 
 | File | Load when |
 |---|---|
-| `.claude/skills/api-contract.md` | Implementing or reviewing any API endpoint |
-| `.claude/skills/backend-conventions.md` | Creating Django models, views, serializers, or a new app |
-| `.claude/skills/error-handling.md` | Writing views, serializers, or React components that handle API responses |
-| `.claude/skills/security-checklist.md` | Any auth, PII, or payment-sensitive module |
-| `.claude/skills/react-conventions.md` | Writing axios interceptors, React Query hooks, or managing auth/state |
-| `.claude/skills/mui-conventions.md` | Choosing MUI components, Grid2, or wiring up RHF forms |
-| `.claude/skills/theme-tokens.md` | Defining or applying Hersa brand colors, typography, or logo rules |
+| `.claude/shared/conventions/api-contract.md` | Implementing or reviewing any API endpoint |
+| `.claude/shared/conventions/error-handling.md` | Writing views, serializers, or React components that handle API responses |
+| `.claude/shared/conventions/security-checklist.md` | Any auth, PII, or payment-sensitive module |
+
+> `backend-conventions.md`, `mui-conventions.md`, `react-conventions.md`, `theme-tokens.md` are now path-scoped rules in `.claude/rules/` — auto-loaded when editing matching files; no explicit load needed.
 
 ## Handoff Protocol
 

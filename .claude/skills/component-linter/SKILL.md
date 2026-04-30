@@ -1,11 +1,20 @@
 ---
 name: component-linter
-description: Validates a generated agent file or skill directory against the project architecture rules. Runs after generation. Do not use for reuse decisions, for live components already in production, or for application code.
-version: 1.0.0
+description: Validates a generated agent file or skill directory against the project architecture rules and Claude Code 2.1+ frontmatter spec. Runs after generation. Do not use for reuse decisions, for live components already in production, or for application code.
+version: 1.1.0
+kb_version: "2026-04-29T00:00:00"
+model: haiku
+allowed-tools: Read Grep Glob
+context: fork
+agent: Explore
 when_to_use:
   - Immediately after a new component has been generated
   - Before merging a hand-written agent or skill
   - When verifying that a component still meets the architecture rules after edits
+when_not_to_use:
+  - Before generation (use reuse-checker instead)
+  - For application source code review
+  - For auditing components already in long-term production (use a separate audit process)
 ---
 
 ## When NOT to Use
@@ -45,21 +54,45 @@ Run the checklist below. Each item is PASS or FAIL.
 11. Output contract defined for both success AND failure cases
 12. Handoff protocol present
 13. Senior-engineer persona language present in system prompt
+14. **`model:` field present** (CLAUDE.md rule — every agent MUST declare an explicit model)
+
+### Agent advanced-field checks (Claude Code 2.1+, only run when field is present)
+
+15. `memory` ∈ {`user`, `project`, `local`}
+16. `permissionMode` ∈ {`default`, `acceptEdits`, `plan`, `auto`, `dontAsk`, `bypassPermissions`}
+17. `effort` ∈ {`low`, `medium`, `high`, `xhigh`, `max`}
+18. `color` ∈ {`red`, `blue`, `green`, `yellow`, `purple`, `orange`, `pink`, `cyan`}
+19. `isolation` ∈ {`worktree`}
+20. `background` is boolean
+21. `maxTurns` is a positive integer
+22. `skills:` — every referenced skill exists under `<project_root>/.claude/skills/`
+23. `disallowedTools:` is a non-empty array of strings (warn if present without `tools:` allowlist)
 
 ### Skill-only checks
 
-14. `SKILL.md` ≤500 lines
-15. Inputs reference paths/IDs (reject if description contains "file content", "blob", "embedded", "paste")
-16. Outputs return paths + summary, not full operation logs
-17. Failure modes table present with ≥1 row
-18. Procedure is numbered steps, not narrative
-19. No skill→agent invocations referenced anywhere
+24. `SKILL.md` ≤500 lines
+25. Inputs reference paths/IDs (reject if description contains "file content", "blob", "embedded", "paste")
+26. Outputs return paths + summary, not full operation logs
+27. Failure modes table present with ≥1 row
+28. Procedure is numbered steps, not narrative
+29. No skill→agent invocations referenced anywhere
+
+### Skill advanced-field checks (Claude Code 2.1+, only run when field is present)
+
+30. `paths:` is a non-empty array of glob strings
+31. `context` ∈ {`fork`}
+32. If `context: fork`, `agent:` must also be set
+33. `effort` ∈ {`low`, `medium`, `high`, `xhigh`, `max`}
+34. `shell` ∈ {`bash`, `powershell`}
+35. `disable-model-invocation` is boolean
+36. `user-invocable` is boolean
+37. `disable-model-invocation: true` AND skill listed in any agent's `skills:` field → FAIL (preloading is not allowed for manual-only skills, per KB §3.5)
 
 ### Cross-component checks
 
-20. No name collision with existing components
-21. No content overlap >50% with any existing component
-22. Does not duplicate facts already in CLAUDE.md
+38. No name collision with existing components
+39. No content overlap >50% with any existing component
+40. Does not duplicate facts already in CLAUDE.md
 
 ## Outputs
 

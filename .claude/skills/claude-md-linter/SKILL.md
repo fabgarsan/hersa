@@ -1,12 +1,21 @@
 ---
 name: claude-md-linter
-description: Validates an existing CLAUDE.md file against the project architecture guide rules (sections 1.1-1.5). Detects missing required sections, length overruns, prose paragraphs, dead registry references, and structural violations. Use in CI or before merging changes to CLAUDE.md. Do not use for generating CLAUDE.md from scratch.
-version: 1.0.0
+description: Validates an existing CLAUDE.md file (and any .claude/rules/*.md path-scoped rule files) against Claude Code best practices and the 2.1+ spec. Detects missing required sections, length overruns, prose paragraphs, dead registry references, structural violations, and malformed path-scoped rules. Use in CI or before merging changes to CLAUDE.md. Do not use for generating CLAUDE.md from scratch.
+version: 1.1.0
+kb_version: "2026-04-29T00:00:00"
+model: haiku
+allowed-tools: Read Grep Glob
+context: fork
+agent: Explore
 when_to_use:
   - Before merging changes to CLAUDE.md
   - Periodic CLAUDE.md health checks (e.g., quarterly audits)
   - After running claude-md-architect to validate the output
   - In CI pipelines as a pre-merge check
+when_not_to_use:
+  - Generating a CLAUDE.md from scratch (use claude-md-architect agent)
+  - Validating agents or skills (use component-linter instead)
+  - Reviewing application source code
 ---
 
 ## When NOT to Use
@@ -30,7 +39,7 @@ when_to_use:
 
 Run the checklist below. Each item is PASS or FAIL.
 
-### Section 1: Required content (architecture guide §1.1)
+### Section 1: Required content (KB §9.1)
 
 1. Project identity present (name + 1-line purpose)
 2. Tech stack section present (languages, frameworks, versions)
@@ -41,7 +50,7 @@ Run the checklist below. Each item is PASS or FAIL.
 7. Agent Registry table present (even if empty placeholder)
 8. Skill Registry table present (even if empty placeholder)
 
-### Section 2: Length and format (architecture guide §1.3, §1.4)
+### Section 2: Length and format (KB §9.1, §9.8)
 
 9. Total line count ≤ `max_lines` (default 300)
 10. Estimated token count ≤ `max_tokens` (default 2000) — approx via `wc -w * 1.3`
@@ -50,7 +59,7 @@ Run the checklist below. Each item is PASS or FAIL.
 13. Imperative voice used in commands ("Run X", not "You should run X") — sample-checked, not exhaustive
 14. Each bullet contains one fact (no compound statements joined by "and")
 
-### Section 3: Registry integrity (architecture guide §4.4)
+### Section 3: Registry integrity (KB §9.1)
 
 15. Every agent in Agent Registry has a corresponding file in `<project_root>/.claude/agents/`
 16. Every file in `<project_root>/.claude/agents/` has a row in Agent Registry
@@ -58,16 +67,38 @@ Run the checklist below. Each item is PASS or FAIL.
 18. Every directory in `<project_root>/.claude/skills/` has a row in Skill Registry
 19. No duplicate names in either registry
 
-### Section 4: Companion files (architecture guide §1.5)
+### Section 4: Companion files (KB §1.7)
 
 20. `.claudeignore` exists at project root (warning, not failure, if absent)
 21. `.claudeignore` excludes at minimum: `node_modules/`, `.git/`, `dist/`, `build/` (warnings per missing item)
 
-### Section 5: Anti-patterns (architecture guide §5.5)
+### Section 5: Anti-patterns (KB §9.4)
 
 22. Does not embed full agent system prompts (>50 lines of indented content suggests prompt-in-prompt)
 23. Does not duplicate procedural content from any skill (cross-checked by detecting >70% line overlap with any SKILL.md body)
 24. Does not contain the literal string `TODO` or `FIXME` (these signal incomplete CLAUDE.md)
+
+### Section 6: `@`-imports (KB §1.4)
+
+25. Every `@path/to/file` import resolves to an existing file (relative to the importing file)
+26. Import depth ≤5 levels (KB §1.4 limit)
+
+### Section 7: Path-scoped rules (`.claude/rules/*.md`, KB §1.3)
+
+For each `.md` file under `<project_root>/.claude/rules/` (recursive):
+
+27. Has YAML frontmatter (between `---` markers)
+28. If `paths:` is present, it is a non-empty array of strings
+29. Glob patterns in `paths:` use supported syntax (`**/*.ext`, `dir/**/*`, `*.md`, `dir/*.tsx`, `dir/**/*.{ts,tsx}`)
+30. File body is non-empty (rule with no content is a dead file — warning)
+31. Body length ≤ 300 lines (consistency with CLAUDE.md ceiling)
+32. Body contains no prose paragraphs >3 consecutive sentences
+33. No nested H1 (`#`) — rule files use H1 once for title, then H2 only
+
+Aggregate (cross-file):
+
+34. No two rule files declare overlapping `paths:` with conflicting rules (warning if globs intersect)
+35. If a topic appears both in CLAUDE.md and in a `.claude/rules/<topic>.md`, flag DRY violation
 
 ## Outputs
 
@@ -80,6 +111,9 @@ METRICS:
   estimated_tokens: <N>
   agents_registered: <N>
   skills_registered: <N>
+  rules_files: <N>
+  imports_resolved: <N>
+  imports_dead: <N>
 ```
 
 ## Failure Modes
@@ -93,7 +127,8 @@ METRICS:
 
 ## Bundled Scripts
 
-`scripts/check_registry.sh` — cross-references CLAUDE.md registries against the filesystem.
+- `scripts/check_registry.sh` — cross-references CLAUDE.md registries against the filesystem.
+- `scripts/check_rules.sh` — validates each `.md` file under `.claude/rules/` (frontmatter present, `paths:` non-empty when declared, body ≤300 lines, single H1).
 
 ## Token Budget
 

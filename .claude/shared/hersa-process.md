@@ -301,5 +301,5 @@ Pais → Departamento → Ciudad (master lookup tables)
 
 - **Full process:** See `documentation/process/to-be/hersa-proceso-operativo-to-be.md` (Spanish, v2.1)
 - **Functional specifications:** See `documentation/requirements/specs/hersa-especificaciones-funcionales.md` (Spanish, v2.0)
-- **API contracts:** See `.claude/skills/api-contract.md` (or `api-contract.md` in the skills directory)
+- **API contracts:** See `.claude/shared/conventions/api-contract.md` (or `api-contract.md` in the skills directory)
 - **Hersa company context:** See `.claude/shared/hersa-context.md`

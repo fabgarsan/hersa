@@ -88,4 +88,4 @@ See `documentation/process/to-be/hersa-proceso-operativo-to-be.md` (Spanish, v2.
 
 See `documentation/requirements/specs/hersa-especificaciones-funcionales.md` (Spanish, v2.0) for functional specifications, user stories, and API contracts.
 
-see `/Users/fabiogarciasanchez/Documents/developments/hersa/.claude/shared/LogoHersa.png` for company logo.
+see `documentation/brand/assets/LogoHersa.png` for company logo.
