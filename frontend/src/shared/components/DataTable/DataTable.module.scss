@@ -102,6 +102,17 @@
   }
 }
 
+// --- Selection bar (bulk actions) ---
+.selectionBar {
+  display: flex;
+  align-items: center;
+  gap: v.sp(1);
+  padding: v.sp(1) v.sp(2);
+  background-color: v.$primary-light;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  color: #ffffff;
+}
+
 // --- Detail rows ---
 .detailRow {
   background-color: #eef2f7 !important; // light navy tint for visual distinction

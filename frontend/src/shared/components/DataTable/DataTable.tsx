@@ -6,7 +6,12 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import Box from "@mui/material/Box";
 import IconButton from "@mui/material/IconButton";
 import { DataGrid } from "@mui/x-data-grid";
-import type { GridColDef, GridRenderCellParams, GridSortModel } from "@mui/x-data-grid";
+import type {
+  GridColDef,
+  GridRenderCellParams,
+  GridRowSelectionModel,
+  GridSortModel,
+} from "@mui/x-data-grid";
 
 import { EmptyState } from "@shared/components/EmptyState";
 import { ErrorState } from "@shared/components/ErrorState";
@@ -85,6 +90,8 @@ export function DataTable<R extends { id: string | number }>({
   toolbarActions,
   exportFilename,
   pageSizeOptions = [10, 25, 50],
+  selectable = false,
+  selectionActions,
 }: DataTableProps<R>) {
   // --- Persistent column config ---
   const fieldNames = useMemo(() => columns.map((c) => c.field), [columns]);
@@ -114,6 +121,10 @@ export function DataTable<R extends { id: string | number }>({
   useEffect(() => {
     savePersistedConfig(tableId, { visibility: columnVisibility, order: columnOrder });
   }, [tableId, columnVisibility, columnOrder]);
+
+  // --- Selection state ---
+  const [selectedIds, setSelectedIds] = useState<Set<string | number>>(new Set());
+  const [allServerSelected, setAllServerSelected] = useState(false);
 
   // --- Expandable rows state ---
   const [expandedRows, setExpandedRows] = useState<Set<string | number>>(new Set());
@@ -156,6 +167,62 @@ export function DataTable<R extends { id: string | number }>({
     }
     return result;
   }, [filteredRows, expandedRows, getRowDetail]);
+
+  // --- Selection helpers ---
+
+  // IDs of the current page that are real rows (not detail rows)
+  const currentPageRealIds = useMemo<(string | number)[]>(() => {
+    return augmentedRows.filter((r) => !isDetailRow(r)).map((r) => (r as R).id);
+  }, [augmentedRows]);
+
+  // rowSelectionModel: IDs on the current page that belong to selectedIds
+  // When allServerSelected, show all current-page rows as selected
+  const rowSelectionModel = useMemo<GridRowSelectionModel>(() => {
+    if (allServerSelected) return currentPageRealIds;
+    return currentPageRealIds.filter((id) => selectedIds.has(id));
+  }, [allServerSelected, currentPageRealIds, selectedIds]);
+
+  // Header checkbox is fully checked when every page row is selected
+  const showSelectAllServerButton = useMemo<boolean>(() => {
+    if (!selectable || currentPageRealIds.length === 0) return false;
+    return currentPageRealIds.every((id) => selectedIds.has(id));
+  }, [selectable, currentPageRealIds, selectedIds]);
+
+  const selectedCount = allServerSelected ? adapter.totalCount : selectedIds.size;
+
+  const handleRowSelectionModelChange = useCallback(
+    (model: GridRowSelectionModel) => {
+      // model contains the newly selected IDs for this page only
+      const modelSet = new Set(model as (string | number)[]);
+      setSelectedIds((prev) => {
+        const next = new Set(prev);
+        // Remove all current-page IDs then re-add the ones that are now selected
+        for (const id of currentPageRealIds) {
+          if (modelSet.has(id)) {
+            next.add(id);
+          } else {
+            next.delete(id);
+          }
+        }
+        return next;
+      });
+      // If user deselects any row while allServerSelected, drop the flag
+      if (allServerSelected) {
+        setAllServerSelected(false);
+      }
+    },
+    [currentPageRealIds, allServerSelected],
+  );
+
+  const handleSelectAllServer = useCallback(() => {
+    setAllServerSelected(true);
+    setSelectedIds(new Set());
+  }, []);
+
+  const handleClearSelection = useCallback(() => {
+    setSelectedIds(new Set());
+    setAllServerSelected(false);
+  }, []);
 
   // --- Column construction ---
   const expandColumn: GridColDef = useMemo(
@@ -272,11 +339,24 @@ export function DataTable<R extends { id: string | number }>({
         exportFilename={resolvedExportFilename}
         rows={exportableRows}
         visibleColumns={visibleColumns}
+        selectable={selectable}
+        selectedCount={selectedCount}
+        allServerSelected={allServerSelected}
+        onSelectAllServer={handleSelectAllServer}
+        onClearSelection={handleClearSelection}
+        showSelectAllServerButton={showSelectAllServerButton}
+        selectedIds={allServerSelected ? [] : Array.from(selectedIds)}
       />
 
       {adapter.error && (
         <Box className={styles.errorBanner}>
           <ErrorState description={adapter.error.message} />
+        </Box>
+      )}
+
+      {selectable && (selectedIds.size > 0 || allServerSelected) && selectionActions && (
+        <Box className={styles.selectionBar}>
+          {selectionActions(allServerSelected ? [] : Array.from(selectedIds), allServerSelected)}
         </Box>
       )}
 
@@ -310,6 +390,11 @@ export function DataTable<R extends { id: string | number }>({
           // Detail rows: prevent selection and highlight
           getRowClassName={(params) => (isDetailRow(params.row) ? styles.detailRow : "")}
           isRowSelectable={(params) => !isDetailRow(params.row)}
+          // Selection
+          checkboxSelection={selectable}
+          rowSelectionModel={rowSelectionModel}
+          onRowSelectionModelChange={handleRowSelectionModelChange}
+          keepNonExistentRowsSelected
           // Accessibility
           aria-label={tableId}
           className={styles.dataGrid}

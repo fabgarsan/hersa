@@ -42,6 +42,15 @@ export interface DataTableProps<R extends { id: string | number }> {
   exportFilename?: string;
   /** default: [10, 25, 50] */
   pageSizeOptions?: number[];
+  /** Habilita selección de filas con checkbox. default: false */
+  selectable?: boolean;
+  /**
+   * Slot de acciones bulk. Se muestra solo cuando hay selección activa.
+   * Recibe los IDs seleccionados y el flag allServerSelected.
+   * Cuando allServerSelected=true, selectedIds será un array vacío — el módulo
+   * debe usar el flag para saber que la selección abarca todo el servidor.
+   */
+  selectionActions?: (selectedIds: (string | number)[], allServerSelected: boolean) => ReactNode;
 }
 
 // Toolbar props
@@ -62,4 +71,14 @@ export interface DataTableToolbarProps {
   exportFilename: string;
   rows: unknown[];
   visibleColumns: GridColDef[];
+  // Selection props
+  selectable: boolean;
+  selectedCount: number;
+  allServerSelected: boolean;
+  /** totalCount already present — reused for the "Seleccionar N filas" button */
+  onSelectAllServer: () => void;
+  onClearSelection: () => void;
+  /** True when the header checkbox is fully checked (all page rows selected) */
+  showSelectAllServerButton: boolean;
+  selectedIds: (string | number)[];
 }

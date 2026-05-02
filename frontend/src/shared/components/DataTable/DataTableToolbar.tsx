@@ -3,11 +3,14 @@ import type { ChangeEvent } from "react";
 
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
+import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import SearchIcon from "@mui/icons-material/Search";
 import ViewColumnIcon from "@mui/icons-material/ViewColumn";
 import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
 import Checkbox from "@mui/material/Checkbox";
+import Chip from "@mui/material/Chip";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import IconButton from "@mui/material/IconButton";
 import InputAdornment from "@mui/material/InputAdornment";
@@ -38,6 +41,13 @@ export function DataTableToolbar({
   exportFilename,
   rows,
   visibleColumns,
+  selectable,
+  selectedCount,
+  allServerSelected,
+  onSelectAllServer,
+  onClearSelection,
+  showSelectAllServerButton,
+  selectedIds,
 }: DataTableToolbarProps) {
   const searchId = useId();
 
@@ -80,29 +90,45 @@ export function DataTableToolbar({
 
   // --- Export helpers ---
 
-  const buildExportData = (): { headers: string[]; data: string[][] } => {
-    const headers = visibleColumns
-      .filter((col) => col.field !== "__expand__")
-      .map((col) =>
-        typeof col.headerName === "string" && col.headerName ? col.headerName : col.field,
-      );
+  const buildExportData = (): { headers: string[]; data: string[][]; note?: string } => {
+    const exportColumns = visibleColumns.filter((col) => col.field !== "__expand__");
 
-    const data = (rows as Record<string, unknown>[]).map((row) =>
-      visibleColumns
-        .filter((col) => col.field !== "__expand__")
-        .map((col) => {
-          const val = row[col.field];
-          return val != null ? String(val) : "";
-        }),
+    const headers = exportColumns.map((col) =>
+      typeof col.headerName === "string" && col.headerName ? col.headerName : col.field,
     );
 
-    return { headers, data };
+    // Determine which rows to export based on selection state
+    let sourceRows = rows as Record<string, unknown>[];
+    let note: string | undefined;
+
+    if (selectedIds.length > 0 && !allServerSelected) {
+      // Export only the selected rows
+      const selectedSet = new Set(selectedIds);
+      sourceRows = sourceRows.filter((row) => {
+        const id = (row as { id?: string | number }).id;
+        return id !== undefined && selectedSet.has(id);
+      });
+    } else if (allServerSelected) {
+      // Cannot fetch server rows from the client — export visible rows with a note
+      note =
+        "Nota: exportación parcial - solo filas cargadas (se seleccionaron todas las filas del servidor)";
+    }
+
+    const data = sourceRows.map((row) =>
+      exportColumns.map((col) => {
+        const val = row[col.field];
+        return val != null ? String(val) : "";
+      }),
+    );
+
+    return { headers, data, note };
   };
 
   const exportExcel = async () => {
     const { utils, writeFile } = await import("xlsx");
-    const { headers, data } = buildExportData();
-    const ws = utils.aoa_to_sheet([headers, ...data]);
+    const { headers, data, note } = buildExportData();
+    const rows_to_write = note ? [headers, ...data, [], [note]] : [headers, ...data];
+    const ws = utils.aoa_to_sheet(rows_to_write);
     const wb = utils.book_new();
     utils.book_append_sheet(wb, ws, "Datos");
     writeFile(wb, `${exportFilename}.xlsx`);
@@ -110,10 +136,10 @@ export function DataTableToolbar({
   };
 
   const exportCsv = async () => {
-    const { utils, writeFile } = await import("xlsx");
-    const { headers, data } = buildExportData();
-    const ws = utils.aoa_to_sheet([headers, ...data]);
-    writeFile(utils.book_new(), `${exportFilename}.csv`, { bookType: "csv" });
+    const { utils } = await import("xlsx");
+    const { headers, data, note } = buildExportData();
+    const rows_to_write = note ? [headers, ...data, [], [note]] : [headers, ...data];
+    const ws = utils.aoa_to_sheet(rows_to_write);
     // Use sheet_to_csv and download as blob for reliability
     const csv = utils.sheet_to_csv(ws);
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
@@ -129,11 +155,11 @@ export function DataTableToolbar({
   const exportPdf = async () => {
     const { default: jsPDF } = await import("jspdf");
     const { autoTable } = await import("jspdf-autotable");
-    const { headers, data } = buildExportData();
+    const { headers, data, note } = buildExportData();
     const doc = new jsPDF({ orientation: "landscape" });
     autoTable(doc, {
       head: [headers],
-      body: data,
+      body: note ? [...data, [note]] : data,
       styles: { fontSize: 8 },
       headStyles: { fillColor: [11, 31, 58] }, // $primary-main
     });
@@ -143,10 +169,40 @@ export function DataTableToolbar({
 
   const searchPlaceholder = searchMode === "server" ? "Buscar en el servidor..." : "Buscar...";
 
+  const selectionLabel = allServerSelected
+    ? `Todas las ${totalCount} filas seleccionadas`
+    : `${selectedCount} ${selectedCount === 1 ? "fila seleccionada" : "filas seleccionadas"}`;
+
+  const hasSelection = selectable && (selectedCount > 0 || allServerSelected);
+
   return (
     <Box className={styles.root}>
       {/* Left: custom slot */}
       {toolbarActions && <Box className={styles.actions}>{toolbarActions}</Box>}
+
+      {/* Selection chip + select-all-server button */}
+      {hasSelection && (
+        <Box className={styles.selectionSection}>
+          <Chip
+            icon={<CheckCircleOutlineIcon fontSize="small" />}
+            label={selectionLabel}
+            onDelete={onClearSelection}
+            size="small"
+            color="primary"
+            className={styles.selectionChip}
+          />
+          {showSelectAllServerButton && !allServerSelected && (
+            <Button
+              variant="text"
+              size="small"
+              className={styles.selectAllServerButton}
+              onClick={onSelectAllServer}
+            >
+              {`Seleccionar las ${totalCount} filas (incluyendo las no visibles)`}
+            </Button>
+          )}
+        </Box>
+      )}
 
       {/* Spacer */}
       <Box className={styles.spacer} />
