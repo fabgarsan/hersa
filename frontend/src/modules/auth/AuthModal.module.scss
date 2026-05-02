@@ -21,10 +21,19 @@
   margin-bottom: v.sp(2);
 }
 
-.title {
-  font-weight: 700;
+.logoWrapper {
+  display: flex;
+  justify-content: center;
   margin-bottom: v.sp(3);
-  text-align: center;
+}
+
+.logo {
+  display: block;
+  width: auto;
+  max-width: 220px;
+  height: auto;
+  max-height: 96px;
+  object-fit: contain;
 }
 
 .form {
