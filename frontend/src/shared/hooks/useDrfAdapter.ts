@@ -99,7 +99,11 @@ export function useDrfAdapter<R>({
     page,
     pageSize,
     isLoading,
-    error: error instanceof Error ? error : error != null ? new Error(String(error)) : null,
+    // Return the original error from React Query without conversion so that
+    // AxiosError properties (response.data, response.status) remain accessible
+    // to consumers. React Query guarantees the error is always an Error instance
+    // when the queryFn rejects, so the cast is safe.
+    error: (error as Error | null) ?? null,
     sortModel,
     searchValue: searchInput,
     onPageChange: handlePageChange,

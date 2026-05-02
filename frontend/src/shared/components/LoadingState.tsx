@@ -1,3 +1,5 @@
+import { useId } from "react";
+
 import Box from "@mui/material/Box";
 import CircularProgress from "@mui/material/CircularProgress";
 import Skeleton from "@mui/material/Skeleton";
@@ -10,15 +12,13 @@ export function LoadingState({
   rows = 3,
   label = "Cargando...",
 }: LoadingStateProps) {
+  const baseId = useId();
+
   if (variant === "skeleton") {
     return (
       <Box className={styles.skeletonRoot}>
         {Array.from({ length: rows }, (_, i) => (
-          <Skeleton
-            key={`skeleton-row-${i}`}
-            variant="rectangular"
-            className={styles.skeletonRow}
-          />
+          <Skeleton key={`${baseId}-${i}`} variant="rectangular" className={styles.skeletonRow} />
         ))}
       </Box>
     );

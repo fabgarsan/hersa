@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import type { GridColDef, GridSortItem } from "@mui/x-data-grid";
+import type { GridColDef, GridRowSelectionModel, GridSortItem } from "@mui/x-data-grid";
 
 // Extended column — field constrained to the row's own keys.
 // We use a type alias (intersection) because GridColDef uses generics internally,
@@ -8,7 +8,9 @@ export type DataTableColumn<R> = Omit<GridColDef, "field"> & {
   field: keyof R & string;
 };
 
-// Contract that DataTable consumes; implemented by any adapter
+// Contract that DataTable consumes; implemented by any adapter.
+// error is typed as the raw value React Query provides so that
+// AxiosError details (response.data, status) are preserved.
 export interface DataTableAdapter<R> {
   rows: R[];
   totalCount: number;
@@ -51,6 +53,39 @@ export interface DataTableProps<R extends { id: string | number }> {
    * debe usar el flag para saber que la selección abarca todo el servidor.
    */
   selectionActions?: (selectedIds: (string | number)[], allServerSelected: boolean) => ReactNode;
+}
+
+// Sentinel type for detail rows inserted alongside real data rows
+export interface DetailRow {
+  id: string;
+  __isDetailRow: true;
+  __parentId: string | number;
+  __content: ReactNode;
+}
+
+// Hook return types — defined here so they can be shared between hooks and DataTable
+
+export interface UseColumnPersistenceReturn {
+  columnVisibility: Record<string, boolean>;
+  columnOrder: string[];
+  setColumnVisibility: (model: Record<string, boolean>) => void;
+  setColumnOrder: (order: string[]) => void;
+}
+
+export interface UseRowSelectionReturn {
+  selectedIds: Set<string | number>;
+  allServerSelected: boolean;
+  rowSelectionModel: GridRowSelectionModel;
+  showSelectAllServerButton: boolean;
+  selectedCount: number;
+  handleRowSelectionModelChange: (model: GridRowSelectionModel) => void;
+  handleSelectAllServer: () => void;
+  handleClearSelection: () => void;
+}
+
+export interface UseExpandableRowsReturn {
+  expandedRows: Set<string | number>;
+  toggleRow: (id: string | number) => void;
 }
 
 // Toolbar props

@@ -1,6 +1,9 @@
 import { useId, useRef, useState } from "react";
 import type { ChangeEvent } from "react";
 
+import Alert from "@mui/material/Alert";
+import Snackbar from "@mui/material/Snackbar";
+
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
@@ -59,6 +62,9 @@ export function DataTableToolbar({
   const [exportAnchorEl, setExportAnchorEl] = useState<HTMLButtonElement | null>(null);
   const exportMenuOpen = Boolean(exportAnchorEl);
 
+  // Export error notification
+  const [exportError, setExportError] = useState<string | null>(null);
+
   const colButtonRef = useRef<HTMLButtonElement>(null);
   const exportButtonRef = useRef<HTMLButtonElement>(null);
 
@@ -90,6 +96,16 @@ export function DataTableToolbar({
 
   // --- Export helpers ---
 
+  /**
+   * Prevents formula injection attacks (CSV/Excel injection).
+   * If a value starts with a formula trigger character, prefix it with a
+   * single quote so spreadsheet apps treat it as literal text.
+   */
+  function sanitizeCellValue(val: string): string {
+    if (/^[=+\-@\t\r]/.test(val)) return `'${val}`;
+    return val;
+  }
+
   const buildExportData = (): { headers: string[]; data: string[][]; note?: string } => {
     const exportColumns = visibleColumns.filter((col) => col.field !== "__expand__");
 
@@ -117,7 +133,8 @@ export function DataTableToolbar({
     const data = sourceRows.map((row) =>
       exportColumns.map((col) => {
         const val = row[col.field];
-        return val != null ? String(val) : "";
+        const raw = val != null ? String(val) : "";
+        return sanitizeCellValue(raw);
       }),
     );
 
@@ -125,46 +142,103 @@ export function DataTableToolbar({
   };
 
   const exportExcel = async () => {
-    const { utils, writeFile } = await import("xlsx");
-    const { headers, data, note } = buildExportData();
-    const rows_to_write = note ? [headers, ...data, [], [note]] : [headers, ...data];
-    const ws = utils.aoa_to_sheet(rows_to_write);
-    const wb = utils.book_new();
-    utils.book_append_sheet(wb, ws, "Datos");
-    writeFile(wb, `${exportFilename}.xlsx`);
-    setExportAnchorEl(null);
+    try {
+      const ExcelJS = await import("exceljs");
+      const { headers, data, note } = buildExportData();
+
+      const workbook = new ExcelJS.Workbook();
+      const sheet = workbook.addWorksheet("Datos");
+
+      // Add header row with bold styling
+      sheet.addRow(headers);
+      const headerRow = sheet.getRow(1);
+      headerRow.font = { bold: true };
+      headerRow.commit();
+
+      // Add data rows; append note rows when a partial-export warning is present
+      data.forEach((row) => sheet.addRow(row));
+      if (note) {
+        sheet.addRow([]);
+        sheet.addRow([note]);
+      }
+
+      // Auto-fit column widths (capped at 60 chars)
+      sheet.columns.forEach((col) => {
+        let maxLen = 10;
+        col.eachCell?.({ includeEmpty: true }, (cell) => {
+          const len = cell.value ? String(cell.value).length : 0;
+          if (len > maxLen) maxLen = len;
+        });
+        col.width = Math.min(maxLen + 2, 60);
+      });
+
+      const buffer = await workbook.xlsx.writeBuffer();
+      const blob = new Blob([buffer], {
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${exportFilename}.xlsx`;
+      a.click();
+      URL.revokeObjectURL(url);
+      setExportAnchorEl(null);
+    } catch {
+      setExportError("No se pudo exportar el archivo Excel. Intente nuevamente.");
+      setExportAnchorEl(null);
+    }
   };
 
   const exportCsv = async () => {
-    const { utils } = await import("xlsx");
-    const { headers, data, note } = buildExportData();
-    const rows_to_write = note ? [headers, ...data, [], [note]] : [headers, ...data];
-    const ws = utils.aoa_to_sheet(rows_to_write);
-    // Use sheet_to_csv and download as blob for reliability
-    const csv = utils.sheet_to_csv(ws);
-    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `${exportFilename}.csv`;
-    a.click();
-    URL.revokeObjectURL(url);
-    setExportAnchorEl(null);
+    try {
+      const { headers, data, note } = buildExportData();
+      const rows_to_write = note ? [headers, ...data, [], [note]] : [headers, ...data];
+
+      // RFC 4180 — quote cells that contain commas, double-quotes, or newlines
+      const csv = rows_to_write
+        .map((row) =>
+          row
+            .map((val) => {
+              const s = val ?? "";
+              return /[",\n]/.test(String(s)) ? `"${String(s).replace(/"/g, '""')}"` : String(s);
+            })
+            .join(","),
+        )
+        .join("\n");
+
+      // BOM prefix ensures Excel on Windows renders UTF-8 correctly
+      const blob = new Blob(["﻿" + csv], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${exportFilename}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+      setExportAnchorEl(null);
+    } catch {
+      setExportError("No se pudo exportar el archivo CSV. Intente nuevamente.");
+      setExportAnchorEl(null);
+    }
   };
 
   const exportPdf = async () => {
-    const { default: jsPDF } = await import("jspdf");
-    const { autoTable } = await import("jspdf-autotable");
-    const { headers, data, note } = buildExportData();
-    const doc = new jsPDF({ orientation: "landscape" });
-    autoTable(doc, {
-      head: [headers],
-      body: note ? [...data, [note]] : data,
-      styles: { fontSize: 8 },
-      headStyles: { fillColor: [11, 31, 58] }, // $primary-main
-    });
-    doc.save(`${exportFilename}.pdf`);
-    setExportAnchorEl(null);
+    try {
+      const { default: jsPDF } = await import("jspdf");
+      const { autoTable } = await import("jspdf-autotable");
+      const { headers, data, note } = buildExportData();
+      const doc = new jsPDF({ orientation: "landscape" });
+      autoTable(doc, {
+        head: [headers],
+        body: note ? [...data, [note]] : data,
+        styles: { fontSize: 8 },
+        headStyles: { fillColor: [11, 31, 58] }, // $primary-main
+      });
+      doc.save(`${exportFilename}.pdf`);
+      setExportAnchorEl(null);
+    } catch {
+      setExportError("No se pudo exportar el archivo PDF. Intente nuevamente.");
+      setExportAnchorEl(null);
+    }
   };
 
   const searchPlaceholder = searchMode === "server" ? "Buscar en el servidor..." : "Buscar...";
@@ -318,6 +392,17 @@ export function DataTableToolbar({
         <MenuItem onClick={exportCsv}>Exportar como CSV (.csv)</MenuItem>
         <MenuItem onClick={exportPdf}>Exportar como PDF (.pdf)</MenuItem>
       </Menu>
+
+      <Snackbar
+        open={exportError !== null}
+        autoHideDuration={4000}
+        onClose={() => setExportError(null)}
+        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+      >
+        <Alert severity="error" onClose={() => setExportError(null)}>
+          {exportError}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 }
