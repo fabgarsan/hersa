@@ -64,21 +64,8 @@ export interface MutationButtonProps {
   fullWidth?: boolean;
 }
 
-export interface SubmitButtonProps {
-  isPending: boolean;
-  label: string;
-  pendingLabel: string;
-  fullWidth?: boolean;
-  disabled?: boolean;
-}
-
 export interface AuthGuardProps {
   children: ReactNode;
-}
-
-export interface OfflineSnackbarProps {
-  open: boolean;
-  onClose: () => void;
 }
 
 export interface OfflineMutationDialogProps {
