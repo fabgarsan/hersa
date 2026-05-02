@@ -3,6 +3,7 @@ import Typography from "@mui/material/Typography";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 
 import { usePermissions } from "@shared/hooks/usePermissions";
+import { LoadingState } from "@shared/components/LoadingState";
 import type { ModuleGuardProps } from "./types";
 import styles from "./ModuleGuard.module.scss";
 
@@ -10,7 +11,7 @@ export function ModuleGuard({ module, children }: ModuleGuardProps) {
   const { hasAccess, isLoading } = usePermissions();
 
   if (isLoading) {
-    return null;
+    return <LoadingState />;
   }
 
   if (!hasAccess(module)) {

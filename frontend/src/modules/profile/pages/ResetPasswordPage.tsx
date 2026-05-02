@@ -17,7 +17,7 @@ export default function ResetPasswordPage() {
 
   // Intentionally runs only on mount: strip sensitive params from URL history.
   // uid and token are already captured above; the form continues working after cleanup.
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+
   useEffect(() => {
     if (uid && token) {
       window.history.replaceState(null, "", window.location.pathname);
@@ -27,7 +27,7 @@ export default function ResetPasswordPage() {
   const isValidLink = uid.length > 0 && token.length > 0;
 
   const footer = (
-    <Link component={RouterLink} to={ROUTES.HOME} variant="body2" color="primary">
+    <Link component={RouterLink} to={ROUTES.LOGIN} variant="body2" color="primary">
       {UI.pages.resetPassword.BACK_TO_LOGIN}
     </Link>
   );
