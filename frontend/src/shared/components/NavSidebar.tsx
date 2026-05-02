@@ -1,4 +1,5 @@
 import Box from "@mui/material/Box";
+import ButtonBase from "@mui/material/ButtonBase";
 import Divider from "@mui/material/Divider";
 import List from "@mui/material/List";
 import ListItemButton from "@mui/material/ListItemButton";
@@ -93,15 +94,15 @@ export function NavSidebar() {
 
       <Divider className={styles.divider} />
 
-      <ListItemButton
+      <ButtonBase
         onClick={() => navigate(ROUTES.PROFILE)}
-        className={isActive(ROUTES.PROFILE) ? styles.navItemActive : styles.userSection}
+        className={isActive(ROUTES.PROFILE) ? styles.userSectionActive : styles.userSectionButton}
       >
         <PersonIcon className={styles.userIcon} />
         <Typography variant="caption" className={styles.username} noWrap>
           {user?.username ?? "—"}
         </Typography>
-      </ListItemButton>
+      </ButtonBase>
     </Box>
   );
 }

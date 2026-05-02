@@ -15,6 +15,11 @@ export { MutationButton } from "./MutationButton";
 export { PermissionGuard } from "./PermissionGuard";
 export { OfflineMutationDialog } from "./OfflineMutationDialog";
 export { PasswordTextField } from "./PasswordTextField";
+export { ConfirmDialog } from "./ConfirmDialog";
+export { StatusChip } from "./StatusChip";
+export { FormSection } from "./FormSection";
+export { PageHeader } from "./PageHeader";
+export { DetailDrawer } from "./DetailDrawer";
 export type {
   AppHeaderProps,
   AuthGuardProps,
@@ -31,5 +36,12 @@ export type {
   NavItem,
   OfflineMutationDialogProps,
   PasswordTextFieldProps,
+  ConfirmDialogProps,
+  StatusChipConfig,
+  StatusChipProps,
+  FormSectionProps,
+  BreadcrumbItem,
+  PageHeaderProps,
+  DetailDrawerProps,
 } from "./types";
 export type { DataTableProps, DataTableColumn, DataTableAdapter } from "./DataTable";

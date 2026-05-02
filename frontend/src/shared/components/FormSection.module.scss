@@ -1,0 +1,21 @@
+@use '../styles/variables' as v;
+
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: v.sp(2);
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: v.sp(0.5);
+}
+
+.subtitle {
+  color: v.$text-secondary;
+}
+
+.divider {
+  margin-bottom: v.sp(0.5);
+}

@@ -1,0 +1,58 @@
+@use '../styles/variables' as v;
+
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: v.sp(1);
+  margin-bottom: v.sp(3);
+}
+
+.breadcrumbs {
+  margin-bottom: v.sp(0.5);
+}
+
+.breadcrumbLink {
+  color: v.$text-secondary;
+
+  &:hover {
+    color: v.$primary-main;
+  }
+}
+
+.breadcrumbText {
+  color: v.$text-secondary;
+}
+
+.breadcrumbCurrent {
+  color: v.$text-primary;
+}
+
+.titleRow {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: v.sp(2);
+}
+
+.titleGroup {
+  display: flex;
+  flex-direction: column;
+  gap: v.sp(0.5);
+}
+
+.title {
+  color: v.$text-primary;
+}
+
+.subtitle {
+  color: v.$text-secondary;
+}
+
+.actions {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: v.sp(1);
+  flex-shrink: 0;
+}

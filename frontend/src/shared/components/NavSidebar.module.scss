@@ -60,22 +60,45 @@ $secondary-tint-2: rgba(201, 162, 39, 0.15);
   min-width: 40px;
 }
 
-.userSection {
+.userSectionButton {
   display: flex;
   align-items: center;
   gap: v.sp(1);
-  padding: v.sp(1.5) v.sp(2);
-  flex-shrink: 0;
+  width: 100%;
+  padding: v.sp(1) v.sp(2);
+  border-left: 3px solid transparent;
+  color: rgba(255, 255, 255, 0.45);
+
+  &:hover {
+    background-color: v.$primary-light;
+    color: rgba(255, 255, 255, 0.7);
+  }
+}
+
+.userSectionActive {
+  display: flex;
+  align-items: center;
+  gap: v.sp(1);
+  width: 100%;
+  padding: v.sp(1) v.sp(2);
+  color: v.$secondary-main;
+  background-color: $secondary-tint-1;
+  border-left: 3px solid v.$secondary-main;
+
+  &:hover {
+    background-color: $secondary-tint-2;
+    color: v.$secondary-main;
+  }
 }
 
 .userIcon {
-  font-size: 18px;
-  color: rgba(255, 255, 255, 0.5);
+  font-size: 16px;
   flex-shrink: 0;
+  color: inherit;
 }
 
 .username {
-  color: rgba(255, 255, 255, 0.6);
+  color: inherit;
   overflow: hidden;
 }
 

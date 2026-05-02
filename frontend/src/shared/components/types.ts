@@ -101,3 +101,55 @@ export interface OfflineMutationDialogProps {
   open: boolean;
   onClose: () => void;
 }
+
+export interface ConfirmDialogProps {
+  open: boolean;
+  title: string;
+  message: string;
+  onConfirm: () => void;
+  onCancel: () => void;
+  confirmLabel?: string;
+  cancelLabel?: string;
+  severity?: "warning" | "error" | "info";
+  loading?: boolean;
+}
+
+export interface StatusChipConfig {
+  label: string;
+  color: "default" | "primary" | "secondary" | "error" | "info" | "success" | "warning";
+}
+
+export interface StatusChipProps {
+  status: string;
+  statusMap: Record<string, StatusChipConfig>;
+  size?: "small" | "medium";
+}
+
+export interface FormSectionProps {
+  title: string;
+  subtitle?: string;
+  children: ReactNode;
+  divider?: boolean;
+}
+
+export interface BreadcrumbItem {
+  label: string;
+  href?: string;
+}
+
+export interface PageHeaderProps {
+  title: string;
+  subtitle?: string;
+  breadcrumbs?: BreadcrumbItem[];
+  actions?: ReactNode;
+}
+
+export interface DetailDrawerProps {
+  open: boolean;
+  onClose: () => void;
+  title: string;
+  subtitle?: string;
+  children: ReactNode;
+  actions?: ReactNode;
+  width?: number | string;
+}

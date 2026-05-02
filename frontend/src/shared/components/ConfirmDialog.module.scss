@@ -1,0 +1,23 @@
+@use '../styles/variables' as v;
+
+.dialog {
+  :global(.MuiDialog-paper) {
+    min-width: 320px;
+  }
+}
+
+.actions {
+  padding: v.sp(2) v.sp(3);
+  gap: v.sp(1);
+}
+
+.confirmButton {
+  min-width: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.spinner {
+  color: inherit;
+}

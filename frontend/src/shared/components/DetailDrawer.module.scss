@@ -1,0 +1,51 @@
+@use '../styles/variables' as v;
+
+.root {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+.header {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: v.sp(2) v.sp(3);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+  flex-shrink: 0;
+  gap: v.sp(1);
+}
+
+.headerText {
+  display: flex;
+  flex-direction: column;
+  gap: v.sp(0.5);
+}
+
+.subtitle {
+  color: v.$text-secondary;
+}
+
+.closeButton {
+  flex-shrink: 0;
+  margin-top: v.sp(0.25);
+}
+
+.content {
+  flex: 1;
+  overflow-y: auto;
+  padding: v.sp(3);
+}
+
+.footer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-end;
+  gap: v.sp(1);
+  padding: v.sp(2) v.sp(3);
+  border-top: 1px solid rgba(0, 0, 0, 0.12);
+  flex-shrink: 0;
+}
