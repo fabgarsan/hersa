@@ -39,14 +39,10 @@ export interface AuthPageCardProps {
   children: ReactNode;
 }
 
-export interface ComingSoonGridItem {
-  label: string;
+export interface ComingSoonStateProps {
+  title?: string;
   description?: string;
-  icon: ReactNode;
-}
-
-export interface ComingSoonGridProps {
-  items: ComingSoonGridItem[];
+  icon?: ReactNode;
 }
 
 export interface ModuleGuardProps {

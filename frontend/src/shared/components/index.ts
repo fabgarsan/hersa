@@ -5,7 +5,7 @@ export { ErrorState } from "./ErrorState";
 export { Layout } from "./Layout";
 export { AppHeader } from "./AppHeader";
 export { AuthPageCard } from "./AuthPageCard";
-export { ComingSoonGrid } from "./ComingSoonGrid";
+export { ComingSoonState } from "./ComingSoonState";
 export { LoadingState } from "./LoadingState";
 export { ModuleGuard } from "./ModuleGuard";
 export { ModuleLayout } from "./ModuleLayout";
@@ -17,8 +17,7 @@ export type {
   AppHeaderProps,
   AuthGuardProps,
   AuthPageCardProps,
-  ComingSoonGridItem,
-  ComingSoonGridProps,
+  ComingSoonStateProps,
   EmptyStateProps,
   ErrorStateProps,
   LayoutProps,
