@@ -2,6 +2,26 @@ import type { Control, FieldError, FieldPath, FieldValues } from "react-hook-for
 import type { ModulePermission } from "@shared/types/permissions";
 import type { ReactNode } from "react";
 
+export interface EmptyStateProps {
+  title?: string;
+  description?: string;
+  icon?: ReactNode;
+  action?: ReactNode;
+  variant?: "initial" | "filtered" | "permission";
+}
+
+export interface ErrorStateProps {
+  title?: string;
+  description?: string;
+  onRetry?: () => void;
+}
+
+export interface LoadingStateProps {
+  variant?: "spinner" | "skeleton";
+  rows?: number;
+  label?: string;
+}
+
 export interface LayoutProps {
   children: ReactNode;
 }
