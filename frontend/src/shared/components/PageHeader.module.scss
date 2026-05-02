@@ -13,9 +13,11 @@
 
 .breadcrumbLink {
   color: v.$text-secondary;
+  text-decoration: none;
 
   &:hover {
     color: v.$primary-main;
+    text-decoration: underline;
   }
 }
 

@@ -9,11 +9,14 @@ import DialogTitle from "@mui/material/DialogTitle";
 import type { ConfirmDialogProps } from "./types";
 import styles from "./ConfirmDialog.module.scss";
 
-const SEVERITY_COLOR_MAP = {
+const SEVERITY_COLOR_MAP: Record<
+  NonNullable<ConfirmDialogProps["severity"]>,
+  "warning" | "error" | "primary"
+> = {
   warning: "warning",
   error: "error",
   info: "primary",
-} as const;
+};
 
 export function ConfirmDialog({
   open,

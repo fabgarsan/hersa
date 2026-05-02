@@ -20,8 +20,12 @@ export function AuthGuard({ children }: AuthGuardProps) {
   }
 
   if (isAuthenticated && isPublicRoute) {
-    const from = (location.state as { from?: { pathname: string } } | null)?.from?.pathname;
-    return <Navigate to={from ?? ROUTES.HOME} replace />;
+    const rawFrom = (location.state as { from?: { pathname: string } } | null)?.from?.pathname;
+    const safeTo =
+      rawFrom && rawFrom.startsWith("/") && !rawFrom.startsWith("//")
+        ? rawFrom
+        : ROUTES.HOME;
+    return <Navigate to={safeTo} replace />;
   }
 
   return <div className={styles.root}>{children}</div>;

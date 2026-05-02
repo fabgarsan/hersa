@@ -48,7 +48,14 @@ createRoot(root).render(
     <CacheProvider value={emotionCache}>
       <PersistQueryClientProvider
         client={queryClient}
-        persistOptions={{ persister, maxAge: 1000 * 60 * 60 * 24 }}
+        persistOptions={{
+          persister,
+          maxAge: 1000 * 60 * 60 * 24,
+          dehydrateOptions: {
+            shouldDehydrateQuery: (query) =>
+              !query.queryKey.some((k) => k === "permissions"),
+          },
+        }}
       >
         <BrowserRouter>
           <AuthProvider>

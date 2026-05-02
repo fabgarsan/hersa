@@ -16,7 +16,7 @@ export function FormSection({
       <Stack className={styles.header}>
         <Typography variant="subtitle2">{title}</Typography>
         {subtitle && (
-          <Typography variant="caption" className={styles.subtitle}>
+          <Typography variant="body2" className={styles.subtitle}>
             {subtitle}
           </Typography>
         )}
