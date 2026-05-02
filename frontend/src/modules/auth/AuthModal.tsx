@@ -21,12 +21,22 @@ import { loginSchema } from "./schemas";
 import type { LoginCredentials } from "./types";
 import styles from "./AuthModal.module.scss";
 
+/**
+ * Guards against open redirect attacks by only allowing same-origin relative
+ * paths. Paths starting with "//" would be treated as protocol-relative URLs
+ * by browsers and could redirect to an external host.
+ */
+function isSafeRedirect(path: string | undefined): path is string {
+  if (!path) return false;
+  return path.startsWith("/") && !path.startsWith("//");
+}
+
 export function AuthModal() {
   const { login } = useAuthContext();
   const navigate = useNavigate();
   const location = useLocation();
-  const redirectTo =
-    (location.state as { from?: { pathname: string } } | null)?.from?.pathname ?? ROUTES.HOME;
+  const rawRedirect = (location.state as { from?: { pathname: string } } | null)?.from?.pathname;
+  const redirectTo = isSafeRedirect(rawRedirect) ? rawRedirect : ROUTES.HOME;
   const [hasAuthError, setHasAuthError] = useState(false);
 
   const { mutate, isPending } = useLoginMutation();

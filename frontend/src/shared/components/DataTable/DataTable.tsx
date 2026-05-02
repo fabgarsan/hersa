@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo } from "react";
 import type { ReactNode } from "react";
 
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
@@ -6,47 +6,28 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import Box from "@mui/material/Box";
 import IconButton from "@mui/material/IconButton";
 import { DataGrid } from "@mui/x-data-grid";
-import type {
-  GridColDef,
-  GridRenderCellParams,
-  GridRowSelectionModel,
-  GridSortModel,
-} from "@mui/x-data-grid";
+import type { GridColDef, GridRenderCellParams, GridSortModel } from "@mui/x-data-grid";
 
 import { EmptyState } from "@shared/components/EmptyState";
 import { ErrorState } from "@shared/components/ErrorState";
 import { LoadingState } from "@shared/components/LoadingState";
 
 import { DataTableToolbar } from "./DataTableToolbar";
-import type { DataTableColumn, DataTableProps } from "./types";
+import type { DataTableColumn, DataTableProps, DetailRow } from "./types";
+import { useColumnPersistence } from "./useColumnPersistence";
+import { useExpandableRows } from "./useExpandableRows";
+import { useRowSelection } from "./useRowSelection";
 import styles from "./DataTable.module.scss";
 
-// Storage key for persisted column config
-function storageKey(tableId: string) {
-  return `datatable-cols-${tableId}`;
-}
+type AugmentedRow<R> = R | DetailRow;
 
-interface PersistedColConfig {
-  visibility: Record<string, boolean>;
-  order: string[];
-}
-
-function loadPersistedConfig(tableId: string): PersistedColConfig | null {
-  try {
-    const raw = localStorage.getItem(storageKey(tableId));
-    if (!raw) return null;
-    return JSON.parse(raw) as PersistedColConfig;
-  } catch {
-    return null;
-  }
-}
-
-function savePersistedConfig(tableId: string, config: PersistedColConfig) {
-  try {
-    localStorage.setItem(storageKey(tableId), JSON.stringify(config));
-  } catch {
-    // Silently ignore storage errors (e.g. private browsing quota)
-  }
+function isDetailRow(row: unknown): row is DetailRow {
+  return (
+    typeof row === "object" &&
+    row !== null &&
+    "__isDetailRow" in row &&
+    (row as DetailRow).__isDetailRow === true
+  );
 }
 
 /**
@@ -58,25 +39,6 @@ function filterRowsClientSide<R extends Record<string, unknown>>(rows: R[], sear
   if (!term) return rows;
   return rows.filter((row) =>
     Object.values(row).some((val) => val != null && String(val).toLowerCase().includes(term)),
-  );
-}
-
-// Sentinel type for detail rows inserted alongside real rows
-interface DetailRow {
-  id: string;
-  __isDetailRow: true;
-  __parentId: string | number;
-  __content: ReactNode;
-}
-
-type AugmentedRow<R> = R | DetailRow;
-
-function isDetailRow(row: unknown): row is DetailRow {
-  return (
-    typeof row === "object" &&
-    row !== null &&
-    "__isDetailRow" in row &&
-    (row as DetailRow).__isDetailRow === true
   );
 }
 
@@ -93,53 +55,12 @@ export function DataTable<R extends { id: string | number }>({
   selectable = false,
   selectionActions,
 }: DataTableProps<R>) {
-  // --- Persistent column config ---
-  const fieldNames = useMemo(() => columns.map((c) => c.field), [columns]);
+  // --- Persistent column config (includes user-scoped localStorage key) ---
+  const { columnVisibility, columnOrder, setColumnVisibility, setColumnOrder } =
+    useColumnPersistence(tableId, columns);
 
-  const [columnVisibility, setColumnVisibility] = useState<Record<string, boolean>>(() => {
-    const persisted = loadPersistedConfig(tableId);
-    return persisted?.visibility ?? {};
-  });
-
-  const [columnOrder, setColumnOrder] = useState<string[]>(() => {
-    const persisted = loadPersistedConfig(tableId);
-    if (persisted?.order && persisted.order.length > 0) return persisted.order;
-    return fieldNames;
-  });
-
-  // Sync columnOrder when columns prop changes (new fields added)
-  useEffect(() => {
-    setColumnOrder((prev) => {
-      const existing = new Set(prev);
-      const additions = fieldNames.filter((f) => !existing.has(f));
-      if (additions.length === 0) return prev;
-      return [...prev, ...additions];
-    });
-  }, [fieldNames]);
-
-  // Persist whenever visibility or order changes
-  useEffect(() => {
-    savePersistedConfig(tableId, { visibility: columnVisibility, order: columnOrder });
-  }, [tableId, columnVisibility, columnOrder]);
-
-  // --- Selection state ---
-  const [selectedIds, setSelectedIds] = useState<Set<string | number>>(new Set());
-  const [allServerSelected, setAllServerSelected] = useState(false);
-
-  // --- Expandable rows state ---
-  const [expandedRows, setExpandedRows] = useState<Set<string | number>>(new Set());
-
-  const toggleRow = useCallback((id: string | number) => {
-    setExpandedRows((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) {
-        next.delete(id);
-      } else {
-        next.add(id);
-      }
-      return next;
-    });
-  }, []);
+  // --- Expandable rows ---
+  const { expandedRows, toggleRow } = useExpandableRows();
 
   // --- Rows: client filtering + expansion ---
   const filteredRows = useMemo<R[]>(() => {
@@ -168,61 +89,23 @@ export function DataTable<R extends { id: string | number }>({
     return result;
   }, [filteredRows, expandedRows, getRowDetail]);
 
-  // --- Selection helpers ---
-
   // IDs of the current page that are real rows (not detail rows)
-  const currentPageRealIds = useMemo<(string | number)[]>(() => {
-    return augmentedRows.filter((r) => !isDetailRow(r)).map((r) => (r as R).id);
-  }, [augmentedRows]);
-
-  // rowSelectionModel: IDs on the current page that belong to selectedIds
-  // When allServerSelected, show all current-page rows as selected
-  const rowSelectionModel = useMemo<GridRowSelectionModel>(() => {
-    if (allServerSelected) return currentPageRealIds;
-    return currentPageRealIds.filter((id) => selectedIds.has(id));
-  }, [allServerSelected, currentPageRealIds, selectedIds]);
-
-  // Header checkbox is fully checked when every page row is selected
-  const showSelectAllServerButton = useMemo<boolean>(() => {
-    if (!selectable || currentPageRealIds.length === 0) return false;
-    return currentPageRealIds.every((id) => selectedIds.has(id));
-  }, [selectable, currentPageRealIds, selectedIds]);
-
-  const selectedCount = allServerSelected ? adapter.totalCount : selectedIds.size;
-
-  const handleRowSelectionModelChange = useCallback(
-    (model: GridRowSelectionModel) => {
-      // model contains the newly selected IDs for this page only
-      const modelSet = new Set(model as (string | number)[]);
-      setSelectedIds((prev) => {
-        const next = new Set(prev);
-        // Remove all current-page IDs then re-add the ones that are now selected
-        for (const id of currentPageRealIds) {
-          if (modelSet.has(id)) {
-            next.add(id);
-          } else {
-            next.delete(id);
-          }
-        }
-        return next;
-      });
-      // If user deselects any row while allServerSelected, drop the flag
-      if (allServerSelected) {
-        setAllServerSelected(false);
-      }
-    },
-    [currentPageRealIds, allServerSelected],
+  const currentPageRealIds = useMemo<(string | number)[]>(
+    () => augmentedRows.filter((r) => !isDetailRow(r)).map((r) => (r as R).id),
+    [augmentedRows],
   );
 
-  const handleSelectAllServer = useCallback(() => {
-    setAllServerSelected(true);
-    setSelectedIds(new Set());
-  }, []);
-
-  const handleClearSelection = useCallback(() => {
-    setSelectedIds(new Set());
-    setAllServerSelected(false);
-  }, []);
+  // --- Row selection ---
+  const {
+    selectedIds,
+    allServerSelected,
+    rowSelectionModel,
+    showSelectAllServerButton,
+    selectedCount,
+    handleRowSelectionModelChange,
+    handleSelectAllServer,
+    handleClearSelection,
+  } = useRowSelection({ selectable, totalCount: adapter.totalCount, currentPageRealIds });
 
   // --- Column construction ---
   const expandColumn: GridColDef = useMemo(
@@ -257,10 +140,7 @@ export function DataTable<R extends { id: string | number }>({
     const ordered: GridColDef[] = columnOrder
       .filter((f) => colMap.has(f))
       .map((f) => colMap.get(f) as GridColDef);
-
-    if (getRowDetail) {
-      return [expandColumn, ...ordered];
-    }
+    if (getRowDetail) return [expandColumn, ...ordered];
     return ordered;
   }, [columns, columnOrder, getRowDetail, expandColumn]);
 
@@ -275,9 +155,8 @@ export function DataTable<R extends { id: string | number }>({
     if (!getRowDetail) return orderedColumns;
     return orderedColumns.map((col, colIdx) => ({
       ...col,
-      renderCell: (params: GridRenderCellParams) => {
+      renderCell: (params: GridRenderCellParams): ReactNode => {
         if (isDetailRow(params.row)) {
-          // Only render detail content in the first visible column
           if (colIdx === 0) {
             return <Box className={styles.detailCell}>{(params.row as DetailRow).__content}</Box>;
           }
@@ -289,7 +168,6 @@ export function DataTable<R extends { id: string | number }>({
   }, [orderedColumns, getRowDetail]);
 
   // --- Sort handling ---
-  // GridSortModel is readonly; spread into a mutable array to satisfy DataTableAdapter contract
   const handleSortChange = useCallback(
     (model: GridSortModel) => {
       adapter.onSortChange([...model]);
@@ -298,7 +176,6 @@ export function DataTable<R extends { id: string | number }>({
   );
 
   // --- Column visibility model for DataGrid ---
-  // Detail rows should not block any column
   const dataGridVisibilityModel = useMemo<Record<string, boolean>>(
     () => ({ ...columnVisibility }),
     [columnVisibility],

@@ -23,6 +23,7 @@ INSTALLED_APPS = [
     "drf_spectacular",
     "django_filters",
     # Local
+    "apps.core",
     "apps.users",
     "apps.modules",
 ]
@@ -97,7 +98,7 @@ REST_FRAMEWORK = {
         "rest_framework.filters.SearchFilter",
         "rest_framework.filters.OrderingFilter",
     ],
-    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
+    "DEFAULT_PAGINATION_CLASS": "apps.core.pagination.StandardResultsSetPagination",
     "PAGE_SIZE": 20,
     "DEFAULT_THROTTLE_CLASSES": [
         "rest_framework.throttling.AnonRateThrottle",
