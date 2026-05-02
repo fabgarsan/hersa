@@ -51,8 +51,6 @@ export function NavSidebar() {
   const isActive = (path: string) =>
     location.pathname === path || location.pathname.startsWith(path + "/");
 
-  const allItems = NAV_ITEMS;
-
   return (
     <Box className={styles.root}>
       <Toolbar className={styles.toolbar}>
@@ -64,7 +62,7 @@ export function NavSidebar() {
       <Divider className={styles.divider} />
 
       <List className={styles.list}>
-        {allItems.map(({ label, icon, path, module }) => {
+        {NAV_ITEMS.map(({ label, icon, path, module }) => {
           const active = isActive(path);
           const locked = !isLoading && module !== null && !hasAccess(module);
 

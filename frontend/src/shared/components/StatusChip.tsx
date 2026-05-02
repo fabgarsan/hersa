@@ -6,7 +6,7 @@ export function StatusChip({ status, statusMap, size = "small" }: StatusChipProp
   const config = statusMap[status];
 
   if (!config) {
-    return <Chip label={status} size={size} variant="filled" />;
+    return <Chip label={status} size={size} color="default" variant="filled" />;
   }
 
   return (

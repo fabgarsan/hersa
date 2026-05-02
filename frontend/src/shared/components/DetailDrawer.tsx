@@ -16,13 +16,15 @@ export function DetailDrawer({
   actions,
   width = 480,
 }: DetailDrawerProps) {
+  const drawerWidth = typeof width === "number" ? `${width}px` : width;
+
   return (
     <Drawer
       anchor="right"
       variant="temporary"
       open={open}
       onClose={onClose}
-      slotProps={{ paper: { style: { width } } }}
+      slotProps={{ paper: { style: { width: drawerWidth } } }}
     >
       <Stack className={styles.root}>
         <Stack className={styles.header}>
@@ -34,7 +36,7 @@ export function DetailDrawer({
               </Typography>
             )}
           </Stack>
-          <IconButton onClick={onClose} className={styles.closeButton} size="small">
+          <IconButton onClick={onClose} className={styles.closeButton} size="small" aria-label="Cerrar">
             <CloseIcon />
           </IconButton>
         </Stack>

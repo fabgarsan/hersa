@@ -1,7 +1,7 @@
 import Breadcrumbs from "@mui/material/Breadcrumbs";
-import Link from "@mui/material/Link";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
+import { Link as RouterLink } from "react-router-dom";
 
 import type { PageHeaderProps } from "./types";
 import styles from "./PageHeader.module.scss";
@@ -25,9 +25,9 @@ export function PageHeader({ title, subtitle, breadcrumbs, actions }: PageHeader
               );
             }
             return (
-              <Link key={item.label} href={item.href} className={styles.breadcrumbLink} underline="hover">
+              <RouterLink key={item.label} to={item.href} className={styles.breadcrumbLink}>
                 <Typography variant="body2">{item.label}</Typography>
-              </Link>
+              </RouterLink>
             );
           })}
         </Breadcrumbs>
