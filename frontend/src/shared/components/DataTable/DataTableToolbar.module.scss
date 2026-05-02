@@ -68,3 +68,30 @@
   display: flex;
   gap: 2px;
 }
+
+// --- Selection UI ---
+
+.selectionSection {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: v.sp(0.5);
+}
+
+.selectionChip {
+  // Chip already uses primary color — override icon color to white for legibility
+  :global(.MuiChip-icon) {
+    color: #ffffff;
+  }
+}
+
+.selectAllServerButton {
+  font-size: 0.75rem;
+  padding: 0 v.sp(0.5);
+  color: v.$primary-light;
+  white-space: nowrap;
+
+  &:hover {
+    background-color: rgba(30, 58, 95, 0.06);
+  }
+}
