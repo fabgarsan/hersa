@@ -1,0 +1,70 @@
+@use '@/shared/styles/variables' as v;
+
+.root {
+  display: flex;
+  align-items: center;
+  gap: v.sp(1);
+  padding: v.sp(1) v.sp(2);
+  background-color: v.$bg-paper;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  flex-wrap: wrap;
+  min-height: 56px;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: v.sp(1);
+}
+
+.spacer {
+  flex: 1;
+}
+
+.counter {
+  color: v.$text-secondary;
+  white-space: nowrap;
+  font-size: 0.8125rem;
+}
+
+.search {
+  min-width: 200px;
+  max-width: 280px;
+}
+
+.colPopover {
+  padding: v.sp(2);
+  min-width: 220px;
+  max-height: 360px;
+  overflow-y: auto;
+}
+
+.colPopoverTitle {
+  font-weight: 600;
+  margin-bottom: v.sp(1);
+  color: v.$text-primary;
+}
+
+.colRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: v.sp(1);
+  padding: 0;
+}
+
+.colLabel {
+  flex: 1;
+  margin: 0;
+
+  // Override MUI default label spacing
+  :global(.MuiFormControlLabel-label) {
+    font-size: 0.875rem;
+    color: v.$text-primary;
+  }
+}
+
+.colOrderButtons {
+  display: flex;
+  gap: 2px;
+}

@@ -1,5 +1,6 @@
 export { AuthGuard } from "./AuthGuard";
 export { ConnectivityIndicator, useConnectivityIndicatorHeight } from "./ConnectivityIndicator";
+export { DataTable } from "./DataTable";
 export { EmptyState } from "./EmptyState";
 export { ErrorState } from "./ErrorState";
 export { Layout } from "./Layout";
@@ -29,3 +30,4 @@ export type {
   OfflineMutationDialogProps,
   PasswordTextFieldProps,
 } from "./types";
+export type { DataTableProps, DataTableColumn, DataTableAdapter } from "./DataTable";
