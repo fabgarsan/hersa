@@ -8,7 +8,7 @@ import MuiLink from "@mui/material/Link";
 import Paper from "@mui/material/Paper";
 import TextField from "@mui/material/TextField";
 import { Controller, useForm } from "react-hook-form";
-import { Link as RouterLink, useNavigate } from "react-router-dom";
+import { Link as RouterLink, useLocation, useNavigate } from "react-router-dom";
 
 import { isNetworkError } from "@api/offlineMutationEvents";
 import { useAuthContext } from "@shared/contexts";
@@ -24,6 +24,9 @@ import styles from "./AuthModal.module.scss";
 export function AuthModal() {
   const { login } = useAuthContext();
   const navigate = useNavigate();
+  const location = useLocation();
+  const redirectTo =
+    (location.state as { from?: { pathname: string } } | null)?.from?.pathname ?? ROUTES.HOME;
   const [hasAuthError, setHasAuthError] = useState(false);
 
   const { mutate, isPending } = useLoginMutation();
@@ -38,7 +41,7 @@ export function AuthModal() {
     mutate(values, {
       onSuccess: ({ access, refresh }) => {
         login(access, refresh);
-        navigate(ROUTES.HOME);
+        navigate(redirectTo, { replace: true });
       },
       onError: (err) => {
         if (isNetworkError(err)) return;

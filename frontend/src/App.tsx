@@ -13,6 +13,7 @@ import { TiendaPage } from "@modules/tienda";
 import { GradosPage } from "@modules/grados";
 import { AdminPage } from "@modules/admin";
 import { ForgotPasswordPage, ProfilePage, ResetPasswordPage } from "@modules/profile";
+import { NotFoundPage } from "@modules/not-found";
 import styles from "./App.module.scss";
 
 function GlobalOfflineMutationDialog() {
@@ -45,6 +46,7 @@ export default function App() {
           <Route path={ROUTES.LOGIN} element={<AuthModal />} />
           <Route path={ROUTES.FORGOT_PASSWORD} element={<ForgotPasswordPage />} />
           <Route path={ROUTES.RESET_PASSWORD} element={<ResetPasswordPage />} />
+          <Route path="*" element={<NotFoundPage fullPage />} />
 
           {/* Protected routes — wrapped in Layout via ProtectedLayout */}
           <Route element={<ProtectedLayout />}>
@@ -74,6 +76,7 @@ export default function App() {
               }
             />
             <Route path={ROUTES.PROFILE} element={<ProfilePage />} />
+            <Route path="*" element={<NotFoundPage />} />
           </Route>
         </Routes>
       </AuthGuard>

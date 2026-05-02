@@ -1,7 +1,6 @@
 import WifiOffIcon from "@mui/icons-material/WifiOff";
 import Button from "@mui/material/Button";
 import CircularProgress from "@mui/material/CircularProgress";
-import Tooltip from "@mui/material/Tooltip";
 
 import { useOnlineStatus } from "@shared/hooks";
 import type { MutationButtonProps } from "./types";
@@ -12,19 +11,11 @@ export function MutationButton({
   label,
   pendingLabel,
   fullWidth,
-  hasPermission,
-  unauthorizedBehavior = "hidden",
-  unauthorizedTooltip,
+  disabled,
 }: MutationButtonProps) {
   const isOnline = useOnlineStatus();
 
-  const isUnauthorized = hasPermission === false;
-
-  if (isUnauthorized && unauthorizedBehavior === "hidden") {
-    return null;
-  }
-
-  const isDisabled = isPending || !isOnline || isUnauthorized;
+  const isDisabled = isPending || !isOnline || disabled;
   const currentLabel = isPending ? pendingLabel : isOnline ? label : "Sin conexión";
   const startIcon = isPending ? (
     <CircularProgress size={20} color="inherit" />
@@ -32,26 +23,18 @@ export function MutationButton({
     <WifiOffIcon fontSize="small" />
   );
 
-  const button = (
-    <Button
-      type="submit"
-      variant="contained"
-      color="primary"
-      disabled={isDisabled}
-      startIcon={startIcon}
-      fullWidth={fullWidth}
-    >
-      {currentLabel}
-    </Button>
+  return (
+    <span className={styles.root}>
+      <Button
+        type="submit"
+        variant="contained"
+        color="primary"
+        disabled={isDisabled}
+        startIcon={startIcon}
+        fullWidth={fullWidth}
+      >
+        {currentLabel}
+      </Button>
+    </span>
   );
-
-  if (isUnauthorized && unauthorizedTooltip) {
-    return (
-      <Tooltip title={unauthorizedTooltip} arrow>
-        <span className={styles.tooltipWrapper}>{button}</span>
-      </Tooltip>
-    );
-  }
-
-  return <span className={styles.root}>{button}</span>;
 }

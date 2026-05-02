@@ -12,6 +12,7 @@ export { ModuleGuard } from "./ModuleGuard";
 export { ModuleLayout } from "./ModuleLayout";
 export { NavSidebar } from "./NavSidebar";
 export { MutationButton } from "./MutationButton";
+export { PermissionGuard } from "./PermissionGuard";
 export { OfflineMutationDialog } from "./OfflineMutationDialog";
 export { PasswordTextField } from "./PasswordTextField";
 export type {
@@ -26,6 +27,7 @@ export type {
   ModuleGuardProps,
   ModuleLayoutProps,
   MutationButtonProps,
+  PermissionGuardProps,
   NavItem,
   OfflineMutationDialogProps,
   PasswordTextFieldProps,

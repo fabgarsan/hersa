@@ -78,9 +78,19 @@ export interface MutationButtonProps {
   label: string;
   pendingLabel: string;
   fullWidth?: boolean;
-  hasPermission?: boolean;
+  disabled?: boolean;
+}
+
+export interface PermissionGuardProps {
+  /**
+   * Outer array = OR, inner array = AND.
+   * [[A, B], [C]] means (A AND B) OR C.
+   * Omit to render without permission check.
+   */
+  requiredPermissions?: string[][];
   unauthorizedBehavior?: "hidden" | "disabled";
   unauthorizedTooltip?: string;
+  children: ReactNode;
 }
 
 export interface AuthGuardProps {
