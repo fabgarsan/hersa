@@ -1,0 +1,118 @@
+@use '@/shared/styles/variables' as v;
+
+.root {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 4px;
+  background-color: v.$bg-paper;
+  overflow: hidden;
+  width: 100%;
+}
+
+.errorBanner {
+  padding: v.sp(2);
+  border-bottom: 1px solid rgba(163, 45, 45, 0.2); // $error-main with alpha
+}
+
+.gridWrapper {
+  flex: 1;
+  min-height: 400px;
+}
+
+.dataGrid {
+  border: none !important;
+
+  // --- Header: primary-main background with white text ---
+  :global(.MuiDataGrid-columnHeaders) {
+    background-color: v.$primary-main;
+    border-bottom: none;
+  }
+
+  :global(.MuiDataGrid-columnHeaderTitle) {
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 0.8125rem;
+  }
+
+  :global(.MuiDataGrid-columnHeader) {
+    background-color: v.$primary-main;
+
+    &:hover {
+      background-color: v.$primary-light;
+    }
+
+    &:focus,
+    &:focus-within {
+      outline: none;
+    }
+  }
+
+  // Sort icons in header — make white
+  :global(.MuiDataGrid-sortIcon),
+  :global(.MuiDataGrid-menuIconButton),
+  :global(.MuiDataGrid-iconButtonContainer button) {
+    color: #ffffff;
+  }
+
+  // Column separator in header
+  :global(.MuiDataGrid-columnSeparator) {
+    color: rgba(255, 255, 255, 0.3);
+  }
+
+  // --- Alternating rows ---
+  :global(.MuiDataGrid-row) {
+    background-color: #ffffff;
+
+    &:nth-of-type(even) {
+      background-color: #f5f5f5;
+    }
+
+    &:hover {
+      background-color: rgba(30, 58, 95, 0.06); // primary-light with low alpha
+    }
+  }
+
+  // --- Cell alignment ---
+  :global(.MuiDataGrid-cell) {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+    font-size: 0.875rem;
+    color: v.$text-primary;
+
+    &:focus,
+    &:focus-within {
+      outline: none;
+    }
+  }
+
+  // --- Footer / pagination ---
+  :global(.MuiDataGrid-footerContainer) {
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+    background-color: v.$bg-paper;
+  }
+
+  // --- Checkbox column ---
+  :global(.MuiDataGrid-checkboxInput) {
+    color: v.$primary-main;
+  }
+
+  // Remove default border from the outermost DataGrid wrapper
+  :global(.MuiDataGrid-root) {
+    border: none;
+  }
+}
+
+// --- Detail rows ---
+.detailRow {
+  background-color: #eef2f7 !important; // light navy tint for visual distinction
+
+  :global(.MuiDataGrid-cell) {
+    padding: 0;
+    align-items: flex-start;
+  }
+}
+
+.detailCell {
+  width: 100%;
+  padding: v.sp(2);
+}
