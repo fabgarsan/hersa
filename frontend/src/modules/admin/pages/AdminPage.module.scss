@@ -1,5 +1,9 @@
 @use '../../../shared/styles/variables' as v;
 
+.root {
+  display: contents;
+}
+
 .statIcon {
   font-size: 28px;
   color: v.$secondary-main;

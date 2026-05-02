@@ -1,0 +1,42 @@
+@use '../styles/variables' as v;
+
+.root {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: v.sp(8) v.sp(3);
+  width: 100%;
+}
+
+.iconWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: v.sp(2);
+  color: v.$text-secondary;
+
+  svg {
+    font-size: 64px;
+    width: 64px;
+    height: 64px;
+  }
+}
+
+.icon {
+  font-size: 64px;
+  width: 64px;
+  height: 64px;
+  color: v.$text-secondary;
+}
+
+.title {
+  color: v.$text-primary;
+  margin-bottom: v.sp(1);
+}
+
+.description {
+  color: v.$text-secondary;
+  max-width: 400px;
+}
