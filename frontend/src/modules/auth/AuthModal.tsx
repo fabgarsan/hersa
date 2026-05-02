@@ -7,7 +7,6 @@ import Container from "@mui/material/Container";
 import MuiLink from "@mui/material/Link";
 import Paper from "@mui/material/Paper";
 import TextField from "@mui/material/TextField";
-import Typography from "@mui/material/Typography";
 import { Controller, useForm } from "react-hook-form";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 
@@ -15,6 +14,7 @@ import { isNetworkError } from "@api/offlineMutationEvents";
 import { useAuthContext } from "@shared/contexts";
 import { MutationButton } from "@shared/components";
 import { ROUTES } from "@shared/constants/routes";
+import logoHersa from "@shared/assets/logo-hersa.png";
 import { UI } from "./constants/ui";
 import { useLoginMutation } from "./loginMutation";
 import { loginSchema } from "./schemas";
@@ -50,9 +50,9 @@ export function AuthModal() {
   return (
     <Container maxWidth="xs" className={styles.container}>
       <Paper elevation={0} className={styles.paper}>
-        <Typography variant="h5" className={styles.title}>
-          Eventos Hersa
-        </Typography>
+        <Box className={styles.logoWrapper}>
+          <img src={logoHersa} alt="Eventos Hersa" className={styles.logo} />
+        </Box>
         {hasAuthError && (
           <Alert severity="error" className={styles.alert}>
             {UI.auth.WRONG_CREDENTIALS}
