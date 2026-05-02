@@ -9,7 +9,7 @@ import styles from "./ForgotPasswordPage.module.scss";
 
 export default function ForgotPasswordPage() {
   const footer = (
-    <Link component={RouterLink} to={ROUTES.HOME} variant="body2" color="primary">
+    <Link component={RouterLink} to={ROUTES.LOGIN} variant="body2" color="primary">
       {UI.pages.forgotPassword.BACK_TO_LOGIN}
     </Link>
   );

@@ -1,5 +1,9 @@
 @use '../styles/variables' as v;
 
+// Local tint variables — SCSS cannot decompose hex tokens so we define them here.
+$secondary-tint-1: rgba(201, 162, 39, 0.10);
+$secondary-tint-2: rgba(201, 162, 39, 0.15);
+
 .root {
   background-color: v.$primary-dark;
   height: 100%;
@@ -42,11 +46,11 @@
   margin-bottom: v.sp(0.5);
   padding-left: v.sp(1.5);
   color: v.$secondary-main;
-  background-color: rgba(201, 162, 39, 0.1);
+  background-color: $secondary-tint-1;
   border-left: 3px solid v.$secondary-main;
 
   &:hover {
-    background-color: rgba(201, 162, 39, 0.15);
+    background-color: $secondary-tint-2;
     color: v.$secondary-main;
   }
 }
@@ -88,4 +92,27 @@
 .navItemLabelActive {
   font-size: 0.9rem;
   font-weight: 600;
+}
+
+.navItemLocked {
+  border-radius: 4px;
+  margin-bottom: v.sp(0.5);
+  padding-left: v.sp(1.5);
+  color: rgba(255, 255, 255, 0.75);
+  background-color: transparent;
+  border-left: 3px solid transparent;
+  opacity: 0.55;
+  cursor: pointer; // still clickable, leads to lock screen
+
+  &:hover {
+    background-color: v.$primary-light;
+    color: #ffffff;
+    opacity: 0.75;
+  }
+}
+
+.lockIcon {
+  font-size: 1rem;
+  color: v.$text-secondary;
+  margin-left: auto;
 }

@@ -7,6 +7,7 @@ import ListItemText from "@mui/material/ListItemText";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
+import LockIcon from "@mui/icons-material/Lock";
 import PersonIcon from "@mui/icons-material/Person";
 import SchoolIcon from "@mui/icons-material/School";
 import StorefrontIcon from "@mui/icons-material/Storefront";
@@ -38,19 +39,18 @@ const NAV_ITEMS: NavItem[] = [
     path: ROUTES.ADMIN,
     module: "modules.access_admin",
   },
-  { label: UI.nav.PROFILE, icon: <PersonIcon />, path: ROUTES.PROFILE, module: null },
 ];
 
 export function NavSidebar() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { hasAccess } = usePermissions();
+  const { hasAccess, isLoading } = usePermissions();
   const { data: user } = useMeQuery();
 
   const isActive = (path: string) =>
     location.pathname === path || location.pathname.startsWith(path + "/");
 
-  const visibleItems = NAV_ITEMS.filter((item) => item.module === null || hasAccess(item.module));
+  const allItems = NAV_ITEMS;
 
   return (
     <Box className={styles.root}>
@@ -63,14 +63,21 @@ export function NavSidebar() {
       <Divider className={styles.divider} />
 
       <List className={styles.list}>
-        {visibleItems.map(({ label, icon, path }) => {
+        {allItems.map(({ label, icon, path, module }) => {
           const active = isActive(path);
+          const locked = !isLoading && module !== null && !hasAccess(module);
+
+          let itemClass: string;
+          if (active) {
+            itemClass = styles.navItemActive;
+          } else if (locked) {
+            itemClass = styles.navItemLocked;
+          } else {
+            itemClass = styles.navItem;
+          }
+
           return (
-            <ListItemButton
-              key={path}
-              onClick={() => navigate(path)}
-              className={active ? styles.navItemActive : styles.navItem}
-            >
+            <ListItemButton key={path} onClick={() => navigate(path)} className={itemClass}>
               <ListItemIcon className={styles.navItemIcon}>{icon}</ListItemIcon>
               <ListItemText
                 primary={label}
@@ -78,6 +85,7 @@ export function NavSidebar() {
                   primary: { className: active ? styles.navItemLabelActive : styles.navItemLabel },
                 }}
               />
+              {locked && <LockIcon className={styles.lockIcon} />}
             </ListItemButton>
           );
         })}
@@ -85,12 +93,15 @@ export function NavSidebar() {
 
       <Divider className={styles.divider} />
 
-      <Box className={styles.userSection}>
+      <ListItemButton
+        onClick={() => navigate(ROUTES.PROFILE)}
+        className={isActive(ROUTES.PROFILE) ? styles.navItemActive : styles.userSection}
+      >
         <PersonIcon className={styles.userIcon} />
         <Typography variant="caption" className={styles.username} noWrap>
           {user?.username ?? "—"}
         </Typography>
-      </Box>
+      </ListItemButton>
     </Box>
   );
 }
