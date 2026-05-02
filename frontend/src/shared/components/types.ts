@@ -78,6 +78,9 @@ export interface MutationButtonProps {
   label: string;
   pendingLabel: string;
   fullWidth?: boolean;
+  hasPermission?: boolean;
+  unauthorizedBehavior?: "hidden" | "disabled";
+  unauthorizedTooltip?: string;
 }
 
 export interface AuthGuardProps {

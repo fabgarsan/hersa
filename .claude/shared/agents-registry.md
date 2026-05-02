@@ -60,6 +60,7 @@ When adding a new agent, decide which bucket it falls into and either set `perso
 | `review-conventions` | Used by `code-reviewer`, `security-auditor` |
 | `pipeline-trace-linter` | After `tdd-writer` TDD; before implementation |
 | `update-cc-knowledge` | `/update-cc-knowledge` |
+| `deploy` | `/deploy [frontend\|backend\|all]` |
 
 ## Slash Commands
 
