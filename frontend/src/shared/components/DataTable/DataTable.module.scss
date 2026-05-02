@@ -115,7 +115,7 @@
 
 // --- Detail rows ---
 .detailRow {
-  background-color: #eef2f7 !important; // light navy tint for visual distinction
+  background-color: v.$bg-surface-1 !important;
 
   :global(.MuiDataGrid-cell) {
     padding: 0;
