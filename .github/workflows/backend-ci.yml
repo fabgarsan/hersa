@@ -44,6 +44,7 @@ jobs:
       DB_PASSWORD: hersa
       SECRET_KEY: ci-insecure-key-not-for-production
       DJANGO_SETTINGS_MODULE: config.settings.development
+      CORS_ALLOWED_ORIGINS: "http://localhost:5173"
 
     steps:
       - uses: actions/checkout@v4
