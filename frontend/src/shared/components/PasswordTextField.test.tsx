@@ -136,4 +136,51 @@ describe("PasswordTextField", () => {
     const textField = input.closest("[class*='MuiTextField']");
     expect(textField).toHaveClass("MuiTextField-root");
   });
+
+  it("should display helperText when error is provided with error=true", () => {
+    const errorMessage = "Password must be at least 8 characters";
+    const mockError = { message: errorMessage, type: "minLength" };
+
+    const { getByText, getByDisplayValue } = renderWithProviders(
+      <TestComponent name="password" label="Password" error={mockError} />,
+    );
+
+    const input = getByDisplayValue("") as HTMLInputElement;
+    expect(input).toHaveAttribute("aria-invalid", "true");
+    expect(getByText(errorMessage)).toBeInTheDocument();
+  });
+
+  it("should not display error helperText when error is not provided", () => {
+    const { queryByText, getByDisplayValue } = renderWithProviders(
+      <TestComponent name="password" label="Password" />,
+    );
+
+    const input = getByDisplayValue("") as HTMLInputElement;
+    expect(input).toHaveAttribute("aria-invalid", "false");
+    expect(queryByText(/Password must be/)).not.toBeInTheDocument();
+  });
+
+  it("should toggle password visibility back and forth correctly", async () => {
+    const { getByRole, getByDisplayValue, user } = renderWithProviders(
+      <TestComponent name="password" label="Password" />,
+    );
+
+    const input = getByDisplayValue("") as HTMLInputElement;
+    const toggleButton = getByRole("button");
+
+    // Initially hidden
+    expect(input.type).toBe("password");
+
+    // Click to show
+    await user.click(toggleButton);
+    expect(input.type).toBe("text");
+
+    // Click to hide again
+    await user.click(toggleButton);
+    expect(input.type).toBe("password");
+
+    // Click to show again
+    await user.click(toggleButton);
+    expect(input.type).toBe("text");
+  });
 });
