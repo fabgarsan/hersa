@@ -16,7 +16,7 @@ const createMockMutation = () => {
   let capturedOnSuccess: (() => void) | null = null;
   let capturedOnError: ((err: Error) => void) | null = null;
 
-  const mutate = vi.fn((values, options) => {
+  const mutate = vi.fn((_values, options) => {
     capturedOnSuccess = options.onSuccess;
     capturedOnError = options.onError;
   });
@@ -46,7 +46,9 @@ describe("ChangePasswordForm", () => {
   describe("render", () => {
     it("should render three password input fields", () => {
       const mockMutation = createMockMutation();
-      vi.mocked(useChangePasswordMutation).mockReturnValue(mockMutation);
+      vi.mocked(useChangePasswordMutation).mockReturnValue(
+        mockMutation as unknown as ReturnType<typeof useChangePasswordMutation>,
+      );
 
       renderWithProviders(<ChangePasswordForm />);
 
@@ -58,7 +60,9 @@ describe("ChangePasswordForm", () => {
 
     it("should render submit button", () => {
       const mockMutation = createMockMutation();
-      vi.mocked(useChangePasswordMutation).mockReturnValue(mockMutation);
+      vi.mocked(useChangePasswordMutation).mockReturnValue(
+        mockMutation as unknown as ReturnType<typeof useChangePasswordMutation>,
+      );
 
       renderWithProviders(<ChangePasswordForm />);
 
@@ -67,7 +71,9 @@ describe("ChangePasswordForm", () => {
 
     it("should not render any error or success messages initially", () => {
       const mockMutation = createMockMutation();
-      vi.mocked(useChangePasswordMutation).mockReturnValue(mockMutation);
+      vi.mocked(useChangePasswordMutation).mockReturnValue(
+        mockMutation as unknown as ReturnType<typeof useChangePasswordMutation>,
+      );
 
       renderWithProviders(<ChangePasswordForm />);
 
@@ -79,7 +85,9 @@ describe("ChangePasswordForm", () => {
   describe("form submission validation", () => {
     it("should show validation error when current password is empty", async () => {
       const mockMutation = createMockMutation();
-      vi.mocked(useChangePasswordMutation).mockReturnValue(mockMutation);
+      vi.mocked(useChangePasswordMutation).mockReturnValue(
+        mockMutation as unknown as ReturnType<typeof useChangePasswordMutation>,
+      );
 
       const { user } = renderWithProviders(<ChangePasswordForm />);
 
@@ -98,7 +106,9 @@ describe("ChangePasswordForm", () => {
 
     it("should show validation error when new password is empty", async () => {
       const mockMutation = createMockMutation();
-      vi.mocked(useChangePasswordMutation).mockReturnValue(mockMutation);
+      vi.mocked(useChangePasswordMutation).mockReturnValue(
+        mockMutation as unknown as ReturnType<typeof useChangePasswordMutation>,
+      );
 
       const { user } = renderWithProviders(<ChangePasswordForm />);
 
@@ -117,7 +127,9 @@ describe("ChangePasswordForm", () => {
 
     it("should show validation error when new password is less than 8 characters", async () => {
       const mockMutation = createMockMutation();
-      vi.mocked(useChangePasswordMutation).mockReturnValue(mockMutation);
+      vi.mocked(useChangePasswordMutation).mockReturnValue(
+        mockMutation as unknown as ReturnType<typeof useChangePasswordMutation>,
+      );
 
       const { user } = renderWithProviders(<ChangePasswordForm />);
 
@@ -139,7 +151,9 @@ describe("ChangePasswordForm", () => {
 
     it("should show validation error when new password is only numeric", async () => {
       const mockMutation = createMockMutation();
-      vi.mocked(useChangePasswordMutation).mockReturnValue(mockMutation);
+      vi.mocked(useChangePasswordMutation).mockReturnValue(
+        mockMutation as unknown as ReturnType<typeof useChangePasswordMutation>,
+      );
 
       const { user } = renderWithProviders(<ChangePasswordForm />);
 
@@ -161,7 +175,9 @@ describe("ChangePasswordForm", () => {
 
     it("should show validation error when passwords do not match", async () => {
       const mockMutation = createMockMutation();
-      vi.mocked(useChangePasswordMutation).mockReturnValue(mockMutation);
+      vi.mocked(useChangePasswordMutation).mockReturnValue(
+        mockMutation as unknown as ReturnType<typeof useChangePasswordMutation>,
+      );
 
       const { user } = renderWithProviders(<ChangePasswordForm />);
 
@@ -181,7 +197,9 @@ describe("ChangePasswordForm", () => {
 
     it("should not call mutate when validation fails", async () => {
       const mockMutation = createMockMutation();
-      vi.mocked(useChangePasswordMutation).mockReturnValue(mockMutation);
+      vi.mocked(useChangePasswordMutation).mockReturnValue(
+        mockMutation as unknown as ReturnType<typeof useChangePasswordMutation>,
+      );
 
       const { user } = renderWithProviders(<ChangePasswordForm />);
 
@@ -197,7 +215,9 @@ describe("ChangePasswordForm", () => {
   describe("successful submission", () => {
     it("should call mutate with valid form data", async () => {
       const mockMutation = createMockMutation();
-      vi.mocked(useChangePasswordMutation).mockReturnValue(mockMutation);
+      vi.mocked(useChangePasswordMutation).mockReturnValue(
+        mockMutation as unknown as ReturnType<typeof useChangePasswordMutation>,
+      );
 
       const { user } = renderWithProviders(<ChangePasswordForm />);
 
@@ -227,7 +247,9 @@ describe("ChangePasswordForm", () => {
 
     it("should show success message on successful change", async () => {
       const mockMutation = createMockMutation();
-      vi.mocked(useChangePasswordMutation).mockReturnValue(mockMutation);
+      vi.mocked(useChangePasswordMutation).mockReturnValue(
+        mockMutation as unknown as ReturnType<typeof useChangePasswordMutation>,
+      );
 
       const { user } = renderWithProviders(<ChangePasswordForm />);
 
@@ -252,7 +274,9 @@ describe("ChangePasswordForm", () => {
 
     it("should reset form after successful change", async () => {
       const mockMutation = createMockMutation();
-      vi.mocked(useChangePasswordMutation).mockReturnValue(mockMutation);
+      vi.mocked(useChangePasswordMutation).mockReturnValue(
+        mockMutation as unknown as ReturnType<typeof useChangePasswordMutation>,
+      );
 
       const { user } = renderWithProviders(<ChangePasswordForm />);
 
@@ -280,7 +304,9 @@ describe("ChangePasswordForm", () => {
 
     it("should call onSuccess callback when password is changed successfully", async () => {
       const mockMutation = createMockMutation();
-      vi.mocked(useChangePasswordMutation).mockReturnValue(mockMutation);
+      vi.mocked(useChangePasswordMutation).mockReturnValue(
+        mockMutation as unknown as ReturnType<typeof useChangePasswordMutation>,
+      );
       const onSuccess = vi.fn();
 
       const { user } = renderWithProviders(<ChangePasswordForm onSuccess={onSuccess} />);
@@ -308,7 +334,9 @@ describe("ChangePasswordForm", () => {
   describe("error handling - API errors", () => {
     it("should set field error when API returns currentPassword error", async () => {
       const mockMutation = createMockMutation();
-      vi.mocked(useChangePasswordMutation).mockReturnValue(mockMutation);
+      vi.mocked(useChangePasswordMutation).mockReturnValue(
+        mockMutation as unknown as ReturnType<typeof useChangePasswordMutation>,
+      );
 
       const { user } = renderWithProviders(<ChangePasswordForm />);
 
@@ -346,7 +374,9 @@ describe("ChangePasswordForm", () => {
 
     it("should set field error when API returns newPassword string error", async () => {
       const mockMutation = createMockMutation();
-      vi.mocked(useChangePasswordMutation).mockReturnValue(mockMutation);
+      vi.mocked(useChangePasswordMutation).mockReturnValue(
+        mockMutation as unknown as ReturnType<typeof useChangePasswordMutation>,
+      );
 
       const { user } = renderWithProviders(<ChangePasswordForm />);
 
@@ -384,7 +414,9 @@ describe("ChangePasswordForm", () => {
 
     it("should set field error when API returns newPassword array error (take first element)", async () => {
       const mockMutation = createMockMutation();
-      vi.mocked(useChangePasswordMutation).mockReturnValue(mockMutation);
+      vi.mocked(useChangePasswordMutation).mockReturnValue(
+        mockMutation as unknown as ReturnType<typeof useChangePasswordMutation>,
+      );
 
       const { user } = renderWithProviders(<ChangePasswordForm />);
 
@@ -422,7 +454,9 @@ describe("ChangePasswordForm", () => {
 
     it("should show generic error message when API returns unknown error", async () => {
       const mockMutation = createMockMutation();
-      vi.mocked(useChangePasswordMutation).mockReturnValue(mockMutation);
+      vi.mocked(useChangePasswordMutation).mockReturnValue(
+        mockMutation as unknown as ReturnType<typeof useChangePasswordMutation>,
+      );
 
       const { user } = renderWithProviders(<ChangePasswordForm />);
 
@@ -460,7 +494,9 @@ describe("ChangePasswordForm", () => {
 
     it("should not show error message on network error", async () => {
       const mockMutation = createMockMutation();
-      vi.mocked(useChangePasswordMutation).mockReturnValue(mockMutation);
+      vi.mocked(useChangePasswordMutation).mockReturnValue(
+        mockMutation as unknown as ReturnType<typeof useChangePasswordMutation>,
+      );
 
       const { user } = renderWithProviders(<ChangePasswordForm />);
 
@@ -491,7 +527,7 @@ describe("ChangePasswordForm", () => {
       vi.mocked(useChangePasswordMutation).mockReturnValue({
         ...mockMutation,
         isPending: true,
-      });
+      } as unknown as ReturnType<typeof useChangePasswordMutation>);
 
       renderWithProviders(<ChangePasswordForm />);
 
@@ -503,7 +539,7 @@ describe("ChangePasswordForm", () => {
       vi.mocked(useChangePasswordMutation).mockReturnValue({
         ...mockMutation,
         isPending: true,
-      });
+      } as unknown as ReturnType<typeof useChangePasswordMutation>);
 
       renderWithProviders(<ChangePasswordForm />);
 

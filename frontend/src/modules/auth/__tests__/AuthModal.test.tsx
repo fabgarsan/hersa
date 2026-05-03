@@ -45,7 +45,7 @@ const createMockMutation = () => {
   let capturedOnSuccess: ((data: TokenPair) => void) | null = null;
   let capturedOnError: ((err: Error) => void) | null = null;
 
-  const mutate = vi.fn((values, options) => {
+  const mutate = vi.fn((_values, options) => {
     capturedOnSuccess = options.onSuccess;
     capturedOnError = options.onError;
   });
@@ -63,9 +63,12 @@ describe("AuthModal", () => {
     localStorage.clear();
     vi.clearAllMocks();
     const mockMutation = createMockMutation();
-    vi.mocked(useLoginMutation).mockReturnValue(mockMutation);
+    vi.mocked(useLoginMutation).mockReturnValue(
+      mockMutation as unknown as ReturnType<typeof useLoginMutation>,
+    );
     vi.mocked(useAuthContext).mockReturnValue({
       isAuthenticated: false,
+      isLoading: false,
       login: vi.fn(),
       logout: vi.fn(),
     });
@@ -168,7 +171,9 @@ describe("AuthModal", () => {
 
     it("should not call mutate when validation fails", async () => {
       const mockMutation = createMockMutation();
-      vi.mocked(useLoginMutation).mockReturnValue(mockMutation);
+      vi.mocked(useLoginMutation).mockReturnValue(
+        mockMutation as unknown as ReturnType<typeof useLoginMutation>,
+      );
 
       const { user } = renderWithRouter();
 
@@ -184,7 +189,9 @@ describe("AuthModal", () => {
   describe("successful login", () => {
     it("should call mutate with valid credentials", async () => {
       const mockMutation = createMockMutation();
-      vi.mocked(useLoginMutation).mockReturnValue(mockMutation);
+      vi.mocked(useLoginMutation).mockReturnValue(
+        mockMutation as unknown as ReturnType<typeof useLoginMutation>,
+      );
 
       const { user } = renderWithRouter();
 
@@ -210,10 +217,13 @@ describe("AuthModal", () => {
 
     it("should call login context and navigate to HOME on successful login", async () => {
       const mockMutation = createMockMutation();
-      vi.mocked(useLoginMutation).mockReturnValue(mockMutation);
+      vi.mocked(useLoginMutation).mockReturnValue(
+        mockMutation as unknown as ReturnType<typeof useLoginMutation>,
+      );
       const mockLogin = vi.fn();
       vi.mocked(useAuthContext).mockReturnValue({
         isAuthenticated: false,
+        isLoading: false,
         login: mockLogin,
         logout: vi.fn(),
       });
@@ -243,10 +253,13 @@ describe("AuthModal", () => {
 
     it("should redirect to origin when returned from protected route", async () => {
       const mockMutation = createMockMutation();
-      vi.mocked(useLoginMutation).mockReturnValue(mockMutation);
+      vi.mocked(useLoginMutation).mockReturnValue(
+        mockMutation as unknown as ReturnType<typeof useLoginMutation>,
+      );
       const mockLogin = vi.fn();
       vi.mocked(useAuthContext).mockReturnValue({
         isAuthenticated: false,
+        isLoading: false,
         login: mockLogin,
         logout: vi.fn(),
       });
@@ -298,10 +311,13 @@ describe("AuthModal", () => {
 
     it("should block open redirect from //evil.com and redirect to HOME instead", async () => {
       const mockMutation = createMockMutation();
-      vi.mocked(useLoginMutation).mockReturnValue(mockMutation);
+      vi.mocked(useLoginMutation).mockReturnValue(
+        mockMutation as unknown as ReturnType<typeof useLoginMutation>,
+      );
       const mockLogin = vi.fn();
       vi.mocked(useAuthContext).mockReturnValue({
         isAuthenticated: false,
+        isLoading: false,
         login: mockLogin,
         logout: vi.fn(),
       });
@@ -354,7 +370,9 @@ describe("AuthModal", () => {
   describe("error handling", () => {
     it("should show error alert on 401 authentication failure", async () => {
       const mockMutation = createMockMutation();
-      vi.mocked(useLoginMutation).mockReturnValue(mockMutation);
+      vi.mocked(useLoginMutation).mockReturnValue(
+        mockMutation as unknown as ReturnType<typeof useLoginMutation>,
+      );
 
       const { user } = renderWithRouter();
 
@@ -394,7 +412,9 @@ describe("AuthModal", () => {
 
     it("should not render error alert on network error", async () => {
       const mockMutation = createMockMutation();
-      vi.mocked(useLoginMutation).mockReturnValue(mockMutation);
+      vi.mocked(useLoginMutation).mockReturnValue(
+        mockMutation as unknown as ReturnType<typeof useLoginMutation>,
+      );
 
       const { user } = renderWithRouter();
 
@@ -421,10 +441,13 @@ describe("AuthModal", () => {
 
     it("should not navigate on authentication error", async () => {
       const mockMutation = createMockMutation();
-      vi.mocked(useLoginMutation).mockReturnValue(mockMutation);
+      vi.mocked(useLoginMutation).mockReturnValue(
+        mockMutation as unknown as ReturnType<typeof useLoginMutation>,
+      );
       const mockLogin = vi.fn();
       vi.mocked(useAuthContext).mockReturnValue({
         isAuthenticated: false,
+        isLoading: false,
         login: mockLogin,
         logout: vi.fn(),
       });
@@ -459,7 +482,7 @@ describe("AuthModal", () => {
       vi.mocked(useLoginMutation).mockReturnValue({
         ...mockMutation,
         isPending: true,
-      });
+      } as unknown as ReturnType<typeof useLoginMutation>);
 
       const { user } = renderWithRouter();
 
@@ -478,7 +501,7 @@ describe("AuthModal", () => {
       vi.mocked(useLoginMutation).mockReturnValue({
         ...mockMutation,
         isPending: true,
-      });
+      } as unknown as ReturnType<typeof useLoginMutation>);
 
       renderWithRouter();
 
@@ -502,7 +525,9 @@ describe("AuthModal", () => {
   describe("clear error on new submission attempt", () => {
     it("should clear error alert when user tries to log in again after error", async () => {
       const mockMutation = createMockMutation();
-      vi.mocked(useLoginMutation).mockReturnValue(mockMutation);
+      vi.mocked(useLoginMutation).mockReturnValue(
+        mockMutation as unknown as ReturnType<typeof useLoginMutation>,
+      );
 
       const { user } = renderWithRouter();
 
