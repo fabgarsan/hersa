@@ -93,7 +93,7 @@ describe("Layout", () => {
   });
 
   it("should have drawer toggling functionality", async () => {
-    const { container, user } = renderWithProviders(
+    const { container } = renderWithProviders(
       <Layout>
         <div>Content</div>
       </Layout>,

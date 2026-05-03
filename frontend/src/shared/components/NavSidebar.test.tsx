@@ -7,7 +7,6 @@ vi.mock("@shared/hooks/usePermissions", () => ({
 }));
 
 vi.mock("@modules/auth", async (importOriginal) => {
-  // eslint-disable-next-line @typescript-eslint/consistent-type-imports
   const actual = await importOriginal<typeof import("@modules/auth")>();
   return { ...actual, useMeQuery: vi.fn() };
 });

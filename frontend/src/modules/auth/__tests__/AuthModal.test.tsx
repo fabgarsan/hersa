@@ -19,7 +19,6 @@ vi.mock("../loginMutation", () => ({
 
 // Mock the auth context
 vi.mock("@shared/contexts", async (importOriginal) => {
-  // eslint-disable-next-line @typescript-eslint/consistent-type-imports
   const actual = await importOriginal<typeof import("@shared/contexts")>();
   return { ...actual, useAuthContext: vi.fn() };
 });
@@ -69,7 +68,9 @@ describe("AuthModal", () => {
   });
 
   const renderWithRouter = (initialEntries = [ROUTES.LOGIN]) => {
-    const qc = new QueryClient({ defaultOptions: { queries: { retry: false, staleTime: 0 }, mutations: { retry: false } } });
+    const qc = new QueryClient({
+      defaultOptions: { queries: { retry: false, staleTime: 0 }, mutations: { retry: false } },
+    });
     const user = userEvent.setup();
     const result = render(
       <CacheProvider value={emotionCache}>
@@ -246,13 +247,17 @@ describe("AuthModal", () => {
         logout: vi.fn(),
       });
 
-      const qc = new QueryClient({ defaultOptions: { queries: { retry: false, staleTime: 0 }, mutations: { retry: false } } });
+      const qc = new QueryClient({
+        defaultOptions: { queries: { retry: false, staleTime: 0 }, mutations: { retry: false } },
+      });
       const user = userEvent.setup();
-      const r = render(
+      render(
         <CacheProvider value={emotionCache}>
           <QueryClientProvider client={qc}>
             <MemoryRouter
-              initialEntries={[{ pathname: ROUTES.LOGIN, state: { from: { pathname: "/profile" } } }]}
+              initialEntries={[
+                { pathname: ROUTES.LOGIN, state: { from: { pathname: "/profile" } } },
+              ]}
             >
               <AuthProvider>
                 <ThemeProvider theme={hersaTheme}>
@@ -297,9 +302,11 @@ describe("AuthModal", () => {
         logout: vi.fn(),
       });
 
-      const qc = new QueryClient({ defaultOptions: { queries: { retry: false, staleTime: 0 }, mutations: { retry: false } } });
+      const qc = new QueryClient({
+        defaultOptions: { queries: { retry: false, staleTime: 0 }, mutations: { retry: false } },
+      });
       const user = userEvent.setup();
-      const r = render(
+      render(
         <CacheProvider value={emotionCache}>
           <QueryClientProvider client={qc}>
             <MemoryRouter
@@ -481,7 +488,7 @@ describe("AuthModal", () => {
       const mockMutation = createMockMutation();
       vi.mocked(useLoginMutation).mockReturnValue(mockMutation);
 
-      const { user, rerender } = renderWithRouter();
+      const { user } = renderWithRouter();
 
       // First attempt with wrong password
       let usernameField = screen.getByLabelText(/Usuario/i);

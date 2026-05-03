@@ -149,5 +149,13 @@ export default tseslint.config(
       ],
     },
   },
+  // Test files: relax rules that are impractical to satisfy in mocks
+  {
+    files: ["**/*.test.{ts,tsx}", "**/__tests__/**/*.{ts,tsx}", "**/tests/**/*.{ts,tsx}"],
+    rules: {
+      "@typescript-eslint/no-explicit-any": "off",
+      "@typescript-eslint/consistent-type-imports": "off",
+    },
+  },
   eslintConfigPrettier,
 );
