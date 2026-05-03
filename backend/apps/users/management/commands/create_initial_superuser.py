@@ -1,13 +1,13 @@
+from decouple import UndefinedValueError, config
 from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand
-from decouple import UndefinedValueError, config
 
 
 class Command(BaseCommand):
     help = "Creates the initial superuser from env vars if no superuser exists yet."
 
     def handle(self, *args: object, **options: object) -> None:
-        User = get_user_model()
+        User = get_user_model()  # noqa: N806
 
         if User.objects.filter(is_superuser=True).exists():
             self.stdout.write("Superuser already exists — skipping.")
