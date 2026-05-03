@@ -31,6 +31,9 @@ const hersaStylePlugin = {
         const filename = context.filename;
         if (!filename.endsWith(".tsx")) return {};
 
+        // Skip test files
+        if (filename.endsWith(".test.tsx")) return {};
+
         const basename = path.basename(filename, ".tsx");
         if (basename === "main") return {};
         if (basename.endsWith("Provider")) return {};
