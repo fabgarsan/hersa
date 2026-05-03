@@ -83,4 +83,34 @@ describe("ConfirmDialog", () => {
     const { getByRole } = renderDialog({ severity: "info" });
     expect(getByRole("button", { name: /confirmar/i })).toHaveClass("MuiButton-colorPrimary");
   });
+
+  it("should show CircularProgress and disable buttons when loading=true", () => {
+    const { getByRole, getAllByRole } = renderDialog({ loading: true });
+    const spinner = getByRole("button", { name: /confirmar/i }).querySelector(
+      "svg[class*='MuiCircularProgress']",
+    );
+    expect(spinner).toBeInTheDocument();
+    const buttons = getAllByRole("button");
+    buttons.forEach((button) => {
+      expect(button).toBeDisabled();
+    });
+  });
+
+  it("should show confirm label as text and enable buttons when loading=false", () => {
+    const { getByRole, getAllByRole } = renderDialog({ loading: false });
+    const confirmButton = getByRole("button", { name: /confirmar/i });
+    expect(confirmButton.textContent).toContain("Confirmar");
+    expect(confirmButton).not.toBeDisabled();
+    const cancelButton = getByRole("button", { name: /cancelar/i });
+    expect(cancelButton).not.toBeDisabled();
+    const buttons = getAllByRole("button");
+    buttons.forEach((button) => {
+      expect(button).not.toBeDisabled();
+    });
+  });
+
+  it("should apply warning color when severity='warning' (default)", () => {
+    const { getByRole } = renderDialog({ severity: "warning" });
+    expect(getByRole("button", { name: /confirmar/i })).toHaveClass("MuiButton-colorWarning");
+  });
 });
