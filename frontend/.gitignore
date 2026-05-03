@@ -3,5 +3,7 @@
 !.env.example
 dist/
 coverage/
+.stryker-tmp/
+reports/
 *.local
 .DS_Store
