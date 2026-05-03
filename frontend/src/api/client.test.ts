@@ -123,6 +123,91 @@ describe("apiClient response interceptor — 401 handling", () => {
     vi.restoreAllMocks();
   });
 
+  // Security Phase 1 tests — explicit names for coverage audit
+  it("interceptor_refreshes_access_token_on_401_and_retries_request", async () => {
+    // Mockear localStorage con refreshToken
+    localStorage.setItem("refreshToken", "my-refresh-token");
+    // Mockear endpoint original: 401 la primera vez, 200 la segunda
+    mock.onGet("/test").replyOnce(401);
+    mock.onGet("/test").reply(200, { user_id: 1 });
+    // Mockear /api/token/refresh/ para devolver nuevo access token
+    postSpy.mockResolvedValueOnce({ data: { access: "new-access-token" } });
+
+    // Ejecutar request
+    const response = await apiClient.get("/test");
+
+    // Verificar que el refresh fue llamado
+    expect(postSpy).toHaveBeenCalledOnce();
+    expect(postSpy).toHaveBeenCalledWith(expect.stringContaining(API.TOKEN_REFRESH), {
+      refresh: "my-refresh-token",
+    });
+    // Verificar que el nuevo token se almacenó
+    expect(localStorage.getItem("accessToken")).toBe("new-access-token");
+    // Verificar que la respuesta final es 200 (request fue reintentado)
+    expect(response.data).toEqual({ userId: 1 });
+  });
+
+  it("interceptor_triggers_logout_when_refresh_fails", async () => {
+    // Setup: refreshToken existe pero será rechazado
+    localStorage.setItem("refreshToken", "bad-refresh");
+    // Endpoint original devuelve 401
+    mock.onGet("/test").reply(401);
+    // Refresh endpoint falla
+    postSpy.mockRejectedValueOnce(new Error("Refresh failed"));
+
+    // Ejecutar request — debe ser rechazado
+    await expect(apiClient.get("/test")).rejects.toBeDefined();
+
+    // Verificar que logout fue disparado
+    expect(triggerLogoutSpy).toHaveBeenCalledOnce();
+  });
+
+  it("interceptor_does_not_send_multiple_refresh_requests_for_concurrent_401s", async () => {
+    // Setup: 2 requests que recibirán 401 concurrentes
+    localStorage.setItem("refreshToken", "my-refresh");
+    mock.onGet("/res1").replyOnce(401);
+    mock.onGet("/res1").reply(200, { id: 1 });
+    mock.onGet("/res2").replyOnce(401);
+    mock.onGet("/res2").reply(200, { id: 2 });
+
+    let refreshCallCount = 0;
+    postSpy.mockImplementation(async () => {
+      refreshCallCount++;
+      // Simular delay de red para que ambos requests concurrentes golpeen el mutex
+      await new Promise<void>((r) => setTimeout(r, 10));
+      return { data: { access: "shared-token" } };
+    });
+
+    // Ejecutar dos requests concurrentes que ambos reciben 401
+    const [r1, r2] = await Promise.all([
+      apiClient.get("/res1"),
+      apiClient.get("/res2"),
+    ]);
+
+    // Verificar que refresh fue llamado EXACTAMENTE UNA VEZ (mutex funciona)
+    expect(refreshCallCount).toBe(1);
+    // Ambos requests deben haber sido reintentados exitosamente
+    expect(r1.data).toEqual({ id: 1 });
+    expect(r2.data).toEqual({ id: 2 });
+  });
+
+  it("interceptor_does_not_retry_refresh_endpoint_on_401", async () => {
+    // Security test: evitar loop infinito si /api/token/refresh/ devuelve 401
+    localStorage.setItem("refreshToken", "my-refresh");
+    // Endpoint original devuelve 401
+    mock.onGet("/test").reply(401);
+    // /api/token/refresh/ también devuelve 401 — debe disparar logout sin loop
+    postSpy.mockRejectedValueOnce(new Error("Unauthorized"));
+
+    // Ejecutar — debe rechazarse
+    await expect(apiClient.get("/test")).rejects.toBeDefined();
+
+    // Verificar que triggerLogout fue llamado (no entra en retry loop)
+    expect(triggerLogoutSpy).toHaveBeenCalledOnce();
+    // Refresh debe ser llamado solo UNA VEZ
+    expect(postSpy).toHaveBeenCalledOnce();
+  });
+
   it("rejects non-401 errors without attempting refresh", async () => {
     mock.onGet("/test").reply(404);
     await expect(apiClient.get("/test")).rejects.toMatchObject({
