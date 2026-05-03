@@ -166,4 +166,28 @@ describe("PageHeader", () => {
     const breadcrumbsComponent = container.querySelector("[class*='MuiBreadcrumbs']");
     expect(breadcrumbsComponent).toBeInTheDocument();
   });
+
+  it("should render intermediate breadcrumb without href as plain text (not a link)", () => {
+    const { getByText, getAllByRole } = renderWithProviders(
+      <PageHeader
+        title="User Details"
+        breadcrumbs={[
+          { label: "Dashboard", href: "/" },
+          { label: "Users Archive" }, // Middle breadcrumb without href
+          { label: "John Doe" },
+        ]}
+      />,
+    );
+
+    const usersArchiveText = getByText("Users Archive");
+    // Should not be wrapped in a link
+    expect(usersArchiveText.closest("a")).not.toBeInTheDocument();
+    // Should exist as a text element
+    expect(usersArchiveText).toBeInTheDocument();
+
+    // Should have exactly 1 link: Dashboard; the others should be text
+    const links = getAllByRole("link");
+    expect(links).toHaveLength(1);
+    expect(links[0]).toHaveAttribute("href", "/");
+  });
 });

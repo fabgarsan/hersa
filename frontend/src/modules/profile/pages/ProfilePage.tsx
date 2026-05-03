@@ -56,7 +56,7 @@ export default function ProfilePage() {
             <Divider />
             <CardContent className={styles.infoContent}>
               {isLoading ? (
-                <List disablePadding>
+                <List disablePadding data-testid="profile-skeleton-list">
                   {[0, 1, 2, 3].map((i) => (
                     <ListItem key={`skeleton-field-${i}`} divider={i < 3}>
                       <ListItemText
