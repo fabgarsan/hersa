@@ -100,4 +100,42 @@ describe("AppHeader", () => {
     expect(logoutFn).toHaveBeenCalledOnce();
     expect(handleMenuClick).not.toHaveBeenCalled();
   });
+
+  describe("security - XSS protection", () => {
+    it("should never render script tags in the DOM", () => {
+      const { container } = renderWithProviders(<AppHeader onMenuClick={vi.fn()} />);
+      const scriptTags = container.querySelectorAll("script:not([data-vitest])");
+      expect(scriptTags.length).toBe(0);
+    });
+
+    it("should sanitize aria-label attributes against XSS", () => {
+      const { getByLabelText } = renderWithProviders(<AppHeader onMenuClick={vi.fn()} />);
+      const menuButton = getByLabelText(/abrir navegación/i);
+      expect(menuButton.getAttribute("aria-label")).toBe("abrir navegación");
+      expect(menuButton.getAttribute("aria-label")).not.toContain("<");
+      expect(menuButton.getAttribute("aria-label")).not.toContain(">");
+    });
+
+    it("should not allow XSS through innerHTML in tooltips", () => {
+      const { container } = renderWithProviders(<AppHeader onMenuClick={vi.fn()} />);
+      const tooltips = container.querySelectorAll("[role='tooltip']");
+      tooltips.forEach((tooltip) => {
+        expect(tooltip.innerHTML).not.toContain("<script");
+        expect(tooltip.innerHTML).not.toContain("onerror=");
+        expect(tooltip.innerHTML).not.toContain("onclick=");
+      });
+    });
+
+    it("should not render dangerously unescaped content", () => {
+      const { container } = renderWithProviders(<AppHeader onMenuClick={vi.fn()} />);
+      const allElements = container.querySelectorAll("*");
+      let foundDangerousHtml = false;
+      allElements.forEach((el) => {
+        if (el.innerHTML.includes("<img") || el.innerHTML.includes("<iframe")) {
+          foundDangerousHtml = true;
+        }
+      });
+      expect(foundDangerousHtml).toBe(false);
+    });
+  });
 });

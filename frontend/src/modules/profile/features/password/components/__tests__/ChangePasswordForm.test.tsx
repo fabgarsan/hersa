@@ -546,4 +546,173 @@ describe("ChangePasswordForm", () => {
       expect(screen.getByRole("button", { name: /Guardando/i })).toBeInTheDocument();
     });
   });
+
+  describe("security - password field protection", () => {
+    it("should not allow XSS payload in password fields", async () => {
+      const mockMutation = createMockMutation();
+      vi.mocked(useChangePasswordMutation).mockReturnValue(
+        mockMutation as unknown as ReturnType<typeof useChangePasswordMutation>,
+      );
+
+      const { user } = renderWithProviders(<ChangePasswordForm />);
+      const { currentPassword, newPassword, confirmPassword } = getPasswordFields();
+      const xssPayload = '<script>alert("xss")</script>';
+
+      await user.type(currentPassword, xssPayload);
+      await user.type(newPassword, xssPayload);
+      await user.type(confirmPassword, xssPayload);
+
+      const submitButton = screen.getByRole("button", { name: /Cambiar contraseña/i });
+      await user.click(submitButton);
+
+      await waitFor(() => {
+        expect(mockMutation.mutate).toHaveBeenCalledWith(
+          expect.objectContaining({
+            currentPassword: xssPayload,
+            newPassword: xssPayload,
+            confirmPassword: xssPayload,
+          }),
+          expect.any(Object),
+        );
+      });
+
+      // XSS payload should not be executed
+      expect(document.querySelector("script")).not.toBeInTheDocument();
+    });
+
+    it("should sanitize currentPassword error messages from API", async () => {
+      const mockMutation = createMockMutation();
+      vi.mocked(useChangePasswordMutation).mockReturnValue(
+        mockMutation as unknown as ReturnType<typeof useChangePasswordMutation>,
+      );
+
+      const { user } = renderWithProviders(<ChangePasswordForm />);
+      const { currentPassword, newPassword, confirmPassword } = getPasswordFields();
+
+      await user.type(currentPassword, "WrongPass");
+      await user.type(newPassword, "NewPass456");
+      await user.type(confirmPassword, "NewPass456");
+
+      const submitButton = screen.getByRole("button", { name: /Cambiar contraseña/i });
+      await user.click(submitButton);
+
+      await waitFor(() => {
+        const onError = mockMutation.getOnError();
+        const error = new AxiosError(
+          "API Error",
+          "ERR_BAD_RESPONSE",
+          { headers: {} } as InternalAxiosRequestConfig,
+          undefined,
+          {
+            data: {
+              currentPassword: "<img src=x onerror=\"alert('xss')\">Contraseña incorrecta",
+            },
+            status: 400,
+            statusText: "Bad Request",
+            headers: {},
+            config: { headers: {} } as InternalAxiosRequestConfig,
+          },
+        );
+        onError?.(error);
+      });
+
+      // Error message should be displayed as text, not HTML
+      const errorText = screen.getByText(
+        "<img src=x onerror=\"alert('xss')\">Contraseña incorrecta",
+      );
+      expect(errorText).toBeInTheDocument();
+      expect(document.querySelector("img[onerror]")).not.toBeInTheDocument();
+    });
+
+    it("should sanitize success message alert", async () => {
+      const mockMutation = createMockMutation();
+      vi.mocked(useChangePasswordMutation).mockReturnValue(
+        mockMutation as unknown as ReturnType<typeof useChangePasswordMutation>,
+      );
+
+      const { user } = renderWithProviders(<ChangePasswordForm />);
+      const { currentPassword, newPassword, confirmPassword } = getPasswordFields();
+
+      await user.type(currentPassword, "OldPass123");
+      await user.type(newPassword, "NewPass456");
+      await user.type(confirmPassword, "NewPass456");
+
+      const submitButton = screen.getByRole("button", { name: /Cambiar contraseña/i });
+      await user.click(submitButton);
+
+      await waitFor(() => {
+        const onSuccess = mockMutation.getOnSuccess();
+        onSuccess?.();
+      });
+
+      // Success alert should contain only text content
+      const successAlert = screen.getByText("Contraseña cambiada exitosamente.");
+      expect(successAlert.innerHTML).not.toContain("<script");
+      expect(successAlert.innerHTML).not.toContain("<img");
+      expect(successAlert.innerHTML).not.toContain("onerror");
+    });
+
+    it("should not execute HTML in error alert messages", async () => {
+      const mockMutation = createMockMutation();
+      vi.mocked(useChangePasswordMutation).mockReturnValue(
+        mockMutation as unknown as ReturnType<typeof useChangePasswordMutation>,
+      );
+
+      const { user } = renderWithProviders(<ChangePasswordForm />);
+      const { currentPassword, newPassword, confirmPassword } = getPasswordFields();
+
+      await user.type(currentPassword, "OldPass123");
+      await user.type(newPassword, "NewPass456");
+      await user.type(confirmPassword, "NewPass456");
+
+      const submitButton = screen.getByRole("button", { name: /Cambiar contraseña/i });
+      await user.click(submitButton);
+
+      await waitFor(() => {
+        const onError = mockMutation.getOnError();
+        const error = new AxiosError(
+          "API Error",
+          "ERR_BAD_RESPONSE",
+          { headers: {} } as InternalAxiosRequestConfig,
+          undefined,
+          {
+            data: {
+              someOtherField: "<div onclick=\"alert('xss')\">Error</div>",
+            },
+            status: 400,
+            statusText: "Bad Request",
+            headers: {},
+            config: { headers: {} } as InternalAxiosRequestConfig,
+          },
+        );
+        onError?.(error);
+      });
+
+      // Generic error should be displayed without executing HTML
+      expect(screen.getByText(/Error al cambiar la contraseña/i)).toBeInTheDocument();
+      expect(document.querySelector("div[onclick]")).not.toBeInTheDocument();
+    });
+
+    it("should not display raw HTML tags in form error helper texts", async () => {
+      const mockMutation = createMockMutation();
+      vi.mocked(useChangePasswordMutation).mockReturnValue(
+        mockMutation as unknown as ReturnType<typeof useChangePasswordMutation>,
+      );
+
+      const { user } = renderWithProviders(<ChangePasswordForm />);
+      const { newPassword, confirmPassword } = getPasswordFields();
+
+      await user.type(newPassword, "Short1");
+      await user.type(confirmPassword, "Short1");
+
+      const submitButton = screen.getByRole("button", { name: /Cambiar contraseña/i });
+      await user.click(submitButton);
+
+      await waitFor(() => {
+        const validationError = screen.getByText("La contraseña debe tener al menos 8 caracteres.");
+        // Validation error should be text content, not HTML
+        expect(validationError.innerHTML).not.toContain("<");
+      });
+    });
+  });
 });
