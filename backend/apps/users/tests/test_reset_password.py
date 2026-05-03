@@ -19,7 +19,7 @@ def disable_reset_password_throttle() -> Generator[None]:
 
 
 def _make_uid_token(user: User) -> tuple[str, str]:
-    uid = urlsafe_base64_encode(force_bytes(user.email))
+    uid = urlsafe_base64_encode(force_bytes(user.pk))
     token = _token_generator.make_token(user)
     return uid, token
 
