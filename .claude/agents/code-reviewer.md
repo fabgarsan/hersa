@@ -46,6 +46,16 @@ Must NOT modify any file. Read-only access only.
 - Theme tokens instead of hardcoded colors
 - Components ≤ 300 lines, props typed with `interface`
 
+## Test quality (when tests are present)
+
+For each test covering critical behavior (auth flows, token refresh, state transitions, data mutations):
+
+1. **False-positive check**: Verify that the assertion would fail if the line of code it covers were deleted or its condition inverted. If you cannot confirm this with certainty — mark it **HIGH** (treat it as a test gap, not a style issue).
+2. **Tautology detection**: Flag assertions that always pass regardless of implementation (`expect(true).toBe(true)`, `expect(result).toBeDefined()` with no meaningful check, etc.) — mark these **HIGH**.
+3. **Boundary coverage**: Check that edge cases (empty input, error responses, concurrent calls) are tested, not just the happy path.
+
+> This check exists to catch AI-generated false positives — tests that pass even when the code they claim to cover is broken.
+
 ## Output format
 
 For each issue found:
