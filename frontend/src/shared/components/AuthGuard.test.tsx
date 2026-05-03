@@ -1,120 +1,146 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
-import { renderWithProviders } from "@/tests/utils";
+import { describe, it, expect, beforeEach, vi } from "vitest";
+import { render, screen } from "@testing-library/react";
+import { MemoryRouter, Route, Routes, useLocation } from "react-router-dom";
 import { AuthGuard } from "./AuthGuard";
 
-// Mock the apiClient to prevent actual API calls
-vi.mock("@api/client", () => ({
-  apiClient: {
-    get: vi.fn(),
-  },
-}));
+vi.mock("@shared/contexts", async (importOriginal) => {
+  // eslint-disable-next-line @typescript-eslint/consistent-type-imports
+  const actual = await importOriginal<typeof import("@shared/contexts")>();
+  return { ...actual, useAuthContext: vi.fn() };
+});
 
-// Mock window.location
-delete (window as Partial<Window>).location;
-window.location = { href: "" } as any;
+import { useAuthContext } from "@shared/contexts";
+
+const MOCK_AUTH_BASE = { login: vi.fn(), logout: vi.fn() };
+
+// Renders the current pathname so redirect tests can assert the navigation target
+function LocationSpy() {
+  const location = useLocation();
+  return <span data-testid="location">{location.pathname}</span>;
+}
 
 describe("AuthGuard", () => {
   beforeEach(() => {
     localStorage.clear();
-  });
-
-  afterEach(() => {
-    localStorage.clear();
     vi.clearAllMocks();
   });
 
-  it("should render loading state when auth is loading", () => {
-    // Set token to trigger loading state
-    localStorage.setItem("accessToken", "fake-token");
-
-    const { container } = renderWithProviders(
-      <AuthGuard>
-        <div>Protected Content</div>
-      </AuthGuard>
-    );
-
-    // The component should render the root div (loading state)
-    // The loading state is empty, so children should not be visible
-    expect(container.querySelector("[class*='root']")).toBeInTheDocument();
-  });
-
-  it("should render children when authenticated and on protected route", () => {
-    localStorage.setItem("accessToken", "fake-token");
-
-    // Mock the API call to succeed
-    vi.mocked(require("@api/client").apiClient.get).mockResolvedValueOnce({
-      data: { id: 1, username: "testuser" },
+  it("renders children when authenticated on a protected route", () => {
+    vi.mocked(useAuthContext).mockReturnValue({
+      ...MOCK_AUTH_BASE,
+      isAuthenticated: true,
+      isLoading: false,
     });
 
-    const { getByText } = renderWithProviders(
-      <AuthGuard>
-        <div>Protected Content</div>
-      </AuthGuard>,
-      { queryClient: undefined }
+    render(
+      <MemoryRouter initialEntries={["/"]}>
+        <AuthGuard>
+          <div>Protected Content</div>
+        </AuthGuard>
+      </MemoryRouter>,
     );
 
-    // After auth resolves, children should render
-    // Note: in a real scenario, we'd wait for the effect to run
-    // For testing, we check that the guard doesn't block rendering on subsequent renders
-    expect(getByText("Protected Content")).toBeInTheDocument();
+    expect(screen.getByText("Protected Content")).toBeInTheDocument();
   });
 
-  it("should not render children when unauthenticated and trying to access protected route", () => {
-    // No token set, so user is not authenticated
-    const { queryByText } = renderWithProviders(
-      <AuthGuard>
-        <div>Protected Content</div>
-      </AuthGuard>
+  it("redirects to /login when unauthenticated on a protected route", () => {
+    vi.mocked(useAuthContext).mockReturnValue({
+      ...MOCK_AUTH_BASE,
+      isAuthenticated: false,
+      isLoading: false,
+    });
+
+    render(
+      <MemoryRouter initialEntries={["/"]}>
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <AuthGuard>
+                <div>Protected Content</div>
+              </AuthGuard>
+            }
+          />
+          <Route path="/login" element={<LocationSpy />} />
+        </Routes>
+      </MemoryRouter>,
     );
 
-    // Children should not be rendered
-    expect(queryByText("Protected Content")).not.toBeInTheDocument();
+    expect(screen.getByTestId("location").textContent).toBe("/login");
+    expect(screen.queryByText("Protected Content")).not.toBeInTheDocument();
   });
 
-  it("should allow access to public routes even without authentication", () => {
-    // No token, but we're on a public route like /login
-    // Note: the component uses useLocation from react-router, which in tests
-    // defaults to "/"
-    // To test public routes, we'd need to be on /login, /forgot-password, or /reset-password
-    // The test setup doesn't easily allow changing the route in the component,
-    // but we can verify the logic: if on a public route, it should render children
+  it("does not render children while auth is loading", () => {
+    vi.mocked(useAuthContext).mockReturnValue({
+      ...MOCK_AUTH_BASE,
+      isAuthenticated: false,
+      isLoading: true,
+    });
 
-    const { getByText } = renderWithProviders(
-      <AuthGuard>
-        <div>Public Content</div>
-      </AuthGuard>
+    render(
+      <MemoryRouter initialEntries={["/"]}>
+        <AuthGuard>
+          <div>Protected Content</div>
+        </AuthGuard>
+      </MemoryRouter>,
     );
 
-    // When on a non-public route ("/") without auth, it redirects
-    // This test verifies the guard doesn't break on public routes
-    // The actual route-aware behavior is tested via integration tests
+    expect(screen.queryByText("Protected Content")).not.toBeInTheDocument();
   });
 
-  it("should redirect to login when accessing protected route without authentication", () => {
-    // This test verifies the redirect behavior
-    // In a real app, this would be tested with a Router wrapper
-    // The component uses <Navigate to={ROUTES.LOGIN} />
-    const { container } = renderWithProviders(
-      <AuthGuard>
-        <div>Protected Content</div>
-      </AuthGuard>
+  it("redirects authenticated user away from a public route", () => {
+    vi.mocked(useAuthContext).mockReturnValue({
+      ...MOCK_AUTH_BASE,
+      isAuthenticated: true,
+      isLoading: false,
+    });
+
+    render(
+      <MemoryRouter initialEntries={["/login"]}>
+        <Routes>
+          <Route
+            path="/login"
+            element={
+              <AuthGuard>
+                <div>Login Form</div>
+              </AuthGuard>
+            }
+          />
+          <Route path="/" element={<LocationSpy />} />
+        </Routes>
+      </MemoryRouter>,
     );
 
-    // The guard should render (navigate is handled by React Router)
-    expect(container).toBeInTheDocument();
+    expect(screen.getByTestId("location").textContent).toBe("/");
+    expect(screen.queryByText("Login Form")).not.toBeInTheDocument();
   });
 
-  it("should handle authenticated user redirecting away from public login route", () => {
-    // When user is authenticated and somehow on /login, redirect to home
-    localStorage.setItem("accessToken", "fake-token");
+  it("blocks open redirect from //evil.com and falls back to /", () => {
+    vi.mocked(useAuthContext).mockReturnValue({
+      ...MOCK_AUTH_BASE,
+      isAuthenticated: true,
+      isLoading: false,
+    });
 
-    const { container } = renderWithProviders(
-      <AuthGuard>
-        <div>Login Page</div>
-      </AuthGuard>
+    render(
+      <MemoryRouter
+        initialEntries={[{ pathname: "/login", state: { from: { pathname: "//evil.com/steal" } } }]}
+      >
+        <Routes>
+          <Route
+            path="/login"
+            element={
+              <AuthGuard>
+                <div>Login Form</div>
+              </AuthGuard>
+            }
+          />
+          <Route path="/" element={<div data-testid="safe-home">Safe Home</div>} />
+        </Routes>
+      </MemoryRouter>,
     );
 
-    // The component should handle the redirect logic
-    expect(container).toBeInTheDocument();
+    expect(screen.getByTestId("safe-home")).toBeInTheDocument();
+    expect(screen.queryByText("Login Form")).not.toBeInTheDocument();
   });
 });

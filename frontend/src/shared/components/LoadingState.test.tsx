@@ -1,4 +1,3 @@
-/* eslint-disable hersa-style/require-scss-module */
 import { describe, it, expect } from "vitest";
 import { screen } from "@testing-library/react";
 import { renderWithProviders } from "@/tests/utils";
@@ -39,9 +38,7 @@ describe("LoadingState", () => {
   });
 
   it("renders correct number of skeleton rows", () => {
-    const { container } = renderWithProviders(
-      <LoadingState variant="skeleton" rows={5} />
-    );
+    const { container } = renderWithProviders(<LoadingState variant="skeleton" rows={5} />);
 
     // MUI Skeleton renders multiple components
     const skeletons = container.querySelectorAll(".MuiSkeleton-root");
@@ -49,9 +46,7 @@ describe("LoadingState", () => {
   });
 
   it("renders default 3 skeleton rows when rows prop is not specified", () => {
-    const { container } = renderWithProviders(
-      <LoadingState variant="skeleton" />
-    );
+    const { container } = renderWithProviders(<LoadingState variant="skeleton" />);
 
     const skeletons = container.querySelectorAll(".MuiSkeleton-root");
     expect(skeletons).toHaveLength(3);
@@ -59,40 +54,34 @@ describe("LoadingState", () => {
 
   it("renders skeleton with custom message", () => {
     const { container } = renderWithProviders(
-      <LoadingState variant="skeleton" label="Loading data..." />
+      <LoadingState variant="skeleton" label="Loading data..." />,
     );
 
     expect(container).toBeInTheDocument();
   });
 
   it("renders single skeleton row when rows={1}", () => {
-    const { container } = renderWithProviders(
-      <LoadingState variant="skeleton" rows={1} />
-    );
+    const { container } = renderWithProviders(<LoadingState variant="skeleton" rows={1} />);
 
     const skeletons = container.querySelectorAll(".MuiSkeleton-root");
     expect(skeletons).toHaveLength(1);
   });
 
   it("renders many skeleton rows when specified", () => {
-    const { container } = renderWithProviders(
-      <LoadingState variant="skeleton" rows={10} />
-    );
+    const { container } = renderWithProviders(<LoadingState variant="skeleton" rows={10} />);
 
     const skeletons = container.querySelectorAll(".MuiSkeleton-root");
     expect(skeletons).toHaveLength(10);
   });
 
   it("spinner and skeleton are mutually exclusive", () => {
-    renderWithProviders(
-      <LoadingState variant="spinner" />
-    );
+    renderWithProviders(<LoadingState variant="spinner" />);
 
     const spinner = screen.getByRole("progressbar", { hidden: true });
     expect(spinner).toBeInTheDocument();
 
     const { container: skeletonContainer } = renderWithProviders(
-      <LoadingState variant="skeleton" />
+      <LoadingState variant="skeleton" />,
     );
 
     const skeletons = skeletonContainer.querySelectorAll(".MuiSkeleton-root");

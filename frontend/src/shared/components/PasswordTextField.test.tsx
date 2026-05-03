@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect } from "vitest";
 import { renderWithProviders } from "@/tests/utils";
 import { PasswordTextField } from "./PasswordTextField";
 import { useForm } from "react-hook-form";
@@ -16,10 +16,7 @@ function TestComponent(props: Omit<React.ComponentProps<typeof PasswordTextField
 describe("PasswordTextField", () => {
   it("should render password field with type='password' by default", () => {
     const { getByDisplayValue } = renderWithProviders(
-      <TestComponent
-        name="password"
-        label="Password"
-      />
+      <TestComponent name="password" label="Password" />,
     );
 
     const input = getByDisplayValue("") as HTMLInputElement;
@@ -28,10 +25,7 @@ describe("PasswordTextField", () => {
 
   it("should render label when provided", () => {
     const { getByLabelText } = renderWithProviders(
-      <TestComponent
-        name="password"
-        label="Enter your password"
-      />
+      <TestComponent name="password" label="Enter your password" />,
     );
 
     expect(getByLabelText("Enter your password")).toBeInTheDocument();
@@ -39,10 +33,7 @@ describe("PasswordTextField", () => {
 
   it("should toggle password visibility when visibility button is clicked", async () => {
     const { getByRole, getByDisplayValue, user } = renderWithProviders(
-      <TestComponent
-        name="password"
-        label="Password"
-      />
+      <TestComponent name="password" label="Password" />,
     );
 
     const input = getByDisplayValue("") as HTMLInputElement;
@@ -60,10 +51,7 @@ describe("PasswordTextField", () => {
 
   it("should toggle back to hidden password when visibility button is clicked again", async () => {
     const { getByRole, getByDisplayValue, user } = renderWithProviders(
-      <TestComponent
-        name="password"
-        label="Password"
-      />
+      <TestComponent name="password" label="Password" />,
     );
 
     const input = getByDisplayValue("") as HTMLInputElement;
@@ -79,13 +67,9 @@ describe("PasswordTextField", () => {
   });
 
   it("should render error state correctly", () => {
-    const mockError = { message: "Password is required" };
+    const mockError = { message: "Password is required", type: "required" };
     const { getByText, getByDisplayValue } = renderWithProviders(
-      <TestComponent
-        name="password"
-        label="Password"
-        error={mockError}
-      />
+      <TestComponent name="password" label="Password" error={mockError} />,
     );
 
     const input = getByDisplayValue("") as HTMLInputElement;
@@ -95,14 +79,10 @@ describe("PasswordTextField", () => {
 
   it("should display helperText from error.message", () => {
     const errorMessage = "Password must be at least 8 characters";
-    const mockError = { message: errorMessage };
+    const mockError = { message: errorMessage, type: "minLength" };
 
     const { getByText } = renderWithProviders(
-      <TestComponent
-        name="password"
-        label="Password"
-        error={mockError}
-      />
+      <TestComponent name="password" label="Password" error={mockError} />,
     );
 
     expect(getByText(errorMessage)).toBeInTheDocument();
@@ -110,10 +90,7 @@ describe("PasswordTextField", () => {
 
   it("should not display error styles when no error is provided", () => {
     const { getByDisplayValue } = renderWithProviders(
-      <TestComponent
-        name="password"
-        label="Password"
-      />
+      <TestComponent name="password" label="Password" />,
     );
 
     const input = getByDisplayValue("") as HTMLInputElement;
@@ -122,11 +99,7 @@ describe("PasswordTextField", () => {
 
   it("should support autoFocus prop", () => {
     const { getByDisplayValue } = renderWithProviders(
-      <TestComponent
-        name="password"
-        label="Password"
-        autoFocus={true}
-      />
+      <TestComponent name="password" label="Password" autoFocus={true} />,
     );
 
     const input = getByDisplayValue("");
@@ -134,12 +107,7 @@ describe("PasswordTextField", () => {
   });
 
   it("should render with Visibility icon when password is hidden", () => {
-    const { container } = renderWithProviders(
-      <TestComponent
-        name="password"
-        label="Password"
-      />
-    );
+    const { container } = renderWithProviders(<TestComponent name="password" label="Password" />);
 
     // Check for Visibility icon (shown when password is hidden)
     const icon = container.querySelector("[class*='MuiSvgIcon']");
@@ -148,10 +116,7 @@ describe("PasswordTextField", () => {
 
   it("should render with VisibilityOff icon when password is shown", async () => {
     const { getByRole, user } = renderWithProviders(
-      <TestComponent
-        name="password"
-        label="Password"
-      />
+      <TestComponent name="password" label="Password" />,
     );
 
     const toggleButton = getByRole("button");
@@ -164,10 +129,7 @@ describe("PasswordTextField", () => {
 
   it("should have fullWidth behavior from TextField", () => {
     const { getByDisplayValue } = renderWithProviders(
-      <TestComponent
-        name="password"
-        label="Password"
-      />
+      <TestComponent name="password" label="Password" />,
     );
 
     const input = getByDisplayValue("");

@@ -4,48 +4,34 @@ import { PageHeader } from "./PageHeader";
 
 describe("PageHeader", () => {
   it("should render title", () => {
-    const { getByText } = renderWithProviders(
-      <PageHeader title="Users" />
-    );
+    const { getByText } = renderWithProviders(<PageHeader title="Users" />);
 
     expect(getByText("Users")).toBeInTheDocument();
   });
 
   it("should render subtitle when provided", () => {
     const { getByText } = renderWithProviders(
-      <PageHeader
-        title="Users"
-        subtitle="Manage all users in the system"
-      />
+      <PageHeader title="Users" subtitle="Manage all users in the system" />,
     );
 
     expect(getByText("Manage all users in the system")).toBeInTheDocument();
   });
 
   it("should not render subtitle when not provided", () => {
-    const { queryByText } = renderWithProviders(
-      <PageHeader title="Users" />
-    );
+    const { queryByText } = renderWithProviders(<PageHeader title="Users" />);
 
     expect(queryByText(/Manage all users/)).not.toBeInTheDocument();
   });
 
   it("should not render breadcrumbs section when breadcrumbs is empty", () => {
-    const { container } = renderWithProviders(
-      <PageHeader
-        title="Users"
-        breadcrumbs={[]}
-      />
-    );
+    const { container } = renderWithProviders(<PageHeader title="Users" breadcrumbs={[]} />);
 
     const breadcrumbs = container.querySelector("[class*='MuiBreadcrumbs']");
     expect(breadcrumbs).not.toBeInTheDocument();
   });
 
   it("should not render breadcrumbs section when breadcrumbs is undefined", () => {
-    const { container } = renderWithProviders(
-      <PageHeader title="Users" />
-    );
+    const { container } = renderWithProviders(<PageHeader title="Users" />);
 
     const breadcrumbs = container.querySelector("[class*='MuiBreadcrumbs']");
     expect(breadcrumbs).not.toBeInTheDocument();
@@ -60,7 +46,7 @@ describe("PageHeader", () => {
           { label: "Users", href: "/users" },
           { label: "John Doe" },
         ]}
-      />
+      />,
     );
 
     const dashboardLink = getByRole("link", { name: /dashboard/i });
@@ -71,7 +57,7 @@ describe("PageHeader", () => {
   });
 
   it("should render last breadcrumb item as plain text, not a link", () => {
-    const { getByText, queryByRole } = renderWithProviders(
+    const { getByText } = renderWithProviders(
       <PageHeader
         title="User Details"
         breadcrumbs={[
@@ -79,7 +65,7 @@ describe("PageHeader", () => {
           { label: "Users", href: "/users" },
           { label: "John Doe" },
         ]}
-      />
+      />,
     );
 
     const lastItem = getByText("John Doe");
@@ -95,7 +81,7 @@ describe("PageHeader", () => {
           { label: "Dashboard", href: "/" },
           { label: "Users" }, // No href
         ]}
-      />
+      />,
     );
 
     const usersItem = getByText("Users");
@@ -105,19 +91,14 @@ describe("PageHeader", () => {
 
   it("should render actions when provided", () => {
     const { getByRole } = renderWithProviders(
-      <PageHeader
-        title="Users"
-        actions={<button>Create User</button>}
-      />
+      <PageHeader title="Users" actions={<button>Create User</button>} />,
     );
 
     expect(getByRole("button", { name: /create user/i })).toBeInTheDocument();
   });
 
   it("should not render actions when not provided", () => {
-    const { queryByRole } = renderWithProviders(
-      <PageHeader title="Users" />
-    );
+    const { queryByRole } = renderWithProviders(<PageHeader title="Users" />);
 
     // Should have no buttons at all when no actions provided
     const buttons = queryByRole("button");
@@ -134,7 +115,7 @@ describe("PageHeader", () => {
           { label: "Profile", href: "/profile" },
           { label: "Edit" },
         ]}
-      />
+      />,
     );
 
     expect(getByText("Home")).toBeInTheDocument();
@@ -154,7 +135,7 @@ describe("PageHeader", () => {
             <button>Export</button>
           </div>
         }
-      />
+      />,
     );
 
     expect(getByRole("button", { name: /create/i })).toBeInTheDocument();
@@ -168,7 +149,7 @@ describe("PageHeader", () => {
         breadcrumbs={[
           { label: "Home" }, // Single breadcrumb, no href, is last
         ]}
-      />
+      />,
     );
 
     expect(getByText("Home")).toBeInTheDocument();
@@ -179,12 +160,7 @@ describe("PageHeader", () => {
 
   it("should render breadcrumbs Breadcrumbs component when breadcrumbs provided", () => {
     const { container } = renderWithProviders(
-      <PageHeader
-        title="Dashboard"
-        breadcrumbs={[
-          { label: "Home", href: "/" },
-        ]}
-      />
+      <PageHeader title="Dashboard" breadcrumbs={[{ label: "Home", href: "/" }]} />,
     );
 
     const breadcrumbsComponent = container.querySelector("[class*='MuiBreadcrumbs']");

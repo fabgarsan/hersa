@@ -1,4 +1,3 @@
-/* eslint-disable hersa-style/require-scss-module */
 import { describe, it, expect } from "vitest";
 import { screen } from "@testing-library/react";
 import { renderWithProviders } from "@/tests/utils";
@@ -30,9 +29,7 @@ describe("ComingSoonState", () => {
   });
 
   it("renders custom description when provided", () => {
-    renderWithProviders(
-      <ComingSoonState description="Check back later for updates." />
-    );
+    renderWithProviders(<ComingSoonState description="Check back later for updates." />);
 
     expect(screen.getByText("Check back later for updates.")).toBeInTheDocument();
   });
@@ -42,7 +39,7 @@ describe("ComingSoonState", () => {
       <ComingSoonState
         title="Feature Coming Soon"
         description="We're working on something awesome for you."
-      />
+      />,
     );
 
     expect(screen.getByText("Feature Coming Soon")).toBeInTheDocument();
@@ -50,9 +47,7 @@ describe("ComingSoonState", () => {
   });
 
   it("renders custom icon when provided", () => {
-    renderWithProviders(
-      <ComingSoonState icon={<span data-testid="custom-icon">⚙️</span>} />
-    );
+    renderWithProviders(<ComingSoonState icon={<span data-testid="custom-icon">⚙️</span>} />);
 
     expect(screen.getByTestId("custom-icon")).toBeInTheDocument();
   });
@@ -73,9 +68,7 @@ describe("ComingSoonState", () => {
   });
 
   it("does not render description if it is empty", () => {
-    renderWithProviders(
-      <ComingSoonState description="" />
-    );
+    renderWithProviders(<ComingSoonState description="" />);
 
     // Should only have the title, not an empty description element
     const heading = screen.getByRole("heading", { level: 6 });
@@ -83,9 +76,7 @@ describe("ComingSoonState", () => {
   });
 
   it("renders description in body2 typography style", () => {
-    renderWithProviders(
-      <ComingSoonState description="Test description" />
-    );
+    renderWithProviders(<ComingSoonState description="Test description" />);
 
     const description = screen.getByText("Test description");
     expect(description).toHaveClass("MuiTypography-body2");

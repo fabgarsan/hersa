@@ -1,4 +1,3 @@
-/* eslint-disable hersa-style/require-scss-module */
 import { describe, it, expect } from "vitest";
 import { screen } from "@testing-library/react";
 import { renderWithProviders } from "@/tests/utils";
@@ -9,7 +8,7 @@ describe("FormSection", () => {
     renderWithProviders(
       <FormSection title="Personal Information">
         <div>Form fields</div>
-      </FormSection>
+      </FormSection>,
     );
 
     expect(screen.getByText("Personal Information")).toBeInTheDocument();
@@ -17,12 +16,9 @@ describe("FormSection", () => {
 
   it("renders subtitle when provided", () => {
     renderWithProviders(
-      <FormSection
-        title="Account Settings"
-        subtitle="Manage your profile details"
-      >
+      <FormSection title="Account Settings" subtitle="Manage your profile details">
         <div>Form fields</div>
-      </FormSection>
+      </FormSection>,
     );
 
     expect(screen.getByText("Manage your profile details")).toBeInTheDocument();
@@ -32,7 +28,7 @@ describe("FormSection", () => {
     renderWithProviders(
       <FormSection title="Account Settings">
         <div>Form fields</div>
-      </FormSection>
+      </FormSection>,
     );
 
     expect(screen.queryByText(/Manage|subtitle/i)).not.toBeInTheDocument();
@@ -43,7 +39,7 @@ describe("FormSection", () => {
       <FormSection title="Personal Info">
         <input placeholder="First Name" />
         <input placeholder="Last Name" />
-      </FormSection>
+      </FormSection>,
     );
 
     expect(screen.getByPlaceholderText("First Name")).toBeInTheDocument();
@@ -54,7 +50,7 @@ describe("FormSection", () => {
     const { container } = renderWithProviders(
       <FormSection title="Contact Details">
         <div>Fields</div>
-      </FormSection>
+      </FormSection>,
     );
 
     const divider = container.querySelector(".MuiDivider-root");
@@ -65,7 +61,7 @@ describe("FormSection", () => {
     const { container } = renderWithProviders(
       <FormSection title="Contact Details" divider={false}>
         <div>Fields</div>
-      </FormSection>
+      </FormSection>,
     );
 
     const divider = container.querySelector(".MuiDivider-root");
@@ -76,7 +72,7 @@ describe("FormSection", () => {
     const { container } = renderWithProviders(
       <FormSection title="Contact Details" divider={true}>
         <div>Fields</div>
-      </FormSection>
+      </FormSection>,
     );
 
     const divider = container.querySelector(".MuiDivider-root");
@@ -87,7 +83,7 @@ describe("FormSection", () => {
     renderWithProviders(
       <FormSection title="Settings">
         <div>Content</div>
-      </FormSection>
+      </FormSection>,
     );
 
     const title = screen.getByText("Settings");
@@ -96,12 +92,9 @@ describe("FormSection", () => {
 
   it("renders subtitle in body2 typography variant", () => {
     renderWithProviders(
-      <FormSection
-        title="Settings"
-        subtitle="Configure your preferences"
-      >
+      <FormSection title="Settings" subtitle="Configure your preferences">
         <div>Content</div>
-      </FormSection>
+      </FormSection>,
     );
 
     const subtitle = screen.getByText("Configure your preferences");
@@ -115,7 +108,7 @@ describe("FormSection", () => {
         <input type="email" placeholder="Email" />
         <textarea placeholder="Bio"></textarea>
         <button>Save</button>
-      </FormSection>
+      </FormSection>,
     );
 
     expect(screen.getByPlaceholderText("Name")).toBeInTheDocument();
@@ -132,7 +125,7 @@ describe("FormSection", () => {
         divider={true}
       >
         <input type="text" placeholder="Street Address" />
-      </FormSection>
+      </FormSection>,
     );
 
     expect(screen.getByText("Billing Address")).toBeInTheDocument();
@@ -142,13 +135,9 @@ describe("FormSection", () => {
 
   it("renders without divider when explicitly disabled", () => {
     const { container } = renderWithProviders(
-      <FormSection
-        title="Section Without Divider"
-        subtitle="Optional description"
-        divider={false}
-      >
+      <FormSection title="Section Without Divider" subtitle="Optional description" divider={false}>
         <div>Content here</div>
-      </FormSection>
+      </FormSection>,
     );
 
     expect(screen.getByText("Section Without Divider")).toBeInTheDocument();

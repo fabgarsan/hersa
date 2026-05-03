@@ -46,13 +46,10 @@ export function ConfirmDialog({
           color={confirmColor}
           onClick={onConfirm}
           disabled={loading}
+          aria-label={confirmLabel}
           className={styles.confirmButton}
         >
-          {loading ? (
-            <CircularProgress size={16} className={styles.spinner} />
-          ) : (
-            confirmLabel
-          )}
+          {loading ? <CircularProgress size={16} className={styles.spinner} /> : confirmLabel}
         </Button>
       </DialogActions>
     </Dialog>
