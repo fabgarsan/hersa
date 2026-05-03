@@ -2,12 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 
 import { useMeQuery } from "@modules/auth";
 
-import type { DataTableColumn, UseColumnPersistenceReturn } from "./types";
-
-interface PersistedColConfig {
-  visibility: Record<string, boolean>;
-  order: string[];
-}
+import type { DataTableColumn, PersistedColConfig, UseColumnPersistenceReturn } from "./types";
 
 // Include userId in the key so each user gets isolated column preferences.
 // Falls back to "anon" when the user data is not yet loaded.
