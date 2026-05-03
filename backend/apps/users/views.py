@@ -70,6 +70,11 @@ class ChangePasswordView(APIView):
                 {"current_password": MESSAGES["validation"]["WRONG_CURRENT_PASSWORD"]},
                 status=status.HTTP_400_BAD_REQUEST,
             )
+        if request.user.check_password(serializer.validated_data["new_password"]):
+            return Response(
+                {"new_password": MESSAGES["validation"]["SAME_AS_CURRENT_PASSWORD"]},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
         request.user.set_password(serializer.validated_data["new_password"])
         request.user.save()
         return Response({"detail": MESSAGES["success"]["PASSWORD_CHANGED"]})

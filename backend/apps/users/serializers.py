@@ -42,7 +42,7 @@ class ChangePasswordSerializer(serializers.Serializer[None]):
 
 
 class ForgotPasswordSerializer(serializers.Serializer[None]):
-    username_or_email = serializers.CharField()
+    username_or_email = serializers.CharField(max_length=254)
 
 
 class ResetPasswordSerializer(serializers.Serializer[None]):
