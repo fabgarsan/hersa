@@ -26,3 +26,10 @@ def inactive_user(db: None) -> User:
         password="StrongPass123!",
         is_active=False,
     )
+
+
+@pytest.fixture
+def auth_client(user: User) -> APIClient:
+    client = APIClient()
+    client.force_authenticate(user=user)
+    return client
