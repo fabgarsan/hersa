@@ -1,0 +1,76 @@
+name: Backend CI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "backend/**"
+  pull_request:
+    branches: [main]
+    paths:
+      - "backend/**"
+  workflow_dispatch:
+
+defaults:
+  run:
+    working-directory: backend
+
+jobs:
+  # ─── Gate: lint + typecheck + tests (blocks every PR) ───────────────────────
+  quality:
+    name: Lint · Typecheck · Tests
+    runs-on: ubuntu-latest
+
+    services:
+      db:
+        image: postgres:17
+        env:
+          POSTGRES_DB: hersa
+          POSTGRES_USER: hersa
+          POSTGRES_PASSWORD: hersa
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      DB_HOST: localhost
+      DB_PORT: "5432"
+      DB_NAME: hersa
+      DB_USER: hersa
+      DB_PASSWORD: hersa
+      SECRET_KEY: ci-insecure-key-not-for-production
+      DJANGO_SETTINGS_MODULE: config.settings.development
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+
+      - name: Install pipenv
+        run: pip install pipenv
+
+      - name: Install dependencies
+        run: pipenv install --dev --deploy
+
+      - name: Lint (ruff)
+        run: pipenv run ruff check .
+
+      - name: Typecheck (mypy)
+        run: pipenv run mypy .
+
+      - name: Tests with coverage
+        run: pipenv run pytest
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: backend-coverage-report
+          path: backend/htmlcov/
+          retention-days: 7
