@@ -1,5 +1,5 @@
 import pytest
-from django.contrib.auth.models import User
+from django.contrib.auth.models import Permission, User
 from rest_framework.test import APIClient
 
 ME_URL = "/api/users/me/"
@@ -39,29 +39,31 @@ def test_my_permissions_rejects_anonymous(api_client: APIClient) -> None:
 
 
 @pytest.mark.django_db
-def test_my_permissions_returns_user_own_permissions(api_client: APIClient) -> None:
+def test_my_permissions_does_not_leak_other_users_permissions(api_client: APIClient) -> None:
     user_a = User.objects.create_user(
-        username="usera",
-        email="usera@example.com",
-        password="StrongPass123!",
+        username="usera", email="usera@example.com", password="StrongPass123!"
     )
     user_b = User.objects.create_user(
-        username="userb",
-        email="userb@example.com",
-        password="StrongPass123!",
+        username="userb", email="userb@example.com", password="StrongPass123!"
     )
 
+    perm = Permission.objects.filter(content_type__app_label="users").first()
+    assert perm is not None, "No permissions found for users app — check migrations"
+    user_a.user_permissions.add(perm)
+    # Refresh from DB so Django's permission cache is cleared
+    user_a = User.objects.get(pk=user_a.pk)
+
     api_client.force_authenticate(user=user_a)
-    response = api_client.get(MY_PERMISSIONS_URL)
-    assert response.status_code == 200
-    user_a_perms = response.data
+    response_a = api_client.get(MY_PERMISSIONS_URL)
+    assert response_a.status_code == 200
 
     api_client.force_authenticate(user=user_b)
-    response = api_client.get(MY_PERMISSIONS_URL)
-    assert response.status_code == 200
-    user_b_perms = response.data
+    response_b = api_client.get(MY_PERMISSIONS_URL)
+    assert response_b.status_code == 200
 
-    assert user_a_perms == user_b_perms
+    assert len(response_a.data) > 0
+    assert len(response_b.data) == 0
+    assert response_a.data != response_b.data
 
 
 @pytest.mark.django_db

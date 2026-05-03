@@ -1,6 +1,18 @@
 import pytest
 from django.contrib.auth.models import User
+from django.core.cache import cache
+from django.test import override_settings
 from rest_framework.test import APIClient
+
+
+@pytest.fixture(autouse=True)
+def use_locmem_cache():  # type: ignore[no-untyped-def]
+    with override_settings(
+        CACHES={"default": {"BACKEND": "django.core.cache.backends.locmem.LocMemCache"}}
+    ):
+        cache.clear()
+        yield
+        cache.clear()
 
 
 @pytest.fixture

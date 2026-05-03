@@ -69,11 +69,21 @@ def test_forgot_password_accessible_without_auth(api_client: APIClient, user: Us
     assert response.status_code == 200
 
 
+@pytest.mark.parametrize(
+    "length,expected_status",
+    [
+        (254, 200),  # boundary — valid (max_length=254 per RFC 5321)
+        (255, 400),  # boundary + 1 — rejected
+    ],
+)
 @pytest.mark.django_db
-def test_username_field_rejects_oversized_payload(api_client: APIClient) -> None:
-    response = api_client.post(URL, {"username_or_email": "a" * 255})
-    assert response.status_code == 400
-    assert "username_or_email" in response.data
+def test_username_field_length_boundary(
+    api_client: APIClient, length: int, expected_status: int
+) -> None:
+    response = api_client.post(URL, {"username_or_email": "a" * length})
+    assert response.status_code == expected_status
+    if expected_status == 400:
+        assert "username_or_email" in response.data
 
 
 @pytest.mark.django_db
@@ -88,7 +98,7 @@ def test_forgot_password_email_send_failure_gracefully_handles_exception(
     api_client: APIClient, user: User
 ) -> None:
     with patch("apps.users.views.ForgotPasswordView.throttle_classes", []):
-        with patch("django.core.mail.send_mail", side_effect=Exception("SMTP error")):
+        with patch("apps.users.views.send_mail", side_effect=Exception("SMTP error")):
             response = api_client.post(URL, {"username_or_email": user.username})
     assert response.status_code == 200
     assert response.data["detail"] == MESSAGES["success"]["PASSWORD_RESET_EMAIL_SENT"]
