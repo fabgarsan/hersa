@@ -30,3 +30,10 @@ django_settings_module = "config.settings.development"
 DJANGO_SETTINGS_MODULE = "config.settings.development"
 python_files = ["tests.py", "test_*.py"]
 addopts = "--cov=apps --cov-report=term-missing --cov-report=html:htmlcov"
+
+[tool.mutmut]
+paths_to_mutate = "apps/"
+backup = false
+runner = "pipenv run pytest -x --timeout=60 -q --no-cov"
+tests_dir = "tests/ apps/"
+dict_synonyms = ""
