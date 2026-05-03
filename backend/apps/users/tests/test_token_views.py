@@ -4,18 +4,13 @@ from rest_framework.test import APIClient
 
 TOKEN_OBTAIN_URL = "/api/token/"
 TOKEN_REFRESH_URL = "/api/token/refresh/"
+USER_PASSWORD = "StrongPass123!"
 
 
 @pytest.mark.django_db
-def test_token_obtain_with_valid_credentials(api_client: APIClient) -> None:
-    user = User.objects.create_user(
-        username="testuser",
-        email="testuser@example.com",
-        password="StrongPass123!",
-    )
+def test_token_obtain_with_valid_credentials(api_client: APIClient, user: User) -> None:
     response = api_client.post(
-        TOKEN_OBTAIN_URL,
-        {"username": user.username, "password": "StrongPass123!"},
+        TOKEN_OBTAIN_URL, {"username": user.username, "password": USER_PASSWORD}
     )
     assert response.status_code == 200
     assert "access" in response.data
@@ -23,45 +18,28 @@ def test_token_obtain_with_valid_credentials(api_client: APIClient) -> None:
 
 
 @pytest.mark.django_db
-def test_token_obtain_invalid_credentials_returns_401(api_client: APIClient) -> None:
-    User.objects.create_user(
-        username="testuser",
-        email="testuser@example.com",
-        password="StrongPass123!",
-    )
+def test_token_obtain_invalid_credentials_returns_401(api_client: APIClient, user: User) -> None:
     response = api_client.post(
-        TOKEN_OBTAIN_URL,
-        {"username": "testuser", "password": "WrongPassword!"},
+        TOKEN_OBTAIN_URL, {"username": user.username, "password": "WrongPassword!"}
     )
     assert response.status_code == 401
     assert "password" not in response.data
 
 
 @pytest.mark.django_db
-def test_token_obtain_inactive_user_returns_401(api_client: APIClient) -> None:
-    user = User.objects.create_user(
-        username="inactiveuser",
-        email="inactive@example.com",
-        password="StrongPass123!",
-        is_active=False,
-    )
+def test_token_obtain_inactive_user_returns_401(
+    api_client: APIClient, inactive_user: User
+) -> None:
     response = api_client.post(
-        TOKEN_OBTAIN_URL,
-        {"username": user.username, "password": "StrongPass123!"},
+        TOKEN_OBTAIN_URL, {"username": inactive_user.username, "password": USER_PASSWORD}
     )
     assert response.status_code == 401
 
 
 @pytest.mark.django_db
-def test_refresh_token_rotation_blacklists_old_token(api_client: APIClient) -> None:
-    user = User.objects.create_user(
-        username="testuser",
-        email="testuser@example.com",
-        password="StrongPass123!",
-    )
+def test_refresh_token_rotation_blacklists_old_token(api_client: APIClient, user: User) -> None:
     response = api_client.post(
-        TOKEN_OBTAIN_URL,
-        {"username": user.username, "password": "StrongPass123!"},
+        TOKEN_OBTAIN_URL, {"username": user.username, "password": USER_PASSWORD}
     )
     assert response.status_code == 200
     refresh_1 = response.data["refresh"]

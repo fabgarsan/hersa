@@ -91,16 +91,23 @@ def test_change_password_validation_errors(
 
 
 @pytest.mark.django_db
-def test_active_jwt_remains_valid_after_password_change(api_client: APIClient, user: User) -> None:
+@pytest.mark.xfail(
+    strict=False,
+    reason="GAP-04: refresh tokens issued before password change remain valid until expiry (4h). "
+    "Remove xfail once token invalidation on password change is implemented.",
+)
+def test_old_refresh_token_invalidated_after_password_change(
+    api_client: APIClient, user: User
+) -> None:
     response = api_client.post(
         "/api/token/",
         {"username": user.username, "password": "StrongPass123!"},
     )
     assert response.status_code == 200
-    refresh_token_old = response.data["refresh"]
+    old_refresh = response.data["refresh"]
 
     api_client.force_authenticate(user=user)
-    response = api_client.post(
+    change_response = api_client.post(
         URL,
         {
             "current_password": "StrongPass123!",
@@ -108,12 +115,11 @@ def test_active_jwt_remains_valid_after_password_change(api_client: APIClient, u
             "confirm_password": "NewStrongPass456@",
         },
     )
-    assert response.status_code == 200
+    assert change_response.status_code == 200
 
-    api_client = APIClient()
-    response = api_client.post("/api/token/refresh/", {"refresh": refresh_token_old})
-    # KNOWN RISK: refresh tokens issued before password change remain valid until expiry (4h). See GAP-04.
-    assert response.status_code == 200
+    api_client.force_authenticate(user=None)
+    response = api_client.post("/api/token/refresh/", {"refresh": old_refresh})
+    assert response.status_code == 401  # currently returns 200 — GAP-04 open
 
 
 @pytest.mark.django_db
