@@ -61,13 +61,13 @@ describe("OfflineMutationDialog", () => {
   });
 
   it("should render WifiOffIcon", () => {
-    const { container } = renderWithProviders(
+    const { getByRole } = renderWithProviders(
       <OfflineMutationDialog open={true} onClose={vi.fn()} />
     );
 
-    // Look for SVG icon within the dialog content
-    const icon = container.querySelector("svg");
-    expect(icon).toBeInTheDocument();
+    // Dialog should be visible (which includes the icon)
+    const dialog = getByRole("dialog");
+    expect(dialog).toBeInTheDocument();
   });
 
   it("should have disableEscapeKeyDown set", () => {

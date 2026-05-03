@@ -1,4 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { act } from "react";
 import { renderWithProviders } from "@/tests/utils";
 import { ConnectivityIndicator } from "./ConnectivityIndicator";
 
@@ -50,8 +51,10 @@ describe("ConnectivityIndicator", () => {
 
     const { container } = renderWithProviders(<ConnectivityIndicator />);
 
-    // Skip init guard delay
-    vi.advanceTimersByTime(900);
+    // Skip init guard delay with act
+    act(() => {
+      vi.advanceTimersByTime(900);
+    });
 
     const indicator = container.querySelector("[role='status']");
     expect(indicator).toBeInTheDocument();
@@ -64,7 +67,9 @@ describe("ConnectivityIndicator", () => {
     });
 
     const { container } = renderWithProviders(<ConnectivityIndicator />);
-    vi.advanceTimersByTime(900);
+    act(() => {
+      vi.advanceTimersByTime(900);
+    });
 
     const indicator = container.querySelector("[role='status']");
     expect(indicator).toHaveAttribute("aria-live", "polite");
@@ -77,7 +82,9 @@ describe("ConnectivityIndicator", () => {
     });
 
     const { container } = renderWithProviders(<ConnectivityIndicator />);
-    vi.advanceTimersByTime(900);
+    act(() => {
+      vi.advanceTimersByTime(900);
+    });
 
     const indicator = container.querySelector("[role='status']");
     expect(indicator).toHaveAttribute("aria-label", "Estado de conectividad");
@@ -90,7 +97,9 @@ describe("ConnectivityIndicator", () => {
     });
 
     const { container } = renderWithProviders(<ConnectivityIndicator />);
-    vi.advanceTimersByTime(900);
+    act(() => {
+      vi.advanceTimersByTime(900);
+    });
 
     const icon = container.querySelector("svg");
     expect(icon).toBeInTheDocument();
@@ -105,7 +114,9 @@ describe("ConnectivityIndicator", () => {
     mockMatchMedia(true); // Desktop
 
     const { container } = renderWithProviders(<ConnectivityIndicator />);
-    vi.advanceTimersByTime(900);
+    act(() => {
+      vi.advanceTimersByTime(900);
+    });
 
     expect(container.textContent).toContain("Sin conexión");
   });
@@ -119,7 +130,9 @@ describe("ConnectivityIndicator", () => {
     mockMatchMedia(false); // Mobile
 
     const { container } = renderWithProviders(<ConnectivityIndicator />);
-    vi.advanceTimersByTime(900);
+    act(() => {
+      vi.advanceTimersByTime(900);
+    });
 
     expect(container.textContent).toContain("Sin señal");
   });
@@ -131,21 +144,27 @@ describe("ConnectivityIndicator", () => {
     });
 
     const { container } = renderWithProviders(<ConnectivityIndicator />);
-    vi.advanceTimersByTime(900);
+    act(() => {
+      vi.advanceTimersByTime(900);
+    });
 
     // Simulate offline event
-    const offlineEvent = new Event("offline");
-    window.dispatchEvent(offlineEvent);
-    vi.runOnlyPendingTimers();
+    act(() => {
+      const offlineEvent = new Event("offline");
+      window.dispatchEvent(offlineEvent);
+      vi.runOnlyPendingTimers();
+    });
 
     // Simulate going back online
     Object.defineProperty(navigator, "onLine", {
       writable: true,
       value: true,
     });
-    const onlineEvent = new Event("online");
-    window.dispatchEvent(onlineEvent);
-    vi.runOnlyPendingTimers();
+    act(() => {
+      const onlineEvent = new Event("online");
+      window.dispatchEvent(onlineEvent);
+      vi.runOnlyPendingTimers();
+    });
 
     expect(container.textContent).toContain("Conexión restaurada");
   });
@@ -159,12 +178,16 @@ describe("ConnectivityIndicator", () => {
     const { container } = renderWithProviders(<ConnectivityIndicator />);
 
     // Before 800ms, should not show
-    vi.advanceTimersByTime(400);
+    act(() => {
+      vi.advanceTimersByTime(400);
+    });
     let indicator = container.querySelector("[role='status']");
     expect(indicator).not.toBeInTheDocument();
 
     // After 800ms, should show
-    vi.advanceTimersByTime(400);
+    act(() => {
+      vi.advanceTimersByTime(400);
+    });
     indicator = container.querySelector("[role='status']");
     expect(indicator).toBeInTheDocument();
   });
@@ -176,23 +199,29 @@ describe("ConnectivityIndicator", () => {
     });
 
     const { container } = renderWithProviders(<ConnectivityIndicator />);
-    vi.advanceTimersByTime(900);
+    act(() => {
+      vi.advanceTimersByTime(900);
+    });
 
     // Go offline
-    const offlineEvent = new Event("offline");
-    window.dispatchEvent(offlineEvent);
-    vi.runOnlyPendingTimers();
+    act(() => {
+      const offlineEvent = new Event("offline");
+      window.dispatchEvent(offlineEvent);
+      vi.runOnlyPendingTimers();
+    });
 
     // Go online
     Object.defineProperty(navigator, "onLine", {
       writable: true,
       value: true,
     });
-    const onlineEvent = new Event("online");
-    window.dispatchEvent(onlineEvent);
+    act(() => {
+      const onlineEvent = new Event("online");
+      window.dispatchEvent(onlineEvent);
 
-    // Wait for reconnected display time (4000ms) + fade out (250ms)
-    vi.advanceTimersByTime(4250);
+      // Wait for reconnected display time (4000ms) + fade out (250ms)
+      vi.advanceTimersByTime(4250);
+    });
 
     // After fade out, should be hidden
     const indicator = container.querySelector("[role='status']");
