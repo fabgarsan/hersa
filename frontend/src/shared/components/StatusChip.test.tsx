@@ -1,4 +1,3 @@
-/* eslint-disable hersa-style/require-scss-module */
 import { describe, it, expect } from "vitest";
 import { screen } from "@testing-library/react";
 import { renderWithProviders } from "@/tests/utils";
@@ -14,40 +13,32 @@ describe("StatusChip", () => {
   };
 
   it("renders chip with label from statusMap when status is found", () => {
-    renderWithProviders(
-      <StatusChip status="pending" statusMap={mockStatusMap} />
-    );
+    renderWithProviders(<StatusChip status="pending" statusMap={mockStatusMap} />);
 
     expect(screen.getByText("Pendiente")).toBeInTheDocument();
   });
 
   it("renders chip with different label from statusMap", () => {
-    renderWithProviders(
-      <StatusChip status="completed" statusMap={mockStatusMap} />
-    );
+    renderWithProviders(<StatusChip status="completed" statusMap={mockStatusMap} />);
 
     expect(screen.getByText("Completado")).toBeInTheDocument();
   });
 
   it("renders chip with raw status string when NOT in statusMap", () => {
-    renderWithProviders(
-      <StatusChip status="unknown_status" statusMap={mockStatusMap} />
-    );
+    renderWithProviders(<StatusChip status="unknown_status" statusMap={mockStatusMap} />);
 
     expect(screen.getByText("unknown_status")).toBeInTheDocument();
   });
 
   it("renders chip with raw status when statusMap is empty", () => {
-    renderWithProviders(
-      <StatusChip status="any_status" statusMap={{}} />
-    );
+    renderWithProviders(<StatusChip status="any_status" statusMap={{}} />);
 
     expect(screen.getByText("any_status")).toBeInTheDocument();
   });
 
   it("uses small size by default", () => {
     const { container } = renderWithProviders(
-      <StatusChip status="pending" statusMap={mockStatusMap} />
+      <StatusChip status="pending" statusMap={mockStatusMap} />,
     );
 
     const chip = container.querySelector(".MuiChip-sizeSmall");
@@ -56,7 +47,7 @@ describe("StatusChip", () => {
 
   it("renders chip with small size when explicitly set", () => {
     const { container } = renderWithProviders(
-      <StatusChip status="pending" statusMap={mockStatusMap} size="small" />
+      <StatusChip status="pending" statusMap={mockStatusMap} size="small" />,
     );
 
     const chip = container.querySelector(".MuiChip-sizeSmall");
@@ -65,7 +56,7 @@ describe("StatusChip", () => {
 
   it("renders chip with medium size when specified", () => {
     const { container } = renderWithProviders(
-      <StatusChip status="pending" statusMap={mockStatusMap} size="medium" />
+      <StatusChip status="pending" statusMap={mockStatusMap} size="medium" />,
     );
 
     const chip = container.querySelector(".MuiChip-sizeMedium");
@@ -74,7 +65,7 @@ describe("StatusChip", () => {
 
   it("applies correct semantic color from statusMap", () => {
     const { container } = renderWithProviders(
-      <StatusChip status="pending" statusMap={mockStatusMap} />
+      <StatusChip status="pending" statusMap={mockStatusMap} />,
     );
 
     const chip = container.querySelector(".MuiChip-colorWarning");
@@ -83,7 +74,7 @@ describe("StatusChip", () => {
 
   it("renders error status with error color", () => {
     const { container } = renderWithProviders(
-      <StatusChip status="failed" statusMap={mockStatusMap} />
+      <StatusChip status="failed" statusMap={mockStatusMap} />,
     );
 
     const chip = container.querySelector(".MuiChip-colorError");
@@ -92,7 +83,7 @@ describe("StatusChip", () => {
 
   it("renders success status with success color", () => {
     const { container } = renderWithProviders(
-      <StatusChip status="completed" statusMap={mockStatusMap} />
+      <StatusChip status="completed" statusMap={mockStatusMap} />,
     );
 
     const chip = container.querySelector(".MuiChip-colorSuccess");
@@ -101,7 +92,7 @@ describe("StatusChip", () => {
 
   it("renders with default color when status not in map", () => {
     const { container } = renderWithProviders(
-      <StatusChip status="unknown" statusMap={mockStatusMap} />
+      <StatusChip status="unknown" statusMap={mockStatusMap} />,
     );
 
     const chip = container.querySelector(".MuiChip-colorDefault");
@@ -110,7 +101,7 @@ describe("StatusChip", () => {
 
   it("renders filled variant", () => {
     const { container } = renderWithProviders(
-      <StatusChip status="pending" statusMap={mockStatusMap} />
+      <StatusChip status="pending" statusMap={mockStatusMap} />,
     );
 
     const chip = container.querySelector(".MuiChip-filled");
@@ -119,21 +110,19 @@ describe("StatusChip", () => {
 
   it("handles multiple status values correctly", () => {
     const { rerender } = renderWithProviders(
-      <StatusChip status="pending" statusMap={mockStatusMap} />
+      <StatusChip status="pending" statusMap={mockStatusMap} />,
     );
 
     expect(screen.getByText("Pendiente")).toBeInTheDocument();
 
-    rerender(
-      <StatusChip status="completed" statusMap={mockStatusMap} />
-    );
+    rerender(<StatusChip status="completed" statusMap={mockStatusMap} />);
 
     expect(screen.getByText("Completado")).toBeInTheDocument();
   });
 
   it("renders with info color", () => {
     const { container } = renderWithProviders(
-      <StatusChip status="processing" statusMap={mockStatusMap} />
+      <StatusChip status="processing" statusMap={mockStatusMap} />,
     );
 
     const chip = container.querySelector(".MuiChip-colorInfo");
@@ -142,7 +131,7 @@ describe("StatusChip", () => {
 
   it("renders chip as MUI component", () => {
     const { container } = renderWithProviders(
-      <StatusChip status="pending" statusMap={mockStatusMap} />
+      <StatusChip status="pending" statusMap={mockStatusMap} />,
     );
 
     const chip = container.querySelector(".MuiChip-root");

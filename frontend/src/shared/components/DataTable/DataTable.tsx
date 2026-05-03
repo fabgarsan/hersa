@@ -26,7 +26,7 @@ function isDetailRow(row: unknown): row is DetailRow {
     typeof row === "object" &&
     row !== null &&
     "__isDetailRow" in row &&
-    (row as DetailRow).__isDetailRow === true
+    (row as DetailRow).__isDetailRow
   );
 }
 

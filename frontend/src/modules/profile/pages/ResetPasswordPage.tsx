@@ -17,11 +17,11 @@ export default function ResetPasswordPage() {
 
   // Intentionally runs only on mount: strip sensitive params from URL history.
   // uid and token are already captured above; the form continues working after cleanup.
-
   useEffect(() => {
     if (uid && token) {
       window.history.replaceState(null, "", window.location.pathname);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const isValidLink = uid.length > 0 && token.length > 0;

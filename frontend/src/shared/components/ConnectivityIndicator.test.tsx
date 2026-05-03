@@ -3,7 +3,6 @@ import { act } from "react";
 import { renderWithProviders } from "@/tests/utils";
 import { ConnectivityIndicator } from "./ConnectivityIndicator";
 
-// Mock the window.matchMedia for tests
 const mockMatchMedia = (matches: boolean) => {
   Object.defineProperty(window, "matchMedia", {
     writable: true,
@@ -20,6 +19,22 @@ const mockMatchMedia = (matches: boolean) => {
   });
 };
 
+function setOnline(value: boolean) {
+  Object.defineProperty(navigator, "onLine", { writable: true, value });
+}
+
+// Mirrors the INIT_GUARD_MS constant in ConnectivityIndicator.tsx — update both if it changes.
+const INIT_GUARD_MS = 800;
+
+function renderOffline() {
+  setOnline(false);
+  const result = renderWithProviders(<ConnectivityIndicator />);
+  act(() => {
+    vi.advanceTimersByTime(INIT_GUARD_MS + 100);
+  });
+  return result;
+}
+
 describe("ConnectivityIndicator", () => {
   beforeEach(() => {
     vi.useFakeTimers();
@@ -28,203 +43,91 @@ describe("ConnectivityIndicator", () => {
 
   afterEach(() => {
     vi.useRealTimers();
+    setOnline(true);
   });
 
   it("should not render any visible element when online", () => {
-    Object.defineProperty(navigator, "onLine", {
-      writable: true,
-      value: true,
-    });
-
+    setOnline(true);
     const { container } = renderWithProviders(<ConnectivityIndicator />);
-
-    // Component returns null when hidden
-    const indicator = container.querySelector("[role='status']");
-    expect(indicator).not.toBeInTheDocument();
+    expect(container.querySelector("[role='status']")).not.toBeInTheDocument();
   });
 
   it("should render a visible indicator when offline", () => {
-    Object.defineProperty(navigator, "onLine", {
-      writable: true,
-      value: false,
-    });
-
-    const { container } = renderWithProviders(<ConnectivityIndicator />);
-
-    // Skip init guard delay with act
-    act(() => {
-      vi.advanceTimersByTime(900);
-    });
-
-    const indicator = container.querySelector("[role='status']");
-    expect(indicator).toBeInTheDocument();
+    const { container } = renderOffline();
+    expect(container.querySelector("[role='status']")).toBeInTheDocument();
   });
 
   it("should have status role for accessibility", () => {
-    Object.defineProperty(navigator, "onLine", {
-      writable: true,
-      value: false,
-    });
-
-    const { container } = renderWithProviders(<ConnectivityIndicator />);
-    act(() => {
-      vi.advanceTimersByTime(900);
-    });
-
-    const indicator = container.querySelector("[role='status']");
-    expect(indicator).toHaveAttribute("aria-live", "polite");
+    const { container } = renderOffline();
+    expect(container.querySelector("[role='status']")).toHaveAttribute("aria-live", "polite");
   });
 
   it("should have accessible aria-label", () => {
-    Object.defineProperty(navigator, "onLine", {
-      writable: true,
-      value: false,
-    });
-
-    const { container } = renderWithProviders(<ConnectivityIndicator />);
-    act(() => {
-      vi.advanceTimersByTime(900);
-    });
-
-    const indicator = container.querySelector("[role='status']");
-    expect(indicator).toHaveAttribute("aria-label", "Estado de conectividad");
+    const { container } = renderOffline();
+    expect(container.querySelector("[role='status']")).toHaveAttribute(
+      "aria-label",
+      "Estado de conectividad",
+    );
   });
 
   it("should render WifiOffIcon when offline", () => {
-    Object.defineProperty(navigator, "onLine", {
-      writable: true,
-      value: false,
-    });
-
-    const { container } = renderWithProviders(<ConnectivityIndicator />);
-    act(() => {
-      vi.advanceTimersByTime(900);
-    });
-
-    const icon = container.querySelector("svg");
-    expect(icon).toBeInTheDocument();
+    const { container } = renderOffline();
+    expect(container.querySelector("svg")).toBeInTheDocument();
   });
 
   it("should display offline message on desktop when offline", () => {
-    Object.defineProperty(navigator, "onLine", {
-      writable: true,
-      value: false,
-    });
-
-    mockMatchMedia(true); // Desktop
-
-    const { container } = renderWithProviders(<ConnectivityIndicator />);
-    act(() => {
-      vi.advanceTimersByTime(900);
-    });
-
+    mockMatchMedia(true);
+    const { container } = renderOffline();
     expect(container.textContent).toContain("Sin conexión");
   });
 
   it("should display short offline message on mobile when offline", () => {
-    Object.defineProperty(navigator, "onLine", {
-      writable: true,
-      value: false,
-    });
-
-    mockMatchMedia(false); // Mobile
-
-    const { container } = renderWithProviders(<ConnectivityIndicator />);
-    act(() => {
-      vi.advanceTimersByTime(900);
-    });
-
+    mockMatchMedia(false);
+    const { container } = renderOffline();
     expect(container.textContent).toContain("Sin señal");
   });
 
   it("should display reconnected message", () => {
-    Object.defineProperty(navigator, "onLine", {
-      writable: true,
-      value: false,
-    });
-
-    const { container } = renderWithProviders(<ConnectivityIndicator />);
+    const { container } = renderOffline();
     act(() => {
-      vi.advanceTimersByTime(900);
-    });
-
-    // Simulate offline event
-    act(() => {
-      const offlineEvent = new Event("offline");
-      window.dispatchEvent(offlineEvent);
+      window.dispatchEvent(new Event("offline"));
       vi.runOnlyPendingTimers();
     });
-
-    // Simulate going back online
-    Object.defineProperty(navigator, "onLine", {
-      writable: true,
-      value: true,
-    });
+    setOnline(true);
     act(() => {
-      const onlineEvent = new Event("online");
-      window.dispatchEvent(onlineEvent);
+      window.dispatchEvent(new Event("online"));
       vi.runOnlyPendingTimers();
     });
-
     expect(container.textContent).toContain("Conexión restaurada");
   });
 
   it("should respect INIT_GUARD_MS before showing offline state", () => {
-    Object.defineProperty(navigator, "onLine", {
-      writable: true,
-      value: false,
-    });
-
+    setOnline(false);
     const { container } = renderWithProviders(<ConnectivityIndicator />);
+    const halfGuard = INIT_GUARD_MS / 2;
 
-    // Before 800ms, should not show
     act(() => {
-      vi.advanceTimersByTime(400);
+      vi.advanceTimersByTime(halfGuard);
     });
-    let indicator = container.querySelector("[role='status']");
-    expect(indicator).not.toBeInTheDocument();
+    expect(container.querySelector("[role='status']")).not.toBeInTheDocument();
 
-    // After 800ms, should show
     act(() => {
-      vi.advanceTimersByTime(400);
+      vi.advanceTimersByTime(halfGuard);
     });
-    indicator = container.querySelector("[role='status']");
-    expect(indicator).toBeInTheDocument();
+    expect(container.querySelector("[role='status']")).toBeInTheDocument();
   });
 
   it("should hide indicator after reconnection fade out", () => {
-    Object.defineProperty(navigator, "onLine", {
-      writable: true,
-      value: false,
-    });
-
-    const { container } = renderWithProviders(<ConnectivityIndicator />);
+    const { container } = renderOffline();
     act(() => {
-      vi.advanceTimersByTime(900);
-    });
-
-    // Go offline
-    act(() => {
-      const offlineEvent = new Event("offline");
-      window.dispatchEvent(offlineEvent);
+      window.dispatchEvent(new Event("offline"));
       vi.runOnlyPendingTimers();
     });
-
-    // Go online
-    Object.defineProperty(navigator, "onLine", {
-      writable: true,
-      value: true,
-    });
+    setOnline(true);
     act(() => {
-      const onlineEvent = new Event("online");
-      window.dispatchEvent(onlineEvent);
-
-      // Wait for reconnected display time (4000ms) + fade out (250ms)
+      window.dispatchEvent(new Event("online"));
       vi.advanceTimersByTime(4250);
     });
-
-    // After fade out, should be hidden
-    const indicator = container.querySelector("[role='status']");
-    expect(indicator).not.toBeInTheDocument();
+    expect(container.querySelector("[role='status']")).not.toBeInTheDocument();
   });
 });

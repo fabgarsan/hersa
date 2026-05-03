@@ -1,4 +1,3 @@
-/* eslint-disable hersa-style/require-scss-module */
 import { describe, it, expect } from "vitest";
 import { screen } from "@testing-library/react";
 import { renderWithProviders } from "@/tests/utils";
@@ -9,7 +8,7 @@ describe("ModuleLayout", () => {
     renderWithProviders(
       <ModuleLayout title="Dashboard">
         <div>Content</div>
-      </ModuleLayout>
+      </ModuleLayout>,
     );
 
     expect(screen.getByText("Dashboard")).toBeInTheDocument();
@@ -19,7 +18,7 @@ describe("ModuleLayout", () => {
     renderWithProviders(
       <ModuleLayout title="Invoices" subtitle="Manage all invoices">
         <div>Content</div>
-      </ModuleLayout>
+      </ModuleLayout>,
     );
 
     expect(screen.getByText("Manage all invoices")).toBeInTheDocument();
@@ -29,7 +28,7 @@ describe("ModuleLayout", () => {
     renderWithProviders(
       <ModuleLayout title="Invoices">
         <div>Content</div>
-      </ModuleLayout>
+      </ModuleLayout>,
     );
 
     expect(screen.queryByText(/Manage|subtitle/i)).not.toBeInTheDocument();
@@ -40,10 +39,12 @@ describe("ModuleLayout", () => {
       <ModuleLayout title="Users">
         <table>
           <tbody>
-            <tr><td>User data</td></tr>
+            <tr>
+              <td>User data</td>
+            </tr>
           </tbody>
         </table>
-      </ModuleLayout>
+      </ModuleLayout>,
     );
 
     expect(screen.getByText("User data")).toBeInTheDocument();
@@ -51,12 +52,9 @@ describe("ModuleLayout", () => {
 
   it("renders actions slot when provided", () => {
     renderWithProviders(
-      <ModuleLayout
-        title="Invoices"
-        actions={<button>Create Invoice</button>}
-      >
+      <ModuleLayout title="Invoices" actions={<button>Create Invoice</button>}>
         <div>Content</div>
-      </ModuleLayout>
+      </ModuleLayout>,
     );
 
     expect(screen.getByRole("button", { name: /create invoice/i })).toBeInTheDocument();
@@ -66,7 +64,7 @@ describe("ModuleLayout", () => {
     renderWithProviders(
       <ModuleLayout title="Invoices">
         <div>Content</div>
-      </ModuleLayout>
+      </ModuleLayout>,
     );
 
     expect(screen.queryByRole("button")).not.toBeInTheDocument();
@@ -76,7 +74,7 @@ describe("ModuleLayout", () => {
     renderWithProviders(
       <ModuleLayout title="Dashboard">
         <div>Content</div>
-      </ModuleLayout>
+      </ModuleLayout>,
     );
 
     const title = screen.getByRole("heading", { level: 5 });
@@ -87,7 +85,7 @@ describe("ModuleLayout", () => {
     renderWithProviders(
       <ModuleLayout title="Events" subtitle="All graduation events">
         <div>Content</div>
-      </ModuleLayout>
+      </ModuleLayout>,
     );
 
     const subtitle = screen.getByText("All graduation events");
@@ -96,12 +94,9 @@ describe("ModuleLayout", () => {
 
   it("renders footer when provided", () => {
     renderWithProviders(
-      <ModuleLayout
-        title="Dashboard"
-        footer={<div>Footer content</div>}
-      >
+      <ModuleLayout title="Dashboard" footer={<div>Footer content</div>}>
         <div>Main content</div>
-      </ModuleLayout>
+      </ModuleLayout>,
     );
 
     expect(screen.getByText("Footer content")).toBeInTheDocument();
@@ -111,7 +106,7 @@ describe("ModuleLayout", () => {
     renderWithProviders(
       <ModuleLayout title="Dashboard">
         <div>Content</div>
-      </ModuleLayout>
+      </ModuleLayout>,
     );
 
     expect(screen.queryByText(/footer|Footer/i)).not.toBeInTheDocument();
@@ -119,12 +114,9 @@ describe("ModuleLayout", () => {
 
   it("renders header with title and actions side by side", () => {
     renderWithProviders(
-      <ModuleLayout
-        title="Events"
-        actions={<button>Add Event</button>}
-      >
+      <ModuleLayout title="Events" actions={<button>Add Event</button>}>
         <div>Events list</div>
-      </ModuleLayout>
+      </ModuleLayout>,
     );
 
     expect(screen.getByText("Events")).toBeInTheDocument();
@@ -138,8 +130,12 @@ describe("ModuleLayout", () => {
         subtitle="Manage customer invoices"
         actions={<button>New Invoice</button>}
       >
-        <table><tr><td>Invoice list</td></tr></table>
-      </ModuleLayout>
+        <table>
+          <tr>
+            <td>Invoice list</td>
+          </tr>
+        </table>
+      </ModuleLayout>,
     );
 
     expect(screen.getByText("Invoices")).toBeInTheDocument();
@@ -156,7 +152,7 @@ describe("ModuleLayout", () => {
         footer={<div>Total: 42 products</div>}
       >
         <div>Product list</div>
-      </ModuleLayout>
+      </ModuleLayout>,
     );
 
     expect(screen.getByText("Products")).toBeInTheDocument();
@@ -178,7 +174,7 @@ describe("ModuleLayout", () => {
         }
       >
         <div>Settings form</div>
-      </ModuleLayout>
+      </ModuleLayout>,
     );
 
     expect(screen.getByRole("button", { name: /save/i })).toBeInTheDocument();
@@ -189,7 +185,7 @@ describe("ModuleLayout", () => {
     renderWithProviders(
       <ModuleLayout title="Module" subtitle="Description">
         <div>Content</div>
-      </ModuleLayout>
+      </ModuleLayout>,
     );
 
     expect(screen.getByText("Module")).toBeInTheDocument();

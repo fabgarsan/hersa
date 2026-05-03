@@ -1,127 +1,89 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 import { renderWithProviders } from "@/tests/utils";
 import { OfflineMutationDialog } from "./OfflineMutationDialog";
 
 describe("OfflineMutationDialog", () => {
-  it("should not render when open={false}", () => {
-    const { queryByRole, queryByText } = renderWithProviders(
-      <OfflineMutationDialog open={false} onClose={vi.fn()} />
-    );
+  const onClose = vi.fn();
 
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  function renderDialog(open = true) {
+    return renderWithProviders(<OfflineMutationDialog open={open} onClose={onClose} />);
+  }
+
+  it("should not render when open={false}", () => {
+    const { queryByRole, queryByText } = renderDialog(false);
     expect(queryByRole("dialog")).not.toBeInTheDocument();
     expect(queryByText("El cambio no se guardó")).not.toBeInTheDocument();
   });
 
   it("should render when open={true}", () => {
-    const { getByRole } = renderWithProviders(
-      <OfflineMutationDialog open={true} onClose={vi.fn()} />
-    );
-
-    expect(getByRole("dialog")).toBeInTheDocument();
+    expect(renderDialog().getByRole("dialog")).toBeInTheDocument();
   });
 
   it("should render dialog title", () => {
-    const { getByText } = renderWithProviders(
-      <OfflineMutationDialog open={true} onClose={vi.fn()} />
-    );
-
-    expect(getByText("El cambio no se guardó")).toBeInTheDocument();
+    expect(renderDialog().getByText("El cambio no se guardó")).toBeInTheDocument();
   });
 
   it("should render dialog message", () => {
-    const { getByText } = renderWithProviders(
-      <OfflineMutationDialog open={true} onClose={vi.fn()} />
-    );
-
     expect(
-      getByText(
-        "No hay conexión en este momento. Los datos no fueron enviados. Cuando recuperes la señal, intenta guardar de nuevo."
-      )
+      renderDialog().getByText(
+        "No hay conexión en este momento. Los datos no fueron enviados. Cuando recuperes la señal, intenta guardar de nuevo.",
+      ),
     ).toBeInTheDocument();
   });
 
   it("should have close/dismiss button", () => {
-    const { getByRole } = renderWithProviders(
-      <OfflineMutationDialog open={true} onClose={vi.fn()} />
-    );
-
-    expect(getByRole("button", { name: /entendido/i })).toBeInTheDocument();
+    expect(renderDialog().getByRole("button", { name: /entendido/i })).toBeInTheDocument();
   });
 
   it("should call onClose when button is clicked", async () => {
-    const handleClose = vi.fn();
-    const { getByRole, user } = renderWithProviders(
-      <OfflineMutationDialog open={true} onClose={handleClose} />
-    );
-
-    const button = getByRole("button", { name: /entendido/i });
-    await user.click(button);
-
-    expect(handleClose).toHaveBeenCalledOnce();
+    const { getByRole, user } = renderDialog();
+    await user.click(getByRole("button", { name: /entendido/i }));
+    expect(onClose).toHaveBeenCalledOnce();
   });
 
   it("should render WifiOffIcon", () => {
-    const { getByRole } = renderWithProviders(
-      <OfflineMutationDialog open={true} onClose={vi.fn()} />
-    );
-
-    // Dialog should be visible (which includes the icon)
-    const dialog = getByRole("dialog");
-    expect(dialog).toBeInTheDocument();
+    // Dialog renders in a MUI portal outside `container` — query from the dialog element itself.
+    const { getByRole } = renderDialog();
+    expect(getByRole("dialog").querySelector("[class*='wifiIcon']")).toBeInTheDocument();
   });
 
-  it("should have disableEscapeKeyDown set", () => {
-    const { getByRole } = renderWithProviders(
-      <OfflineMutationDialog open={true} onClose={vi.fn()} />
-    );
-
-    const dialog = getByRole("dialog");
-    // Dialog should be present - the disableEscapeKeyDown prevents Escape key from closing it
-    expect(dialog).toBeInTheDocument();
+  it("should have disableEscapeKeyDown set", async () => {
+    const { getByRole, user } = renderDialog();
+    await user.keyboard("{Escape}");
+    expect(getByRole("dialog")).toBeInTheDocument();
+    expect(onClose).not.toHaveBeenCalled();
   });
 
   it("should have proper aria-labelledby for accessibility", () => {
-    const { getByRole } = renderWithProviders(
-      <OfflineMutationDialog open={true} onClose={vi.fn()} />
+    expect(renderDialog().getByRole("dialog")).toHaveAttribute(
+      "aria-labelledby",
+      "offline-mutation-dialog-title",
     );
-
-    const dialog = getByRole("dialog");
-    expect(dialog).toHaveAttribute("aria-labelledby", "offline-mutation-dialog-title");
   });
 
   it("should button be large size for touch targets", () => {
-    const { getByRole } = renderWithProviders(
-      <OfflineMutationDialog open={true} onClose={vi.fn()} />
+    expect(renderDialog().getByRole("button", { name: /entendido/i })).toHaveClass(
+      "MuiButton-sizeLarge",
     );
-
-    const button = getByRole("button", { name: /entendido/i });
-    expect(button).toHaveClass("MuiButton-sizeLarge");
   });
 
   it("should render button with autoFocus", () => {
-    const { getByRole } = renderWithProviders(
-      <OfflineMutationDialog open={true} onClose={vi.fn()} />
-    );
-
-    const button = getByRole("button", { name: /entendido/i });
-    expect(button).toHaveFocus();
+    expect(renderDialog().getByRole("button", { name: /entendido/i })).toHaveFocus();
   });
 
   it("should render button as fullWidth", () => {
-    const { getByRole } = renderWithProviders(
-      <OfflineMutationDialog open={true} onClose={vi.fn()} />
+    expect(renderDialog().getByRole("button", { name: /entendido/i })).toHaveClass(
+      "MuiButton-fullWidth",
     );
-
-    const button = getByRole("button", { name: /entendido/i });
-    expect(button).toHaveClass("MuiButton-fullWidth");
   });
 
   it("should render button as contained primary", () => {
-    const { getByRole } = renderWithProviders(
-      <OfflineMutationDialog open={true} onClose={vi.fn()} />
+    expect(renderDialog().getByRole("button", { name: /entendido/i })).toHaveClass(
+      "MuiButton-containedPrimary",
     );
-
-    const button = getByRole("button", { name: /entendido/i });
-    expect(button).toHaveClass("MuiButton-containedPrimary");
   });
 });

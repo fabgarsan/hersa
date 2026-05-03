@@ -1,4 +1,3 @@
-/* eslint-disable hersa-style/require-scss-module */
 import { describe, it, expect, vi } from "vitest";
 import { screen } from "@testing-library/react";
 import { renderWithProviders } from "@/tests/utils";
@@ -31,7 +30,7 @@ describe("ErrorState", () => {
 
   it("renders both custom title and description", () => {
     renderWithProviders(
-      <ErrorState title="Oops!" description="Something went wrong with the request." />
+      <ErrorState title="Oops!" description="Something went wrong with the request." />,
     );
 
     expect(screen.getByText("Oops!")).toBeInTheDocument();
