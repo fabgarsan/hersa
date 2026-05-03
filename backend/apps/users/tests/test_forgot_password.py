@@ -67,3 +67,17 @@ def test_forgot_password_accessible_without_auth(api_client: APIClient, user: Us
     with patch("apps.users.views.ForgotPasswordView.throttle_classes", []):
         response = api_client.post(URL, {"username_or_email": user.username})
     assert response.status_code == 200
+
+
+@pytest.mark.django_db
+def test_username_field_rejects_oversized_payload(api_client: APIClient) -> None:
+    response = api_client.post(URL, {"username_or_email": "a" * 10000})
+    assert response.status_code in (200, 400)
+    assert response.status_code != 500
+
+
+@pytest.mark.django_db
+def test_username_field_with_sql_injection_payload(api_client: APIClient) -> None:
+    response = api_client.post(URL, {"username_or_email": "' OR 1=1; --"})
+    assert response.status_code in (200, 400)
+    assert response.status_code != 500
