@@ -2,13 +2,7 @@ import { useCallback, useMemo, useState } from "react";
 
 import type { GridRowSelectionModel } from "@mui/x-data-grid";
 
-import type { UseRowSelectionReturn } from "./types";
-
-interface UseRowSelectionOptions {
-  selectable: boolean;
-  totalCount: number;
-  currentPageRealIds: (string | number)[];
-}
+import type { UseRowSelectionOptions, UseRowSelectionReturn } from "./types";
 
 /**
  * Manages multi-level row selection for DataTable.

@@ -63,6 +63,19 @@ export interface DetailRow {
   __content: ReactNode;
 }
 
+// Internal hook parameter types — not part of the public barrel export
+
+export interface PersistedColConfig {
+  visibility: Record<string, boolean>;
+  order: string[];
+}
+
+export interface UseRowSelectionOptions {
+  selectable: boolean;
+  totalCount: number;
+  currentPageRealIds: (string | number)[];
+}
+
 // Hook return types — defined here so they can be shared between hooks and DataTable
 
 export interface UseColumnPersistenceReturn {

@@ -10,6 +10,7 @@ paths:
 - `interface` for object shapes and domain types; `type` for unions and computed types.
 - Component props typed with `interface`, named `<ComponentName>Props`, defined in the co-located `types.ts` — never inlined in the `.tsx` file.
 - Hook return types named `Use<HookName>Return`, defined in the co-located `types.ts` — the hook must explicitly annotate its return type.
+- **No `interface` or `type` declaration in hook files (`use*.ts`, `use*.tsx`)** — all types (return types, parameter types, internal shapes) must live in the co-located `types.ts` and be imported from there.
 - Use `import type` for all type-only imports.
 - Never use `as` to cast — prefer type guards or narrowing.
 - Named exports by default; default export only for pages and layouts.
@@ -23,6 +24,74 @@ paths:
 - Types shared across features go in `src/shared/types/`.
 - All API response shapes must be typed in camelCase (the axios interceptor handles transformation).
 - Types defined in `types.ts` are re-exported through the folder's `index.ts`.
+- **Hook files are type-free**: every `interface` and `type` a hook needs — parameters, internal shapes, return types — is declared in `types.ts` and imported. This applies equally to module hooks, shared hooks, and component-local hooks.
+
+## Test file structure
+
+Apply these rules to every `*.test.ts` / `*.test.tsx` file to eliminate duplication before it appears:
+
+**Shared state per `describe` block** — `QueryClient`, wrappers, and mocks live in `let` variables initialized in `beforeEach`, not recreated inline per test.
+
+```typescript
+// ✅
+describe("usePermissions", () => {
+  let qc: QueryClient;
+  let wrapper: ReturnType<typeof createWrapper>;
+  beforeEach(() => {
+    qc = createTestQueryClient();
+    wrapper = createWrapper(qc);
+    vi.clearAllMocks();
+  });
+  it("...", () => { /* uses qc and wrapper directly */ });
+});
+
+// ❌ inline per test — duplicates 4 lines in every it()
+it("...", () => {
+  const qc = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+  const wrapper = createWrapper(qc);
+  ...
+});
+```
+
+**Render helpers** — when ≥2 tests `renderHook` the same hook with the same boilerplate, extract a `renderXxx()` helper inside the `describe` block. The helper closes over the `let mockFn` from `beforeEach` — this is intentional.
+
+```typescript
+function renderAdapter(initialPageSize?: number) {
+  const qc = createTestQueryClient();
+  const wrapper = createWrapper(qc);
+  return renderHook(
+    () => useDrfAdapter({ queryFn: mockQueryFn, queryKey: ["test"], initialPageSize }),
+    { wrapper },
+  );
+}
+```
+
+**Mock data factories** — replace repeated literal objects with a factory that accepts only the varying fields.
+
+```typescript
+// ✅ factory inside describe
+function emptyPage(count = 0): DrfPaginatedResponse<TestRow> {
+  return { count, next: null, previous: null, results: [] };
+}
+// usage: mockQueryFn.mockResolvedValue(emptyPage(100));
+
+// ❌ copy-pasted 14 times
+mockQueryFn.mockResolvedValue({ count: 0, next: null, previous: null, results: [] });
+```
+
+**Typed mocks** — always type `vi.fn()` with the function signature it replaces; never use `ReturnType<typeof vi.fn>` (untyped).
+
+```typescript
+// ✅
+type QueryFn = (params: DrfQueryParams) => Promise<DrfPaginatedResponse<TestRow>>;
+let mockQueryFn: ReturnType<typeof vi.fn<QueryFn>> = vi.fn<QueryFn>();
+beforeEach(() => { mockQueryFn = vi.fn<QueryFn>(); });
+
+// ❌ untyped — breaks assignability to typed parameters
+let mockQueryFn: ReturnType<typeof vi.fn>;
+```
+
+**Shared helpers across `describe` blocks** — `createTestQueryClient()` and `createWrapper()` belong at module level (top of the test file), not copied into each describe block.
 
 ## Import order
 
