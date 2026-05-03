@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
+import { describe, it, expect, beforeEach, afterEach, vi, type MockInstance } from "vitest";
 import axios from "axios";
 import MockAdapter from "axios-mock-adapter";
 import { apiClient, isApiErrorData } from "./client";
@@ -106,10 +106,8 @@ describe("apiClient response interceptor — success", () => {
 });
 
 describe("apiClient response interceptor — 401 handling", () => {
-  let postSpy: ReturnType<typeof vi.spyOn<typeof axios, "post">>;
-  let triggerLogoutSpy: ReturnType<
-    typeof vi.spyOn<typeof authEventsModule.authEvents, "triggerLogout">
-  >;
+  let postSpy: MockInstance<typeof axios.post>;
+  let triggerLogoutSpy: MockInstance<typeof authEventsModule.authEvents.triggerLogout>;
 
   beforeEach(() => {
     mock.reset();
