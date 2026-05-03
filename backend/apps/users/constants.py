@@ -12,6 +12,7 @@ MESSAGES: dict[str, dict[str, str]] = {
     "validation": {
         "PASSWORDS_DO_NOT_MATCH": "Las contraseñas no coinciden.",
         "WRONG_CURRENT_PASSWORD": "Contraseña incorrecta.",
+        "SAME_AS_CURRENT_PASSWORD": "La nueva contraseña no puede ser igual a la contraseña actual.",
     },
     "not_found": {
         "INVALID_RESET_LINK": "Enlace de restablecimiento inválido.",

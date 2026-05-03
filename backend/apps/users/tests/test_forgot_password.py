@@ -71,9 +71,9 @@ def test_forgot_password_accessible_without_auth(api_client: APIClient, user: Us
 
 @pytest.mark.django_db
 def test_username_field_rejects_oversized_payload(api_client: APIClient) -> None:
-    response = api_client.post(URL, {"username_or_email": "a" * 10000})
-    assert response.status_code in (200, 400)
-    assert response.status_code != 500
+    response = api_client.post(URL, {"username_or_email": "a" * 255})
+    assert response.status_code == 400
+    assert "username_or_email" in response.data
 
 
 @pytest.mark.django_db
@@ -81,3 +81,14 @@ def test_username_field_with_sql_injection_payload(api_client: APIClient) -> Non
     response = api_client.post(URL, {"username_or_email": "' OR 1=1; --"})
     assert response.status_code in (200, 400)
     assert response.status_code != 500
+
+
+@pytest.mark.django_db
+def test_forgot_password_email_send_failure_gracefully_handles_exception(
+    api_client: APIClient, user: User
+) -> None:
+    with patch("apps.users.views.ForgotPasswordView.throttle_classes", []):
+        with patch("django.core.mail.send_mail", side_effect=Exception("SMTP error")):
+            response = api_client.post(URL, {"username_or_email": user.username})
+    assert response.status_code == 200
+    assert response.data["detail"] == MESSAGES["success"]["PASSWORD_RESET_EMAIL_SENT"]

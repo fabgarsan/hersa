@@ -114,3 +114,18 @@ def test_active_jwt_remains_valid_after_password_change(api_client: APIClient, u
     response = api_client.post("/api/token/refresh/", {"refresh": refresh_token_old})
     # KNOWN RISK: refresh tokens issued before password change remain valid until expiry (4h). See GAP-04.
     assert response.status_code == 200
+
+
+@pytest.mark.django_db
+def test_change_password_rejects_same_as_current_password(api_client: APIClient, user: User) -> None:
+    api_client.force_authenticate(user=user)
+    response = api_client.post(
+        URL,
+        {
+            "current_password": "StrongPass123!",
+            "new_password": "StrongPass123!",
+            "confirm_password": "StrongPass123!",
+        },
+    )
+    assert response.status_code == 400
+    assert "new_password" in response.data
