@@ -4,6 +4,7 @@ import { MemoryRouter, Route, Routes, useLocation } from "react-router-dom";
 import { AuthGuard } from "./AuthGuard";
 
 vi.mock("@shared/contexts", async (importOriginal) => {
+  // eslint-disable-next-line @typescript-eslint/consistent-type-imports
   const actual = await importOriginal<typeof import("@shared/contexts")>();
   return { ...actual, useAuthContext: vi.fn() };
 });
