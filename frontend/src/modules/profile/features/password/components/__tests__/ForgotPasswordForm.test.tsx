@@ -14,7 +14,7 @@ const createMockMutation = () => {
   let capturedOnSuccess: (() => void) | null = null;
   let capturedOnError: ((err: Error) => void) | null = null;
 
-  const mutate = vi.fn((values, options) => {
+  const mutate = vi.fn((_values, options) => {
     capturedOnSuccess = options.onSuccess;
     capturedOnError = options.onError;
   });
@@ -35,7 +35,9 @@ describe("ForgotPasswordForm", () => {
   describe("render - initial state", () => {
     it("should render username/email input field", () => {
       const mockMutation = createMockMutation();
-      vi.mocked(useForgotPasswordMutation).mockReturnValue(mockMutation);
+      vi.mocked(useForgotPasswordMutation).mockReturnValue(
+        mockMutation as unknown as ReturnType<typeof useForgotPasswordMutation>,
+      );
 
       renderWithProviders(<ForgotPasswordForm />);
 
@@ -44,7 +46,9 @@ describe("ForgotPasswordForm", () => {
 
     it("should render submit button", () => {
       const mockMutation = createMockMutation();
-      vi.mocked(useForgotPasswordMutation).mockReturnValue(mockMutation);
+      vi.mocked(useForgotPasswordMutation).mockReturnValue(
+        mockMutation as unknown as ReturnType<typeof useForgotPasswordMutation>,
+      );
 
       renderWithProviders(<ForgotPasswordForm />);
 
@@ -53,7 +57,9 @@ describe("ForgotPasswordForm", () => {
 
     it("should not show success alert initially", () => {
       const mockMutation = createMockMutation();
-      vi.mocked(useForgotPasswordMutation).mockReturnValue(mockMutation);
+      vi.mocked(useForgotPasswordMutation).mockReturnValue(
+        mockMutation as unknown as ReturnType<typeof useForgotPasswordMutation>,
+      );
 
       renderWithProviders(<ForgotPasswordForm />);
 
@@ -64,7 +70,9 @@ describe("ForgotPasswordForm", () => {
 
     it("should not show error alert initially", () => {
       const mockMutation = createMockMutation();
-      vi.mocked(useForgotPasswordMutation).mockReturnValue(mockMutation);
+      vi.mocked(useForgotPasswordMutation).mockReturnValue(
+        mockMutation as unknown as ReturnType<typeof useForgotPasswordMutation>,
+      );
 
       renderWithProviders(<ForgotPasswordForm />);
 
@@ -75,7 +83,9 @@ describe("ForgotPasswordForm", () => {
   describe("form submission validation", () => {
     it("should show validation error when usernameOrEmail is empty", async () => {
       const mockMutation = createMockMutation();
-      vi.mocked(useForgotPasswordMutation).mockReturnValue(mockMutation);
+      vi.mocked(useForgotPasswordMutation).mockReturnValue(
+        mockMutation as unknown as ReturnType<typeof useForgotPasswordMutation>,
+      );
 
       const { user } = renderWithProviders(<ForgotPasswordForm />);
 
@@ -89,7 +99,9 @@ describe("ForgotPasswordForm", () => {
 
     it("should not call mutate when validation fails", async () => {
       const mockMutation = createMockMutation();
-      vi.mocked(useForgotPasswordMutation).mockReturnValue(mockMutation);
+      vi.mocked(useForgotPasswordMutation).mockReturnValue(
+        mockMutation as unknown as ReturnType<typeof useForgotPasswordMutation>,
+      );
 
       const { user } = renderWithProviders(<ForgotPasswordForm />);
 
@@ -105,7 +117,9 @@ describe("ForgotPasswordForm", () => {
   describe("successful submission", () => {
     it("should call mutate with valid username", async () => {
       const mockMutation = createMockMutation();
-      vi.mocked(useForgotPasswordMutation).mockReturnValue(mockMutation);
+      vi.mocked(useForgotPasswordMutation).mockReturnValue(
+        mockMutation as unknown as ReturnType<typeof useForgotPasswordMutation>,
+      );
 
       const { user } = renderWithProviders(<ForgotPasswordForm />);
 
@@ -128,7 +142,9 @@ describe("ForgotPasswordForm", () => {
 
     it("should call mutate with valid email", async () => {
       const mockMutation = createMockMutation();
-      vi.mocked(useForgotPasswordMutation).mockReturnValue(mockMutation);
+      vi.mocked(useForgotPasswordMutation).mockReturnValue(
+        mockMutation as unknown as ReturnType<typeof useForgotPasswordMutation>,
+      );
 
       const { user } = renderWithProviders(<ForgotPasswordForm />);
 
@@ -148,7 +164,9 @@ describe("ForgotPasswordForm", () => {
 
     it("should show success message on successful submission", async () => {
       const mockMutation = createMockMutation();
-      vi.mocked(useForgotPasswordMutation).mockReturnValue(mockMutation);
+      vi.mocked(useForgotPasswordMutation).mockReturnValue(
+        mockMutation as unknown as ReturnType<typeof useForgotPasswordMutation>,
+      );
 
       const { user } = renderWithProviders(<ForgotPasswordForm />);
 
@@ -174,7 +192,9 @@ describe("ForgotPasswordForm", () => {
 
     it("should hide the form after successful submission", async () => {
       const mockMutation = createMockMutation();
-      vi.mocked(useForgotPasswordMutation).mockReturnValue(mockMutation);
+      vi.mocked(useForgotPasswordMutation).mockReturnValue(
+        mockMutation as unknown as ReturnType<typeof useForgotPasswordMutation>,
+      );
 
       const { user } = renderWithProviders(<ForgotPasswordForm />);
 
@@ -197,7 +217,9 @@ describe("ForgotPasswordForm", () => {
 
     it("should display success alert when form is successfully submitted", async () => {
       const mockMutation = createMockMutation();
-      vi.mocked(useForgotPasswordMutation).mockReturnValue(mockMutation);
+      vi.mocked(useForgotPasswordMutation).mockReturnValue(
+        mockMutation as unknown as ReturnType<typeof useForgotPasswordMutation>,
+      );
 
       const { user } = renderWithProviders(<ForgotPasswordForm />);
 
@@ -224,7 +246,9 @@ describe("ForgotPasswordForm", () => {
   describe("error handling", () => {
     it("should show error message on API error", async () => {
       const mockMutation = createMockMutation();
-      vi.mocked(useForgotPasswordMutation).mockReturnValue(mockMutation);
+      vi.mocked(useForgotPasswordMutation).mockReturnValue(
+        mockMutation as unknown as ReturnType<typeof useForgotPasswordMutation>,
+      );
 
       const { user } = renderWithProviders(<ForgotPasswordForm />);
 
@@ -247,7 +271,9 @@ describe("ForgotPasswordForm", () => {
 
     it("should not show error message on network error", async () => {
       const mockMutation = createMockMutation();
-      vi.mocked(useForgotPasswordMutation).mockReturnValue(mockMutation);
+      vi.mocked(useForgotPasswordMutation).mockReturnValue(
+        mockMutation as unknown as ReturnType<typeof useForgotPasswordMutation>,
+      );
 
       const { user } = renderWithProviders(<ForgotPasswordForm />);
 
@@ -270,7 +296,9 @@ describe("ForgotPasswordForm", () => {
 
     it("should keep form visible if there is an error during submission", async () => {
       const mockMutation = createMockMutation();
-      vi.mocked(useForgotPasswordMutation).mockReturnValue(mockMutation);
+      vi.mocked(useForgotPasswordMutation).mockReturnValue(
+        mockMutation as unknown as ReturnType<typeof useForgotPasswordMutation>,
+      );
 
       const { user } = renderWithProviders(<ForgotPasswordForm />);
 
@@ -300,7 +328,7 @@ describe("ForgotPasswordForm", () => {
       vi.mocked(useForgotPasswordMutation).mockReturnValue({
         ...mockMutation,
         isPending: true,
-      });
+      } as unknown as ReturnType<typeof useForgotPasswordMutation>);
 
       renderWithProviders(<ForgotPasswordForm />);
 
@@ -312,7 +340,7 @@ describe("ForgotPasswordForm", () => {
       vi.mocked(useForgotPasswordMutation).mockReturnValue({
         ...mockMutation,
         isPending: true,
-      });
+      } as unknown as ReturnType<typeof useForgotPasswordMutation>);
 
       renderWithProviders(<ForgotPasswordForm />);
 

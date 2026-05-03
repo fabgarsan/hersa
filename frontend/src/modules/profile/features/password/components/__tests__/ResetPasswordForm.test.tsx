@@ -18,7 +18,7 @@ const createMockMutation = () => {
   let capturedOnSuccess: (() => void) | null = null;
   let capturedOnError: ((err: Error) => void) | null = null;
 
-  const mutate = vi.fn((values, options) => {
+  const mutate = vi.fn((_values, options) => {
     capturedOnSuccess = options.onSuccess;
     capturedOnError = options.onError;
   });
@@ -69,7 +69,9 @@ describe("ResetPasswordForm", () => {
   describe("render - initial state", () => {
     it("should render new password and confirm password fields", () => {
       const mockMutation = createMockMutation();
-      vi.mocked(useResetPasswordMutation).mockReturnValue(mockMutation);
+      vi.mocked(useResetPasswordMutation).mockReturnValue(
+        mockMutation as unknown as ReturnType<typeof useResetPasswordMutation>,
+      );
 
       renderWithRouter();
 
@@ -79,7 +81,9 @@ describe("ResetPasswordForm", () => {
 
     it("should render submit button", () => {
       const mockMutation = createMockMutation();
-      vi.mocked(useResetPasswordMutation).mockReturnValue(mockMutation);
+      vi.mocked(useResetPasswordMutation).mockReturnValue(
+        mockMutation as unknown as ReturnType<typeof useResetPasswordMutation>,
+      );
 
       renderWithRouter();
 
@@ -88,7 +92,9 @@ describe("ResetPasswordForm", () => {
 
     it("should not render success state initially", () => {
       const mockMutation = createMockMutation();
-      vi.mocked(useResetPasswordMutation).mockReturnValue(mockMutation);
+      vi.mocked(useResetPasswordMutation).mockReturnValue(
+        mockMutation as unknown as ReturnType<typeof useResetPasswordMutation>,
+      );
 
       renderWithRouter();
 
@@ -100,7 +106,9 @@ describe("ResetPasswordForm", () => {
 
     it("should not show error message initially", () => {
       const mockMutation = createMockMutation();
-      vi.mocked(useResetPasswordMutation).mockReturnValue(mockMutation);
+      vi.mocked(useResetPasswordMutation).mockReturnValue(
+        mockMutation as unknown as ReturnType<typeof useResetPasswordMutation>,
+      );
 
       renderWithRouter();
 
@@ -111,7 +119,9 @@ describe("ResetPasswordForm", () => {
   describe("form submission validation", () => {
     it("should show validation error when passwords do not match", async () => {
       const mockMutation = createMockMutation();
-      vi.mocked(useResetPasswordMutation).mockReturnValue(mockMutation);
+      vi.mocked(useResetPasswordMutation).mockReturnValue(
+        mockMutation as unknown as ReturnType<typeof useResetPasswordMutation>,
+      );
 
       const { user } = renderWithRouter();
       const { newPassword, confirmPassword } = getPasswordFields();
@@ -129,7 +139,9 @@ describe("ResetPasswordForm", () => {
 
     it("should show validation error when new password is less than 8 characters", async () => {
       const mockMutation = createMockMutation();
-      vi.mocked(useResetPasswordMutation).mockReturnValue(mockMutation);
+      vi.mocked(useResetPasswordMutation).mockReturnValue(
+        mockMutation as unknown as ReturnType<typeof useResetPasswordMutation>,
+      );
 
       const { user } = renderWithRouter();
       const { newPassword, confirmPassword } = getPasswordFields();
@@ -149,7 +161,9 @@ describe("ResetPasswordForm", () => {
 
     it("should show validation error when new password is only numeric", async () => {
       const mockMutation = createMockMutation();
-      vi.mocked(useResetPasswordMutation).mockReturnValue(mockMutation);
+      vi.mocked(useResetPasswordMutation).mockReturnValue(
+        mockMutation as unknown as ReturnType<typeof useResetPasswordMutation>,
+      );
 
       const { user } = renderWithRouter();
       const { newPassword, confirmPassword } = getPasswordFields();
@@ -169,7 +183,9 @@ describe("ResetPasswordForm", () => {
 
     it("should reject empty confirm password", async () => {
       const mockMutation = createMockMutation();
-      vi.mocked(useResetPasswordMutation).mockReturnValue(mockMutation);
+      vi.mocked(useResetPasswordMutation).mockReturnValue(
+        mockMutation as unknown as ReturnType<typeof useResetPasswordMutation>,
+      );
 
       const { user } = renderWithRouter();
       const { newPassword } = getPasswordFields();
@@ -186,7 +202,9 @@ describe("ResetPasswordForm", () => {
 
     it("should not call mutate when validation fails", async () => {
       const mockMutation = createMockMutation();
-      vi.mocked(useResetPasswordMutation).mockReturnValue(mockMutation);
+      vi.mocked(useResetPasswordMutation).mockReturnValue(
+        mockMutation as unknown as ReturnType<typeof useResetPasswordMutation>,
+      );
 
       const { user } = renderWithRouter();
 
@@ -202,7 +220,9 @@ describe("ResetPasswordForm", () => {
   describe("successful submission", () => {
     it("should call mutate with valid form data including uid and token", async () => {
       const mockMutation = createMockMutation();
-      vi.mocked(useResetPasswordMutation).mockReturnValue(mockMutation);
+      vi.mocked(useResetPasswordMutation).mockReturnValue(
+        mockMutation as unknown as ReturnType<typeof useResetPasswordMutation>,
+      );
 
       const { user } = renderWithRouter();
       const { newPassword, confirmPassword } = getPasswordFields();
@@ -231,7 +251,9 @@ describe("ResetPasswordForm", () => {
 
     it("should show success alert on successful reset", async () => {
       const mockMutation = createMockMutation();
-      vi.mocked(useResetPasswordMutation).mockReturnValue(mockMutation);
+      vi.mocked(useResetPasswordMutation).mockReturnValue(
+        mockMutation as unknown as ReturnType<typeof useResetPasswordMutation>,
+      );
 
       const { user } = renderWithRouter();
       const { newPassword, confirmPassword } = getPasswordFields();
@@ -256,7 +278,9 @@ describe("ResetPasswordForm", () => {
 
     it("should display go to login button on success", async () => {
       const mockMutation = createMockMutation();
-      vi.mocked(useResetPasswordMutation).mockReturnValue(mockMutation);
+      vi.mocked(useResetPasswordMutation).mockReturnValue(
+        mockMutation as unknown as ReturnType<typeof useResetPasswordMutation>,
+      );
 
       const { user } = renderWithRouter();
       const { newPassword, confirmPassword } = getPasswordFields();
@@ -279,7 +303,9 @@ describe("ResetPasswordForm", () => {
 
     it("should navigate to HOME when go to login button is clicked", async () => {
       const mockMutation = createMockMutation();
-      vi.mocked(useResetPasswordMutation).mockReturnValue(mockMutation);
+      vi.mocked(useResetPasswordMutation).mockReturnValue(
+        mockMutation as unknown as ReturnType<typeof useResetPasswordMutation>,
+      );
 
       const { user } = renderWithRouter();
       const { newPassword, confirmPassword } = getPasswordFields();
@@ -305,7 +331,9 @@ describe("ResetPasswordForm", () => {
 
     it("should hide form after successful reset", async () => {
       const mockMutation = createMockMutation();
-      vi.mocked(useResetPasswordMutation).mockReturnValue(mockMutation);
+      vi.mocked(useResetPasswordMutation).mockReturnValue(
+        mockMutation as unknown as ReturnType<typeof useResetPasswordMutation>,
+      );
 
       const { user } = renderWithRouter();
       const { newPassword, confirmPassword } = getPasswordFields();
@@ -331,7 +359,9 @@ describe("ResetPasswordForm", () => {
   describe("error handling - API errors", () => {
     it("should set field error when API returns confirmPassword error", async () => {
       const mockMutation = createMockMutation();
-      vi.mocked(useResetPasswordMutation).mockReturnValue(mockMutation);
+      vi.mocked(useResetPasswordMutation).mockReturnValue(
+        mockMutation as unknown as ReturnType<typeof useResetPasswordMutation>,
+      );
 
       const { user } = renderWithRouter();
       const { newPassword, confirmPassword } = getPasswordFields();
@@ -367,7 +397,9 @@ describe("ResetPasswordForm", () => {
 
     it("should set field error when API returns newPassword string error", async () => {
       const mockMutation = createMockMutation();
-      vi.mocked(useResetPasswordMutation).mockReturnValue(mockMutation);
+      vi.mocked(useResetPasswordMutation).mockReturnValue(
+        mockMutation as unknown as ReturnType<typeof useResetPasswordMutation>,
+      );
 
       const { user } = renderWithRouter();
       const { newPassword, confirmPassword } = getPasswordFields();
@@ -403,7 +435,9 @@ describe("ResetPasswordForm", () => {
 
     it("should take first element when API returns newPassword array error", async () => {
       const mockMutation = createMockMutation();
-      vi.mocked(useResetPasswordMutation).mockReturnValue(mockMutation);
+      vi.mocked(useResetPasswordMutation).mockReturnValue(
+        mockMutation as unknown as ReturnType<typeof useResetPasswordMutation>,
+      );
 
       const { user } = renderWithRouter();
       const { newPassword, confirmPassword } = getPasswordFields();
@@ -440,7 +474,9 @@ describe("ResetPasswordForm", () => {
 
     it("should show detail message when API returns detail field in error", async () => {
       const mockMutation = createMockMutation();
-      vi.mocked(useResetPasswordMutation).mockReturnValue(mockMutation);
+      vi.mocked(useResetPasswordMutation).mockReturnValue(
+        mockMutation as unknown as ReturnType<typeof useResetPasswordMutation>,
+      );
 
       const { user } = renderWithRouter();
       const { newPassword, confirmPassword } = getPasswordFields();
@@ -476,7 +512,9 @@ describe("ResetPasswordForm", () => {
 
     it("should show request new link when detail error is shown", async () => {
       const mockMutation = createMockMutation();
-      vi.mocked(useResetPasswordMutation).mockReturnValue(mockMutation);
+      vi.mocked(useResetPasswordMutation).mockReturnValue(
+        mockMutation as unknown as ReturnType<typeof useResetPasswordMutation>,
+      );
 
       const { user } = renderWithRouter();
       const { newPassword, confirmPassword } = getPasswordFields();
@@ -514,7 +552,9 @@ describe("ResetPasswordForm", () => {
 
     it("should show default error message when response has no detail field", async () => {
       const mockMutation = createMockMutation();
-      vi.mocked(useResetPasswordMutation).mockReturnValue(mockMutation);
+      vi.mocked(useResetPasswordMutation).mockReturnValue(
+        mockMutation as unknown as ReturnType<typeof useResetPasswordMutation>,
+      );
 
       const { user } = renderWithRouter();
       const { newPassword, confirmPassword } = getPasswordFields();
@@ -550,7 +590,9 @@ describe("ResetPasswordForm", () => {
 
     it("should not show error message on network error", async () => {
       const mockMutation = createMockMutation();
-      vi.mocked(useResetPasswordMutation).mockReturnValue(mockMutation);
+      vi.mocked(useResetPasswordMutation).mockReturnValue(
+        mockMutation as unknown as ReturnType<typeof useResetPasswordMutation>,
+      );
 
       const { user } = renderWithRouter();
       const { newPassword, confirmPassword } = getPasswordFields();
@@ -574,7 +616,9 @@ describe("ResetPasswordForm", () => {
 
     it("should keep form visible if there is an error during submission", async () => {
       const mockMutation = createMockMutation();
-      vi.mocked(useResetPasswordMutation).mockReturnValue(mockMutation);
+      vi.mocked(useResetPasswordMutation).mockReturnValue(
+        mockMutation as unknown as ReturnType<typeof useResetPasswordMutation>,
+      );
 
       const { user } = renderWithRouter();
       const { newPassword, confirmPassword } = getPasswordFields();
@@ -618,7 +662,7 @@ describe("ResetPasswordForm", () => {
       vi.mocked(useResetPasswordMutation).mockReturnValue({
         ...mockMutation,
         isPending: true,
-      });
+      } as unknown as ReturnType<typeof useResetPasswordMutation>);
 
       renderWithRouter();
 
@@ -630,7 +674,7 @@ describe("ResetPasswordForm", () => {
       vi.mocked(useResetPasswordMutation).mockReturnValue({
         ...mockMutation,
         isPending: true,
-      });
+      } as unknown as ReturnType<typeof useResetPasswordMutation>);
 
       renderWithRouter();
 
