@@ -16,7 +16,9 @@ describe("EmptyState", () => {
     renderWithProviders(<EmptyState variant="filtered" />);
 
     expect(screen.getByText("Sin resultados")).toBeInTheDocument();
-    expect(screen.getByText("Intentá con otros filtros o términos de búsqueda.")).toBeInTheDocument();
+    expect(
+      screen.getByText("Intentá con otros filtros o términos de búsqueda."),
+    ).toBeInTheDocument();
   });
 
   it("renders default title and description for 'permission' variant", () => {
@@ -40,11 +42,7 @@ describe("EmptyState", () => {
 
   it("renders both custom title and description", () => {
     renderWithProviders(
-      <EmptyState
-        variant="initial"
-        title="My Custom Title"
-        description="My custom description"
-      />
+      <EmptyState variant="initial" title="My Custom Title" description="My custom description" />,
     );
 
     expect(screen.getByText("My Custom Title")).toBeInTheDocument();
@@ -52,9 +50,7 @@ describe("EmptyState", () => {
   });
 
   it("renders action button when action prop is provided", async () => {
-    const { user } = renderWithProviders(
-      <EmptyState action={<button>Click me</button>} />
-    );
+    const { user } = renderWithProviders(<EmptyState action={<button>Click me</button>} />);
 
     const button = screen.getByRole("button", { name: /click me/i });
     expect(button).toBeInTheDocument();
@@ -70,9 +66,7 @@ describe("EmptyState", () => {
   });
 
   it("renders custom icon prop when provided", () => {
-    const { container } = renderWithProviders(
-      <EmptyState icon={<span data-testid="custom-icon">📦</span>} />
-    );
+    renderWithProviders(<EmptyState icon={<span data-testid="custom-icon">📦</span>} />);
 
     expect(screen.getByTestId("custom-icon")).toBeInTheDocument();
   });

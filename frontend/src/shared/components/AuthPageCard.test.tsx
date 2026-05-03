@@ -9,7 +9,7 @@ describe("AuthPageCard", () => {
     renderWithProviders(
       <AuthPageCard title="Login">
         <div>Form content</div>
-      </AuthPageCard>
+      </AuthPageCard>,
     );
 
     expect(screen.getByText("Login")).toBeInTheDocument();
@@ -19,7 +19,7 @@ describe("AuthPageCard", () => {
     renderWithProviders(
       <AuthPageCard title="Login">
         <input placeholder="Email" />
-      </AuthPageCard>
+      </AuthPageCard>,
     );
 
     expect(screen.getByPlaceholderText("Email")).toBeInTheDocument();
@@ -29,7 +29,7 @@ describe("AuthPageCard", () => {
     renderWithProviders(
       <AuthPageCard title="Login" subtitle="Welcome back!">
         <div>Form</div>
-      </AuthPageCard>
+      </AuthPageCard>,
     );
 
     expect(screen.getByText("Welcome back!")).toBeInTheDocument();
@@ -39,7 +39,7 @@ describe("AuthPageCard", () => {
     renderWithProviders(
       <AuthPageCard title="Login">
         <div>Form</div>
-      </AuthPageCard>
+      </AuthPageCard>,
     );
 
     // Verify no subtitle is rendered
@@ -50,7 +50,7 @@ describe("AuthPageCard", () => {
     renderWithProviders(
       <AuthPageCard title="Login" footer={<div>Footer content</div>}>
         <div>Form</div>
-      </AuthPageCard>
+      </AuthPageCard>,
     );
 
     expect(screen.getByText("Footer content")).toBeInTheDocument();
@@ -60,20 +60,17 @@ describe("AuthPageCard", () => {
     renderWithProviders(
       <AuthPageCard title="Login">
         <div>Form</div>
-      </AuthPageCard>
+      </AuthPageCard>,
     );
 
     expect(screen.queryByText(/Footer/)).not.toBeInTheDocument();
   });
 
   it("renders children between title and footer", () => {
-    const { container } = renderWithProviders(
-      <AuthPageCard
-        title="Login"
-        footer={<div>Don't have an account?</div>}
-      >
+    renderWithProviders(
+      <AuthPageCard title="Login" footer={<div>Don't have an account?</div>}>
         <input placeholder="Email" />
-      </AuthPageCard>
+      </AuthPageCard>,
     );
 
     const emailInput = screen.getByPlaceholderText("Email");
@@ -89,7 +86,7 @@ describe("AuthPageCard", () => {
         <input placeholder="Name" />
         <input placeholder="Email" />
         <input placeholder="Password" />
-      </AuthPageCard>
+      </AuthPageCard>,
     );
 
     expect(screen.getByPlaceholderText("Name")).toBeInTheDocument();
@@ -101,7 +98,7 @@ describe("AuthPageCard", () => {
     renderWithProviders(
       <AuthPageCard title="Authenticate">
         <div>Content</div>
-      </AuthPageCard>
+      </AuthPageCard>,
     );
 
     const title = screen.getByText("Authenticate");
@@ -120,7 +117,7 @@ describe("AuthPageCard", () => {
           <input type="password" placeholder="Password" />
           <button>Register</button>
         </form>
-      </AuthPageCard>
+      </AuthPageCard>,
     );
 
     expect(screen.getByText("User Registration")).toBeInTheDocument();
@@ -134,7 +131,7 @@ describe("AuthPageCard", () => {
     renderWithProviders(
       <AuthPageCard title="Login">
         <div>Form</div>
-      </AuthPageCard>
+      </AuthPageCard>,
     );
 
     // Verify the Card element is rendered (already tested by renderWithProviders)
@@ -145,7 +142,7 @@ describe("AuthPageCard", () => {
     const { container: doc } = renderWithProviders(
       <AuthPageCard title="Login">
         <div>Form</div>
-      </AuthPageCard>
+      </AuthPageCard>,
     );
 
     const muiContainer = doc.querySelector(".MuiContainer-maxWidthXs");
