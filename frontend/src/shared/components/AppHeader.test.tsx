@@ -3,7 +3,6 @@ import { renderWithProviders } from "@/tests/utils";
 import { AppHeader } from "./AppHeader";
 
 vi.mock("@modules/auth", async (importOriginal) => {
-  // eslint-disable-next-line @typescript-eslint/consistent-type-imports
   const actual = await importOriginal<typeof import("@modules/auth")>();
   return { ...actual, useAuth: vi.fn() };
 });

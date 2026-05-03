@@ -420,7 +420,7 @@ describe("AuthProvider", () => {
       localStorage.setItem("accessToken", "token");
       localStorage.setItem("refreshToken", "refresh");
 
-      const { result } = renderHook(() => useAuthContext(), {
+      renderHook(() => useAuthContext(), {
         wrapper: createWrapper(queryClient),
       });
 

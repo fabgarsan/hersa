@@ -2,7 +2,6 @@ import { describe, it, expect } from "vitest";
 import { renderWithProviders } from "@/tests/utils";
 import { StatCard } from "../StatCard";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
-import TrendingDownIcon from "@mui/icons-material/TrendingDown";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 
 describe("StatCard", () => {
@@ -89,27 +88,21 @@ describe("StatCard", () => {
 
   it("should handle different label values", () => {
     const customLabel = "Custom Metric";
-    const { getByText } = renderWithProviders(
-      <StatCard {...mockProps} label={customLabel} />,
-    );
+    const { getByText } = renderWithProviders(<StatCard {...mockProps} label={customLabel} />);
 
     expect(getByText(customLabel)).toBeInTheDocument();
   });
 
   it("should handle different value values", () => {
     const customValue = "1,234";
-    const { getByText } = renderWithProviders(
-      <StatCard {...mockProps} value={customValue} />,
-    );
+    const { getByText } = renderWithProviders(<StatCard {...mockProps} value={customValue} />);
 
     expect(getByText(customValue)).toBeInTheDocument();
   });
 
   it("should handle different trend values", () => {
     const customTrend = "-5%";
-    const { getByText } = renderWithProviders(
-      <StatCard {...mockProps} trend={customTrend} />,
-    );
+    const { getByText } = renderWithProviders(<StatCard {...mockProps} trend={customTrend} />);
 
     expect(getByText(customTrend)).toBeInTheDocument();
   });
@@ -152,9 +145,7 @@ describe("StatCard", () => {
 
   it("should maintain structure with different icon types", () => {
     const customIcon = <TrendingUpIcon data-testid="custom-icon" />;
-    const { getByTestId } = renderWithProviders(
-      <StatCard {...mockProps} icon={customIcon} />,
-    );
+    const { getByTestId } = renderWithProviders(<StatCard {...mockProps} icon={customIcon} />);
 
     expect(getByTestId("custom-icon")).toBeInTheDocument();
   });

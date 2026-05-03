@@ -87,15 +87,6 @@ describe("useAuth hook", () => {
     });
 
     it("should reflect authentication state from context", () => {
-      const { result: authContextResult } = renderHook(
-        () => {
-          // First get the auth context to login
-          const useAuthContextModule = vi.importActual("@shared/contexts");
-          return useAuthContextModule;
-        },
-        { wrapper: createWrapper(queryClient) }
-      );
-
       const { result } = renderHook(() => useAuth(), {
         wrapper: createWrapper(queryClient),
       });
@@ -316,7 +307,7 @@ describe("useAuth hook", () => {
           const auth = useAuth();
           return { auth };
         },
-        { wrapper: createWrapper(queryClient) }
+        { wrapper: createWrapper(queryClient) },
       );
 
       expect(result.current.auth.isAuthenticated).toBe(false);
@@ -330,7 +321,7 @@ describe("useAuth hook", () => {
           const auth2 = useAuth();
           return { auth1, auth2 };
         },
-        { wrapper: createWrapper(queryClient) }
+        { wrapper: createWrapper(queryClient) },
       );
 
       expect(result.current.auth1).toEqual(result.current.auth2);
