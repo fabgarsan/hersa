@@ -681,4 +681,144 @@ describe("ResetPasswordForm", () => {
       expect(screen.getByRole("button", { name: /Restableciendo/i })).toBeInTheDocument();
     });
   });
+
+  describe("security - password input protection", () => {
+    it("should not allow XSS payload in password fields", async () => {
+      const mockMutation = createMockMutation();
+      vi.mocked(useResetPasswordMutation).mockReturnValue(
+        mockMutation as unknown as ReturnType<typeof useResetPasswordMutation>,
+      );
+
+      const { user } = renderWithRouter();
+      const { newPassword, confirmPassword } = getPasswordFields();
+      const xssPayload = "<img src=x onerror=\"alert('xss')\">";
+
+      await user.type(newPassword, xssPayload);
+      await user.type(confirmPassword, xssPayload);
+
+      const submitButton = screen.getByRole("button", { name: /Restablecer contraseña/i });
+      await user.click(submitButton);
+
+      // Form should still show validation error for mismatched passwords
+      await waitFor(() => {
+        expect(mockMutation.mutate).toHaveBeenCalledWith(
+          expect.objectContaining({
+            newPassword: xssPayload,
+            confirmPassword: xssPayload,
+          }),
+          expect.any(Object),
+        );
+      });
+
+      // XSS payload should not be executed
+      expect(document.querySelector("img[onerror]")).not.toBeInTheDocument();
+    });
+
+    it("should sanitize error messages from detail field", async () => {
+      const mockMutation = createMockMutation();
+      vi.mocked(useResetPasswordMutation).mockReturnValue(
+        mockMutation as unknown as ReturnType<typeof useResetPasswordMutation>,
+      );
+
+      const { user } = renderWithRouter();
+      const { newPassword, confirmPassword } = getPasswordFields();
+
+      await user.type(newPassword, "NewPass123");
+      await user.type(confirmPassword, "NewPass123");
+
+      const submitButton = screen.getByRole("button", { name: /Restablecer contraseña/i });
+      await user.click(submitButton);
+
+      await waitFor(() => {
+        const onError = mockMutation.getOnError();
+        const error = new AxiosError(
+          "API Error",
+          "ERR_BAD_RESPONSE",
+          { headers: {} } as InternalAxiosRequestConfig,
+          undefined,
+          {
+            data: { detail: '<script>alert("xss")</script>Error occurred' },
+            status: 400,
+            statusText: "Bad Request",
+            headers: {},
+            config: { headers: {} } as InternalAxiosRequestConfig,
+          },
+        );
+        onError?.(error);
+      });
+
+      // Error message should be displayed as text, not HTML
+      const errorAlert = screen.getByText('<script>alert("xss")</script>Error occurred');
+      expect(errorAlert).toBeInTheDocument();
+      expect(document.querySelector("script")).not.toBeInTheDocument();
+    });
+
+    it("should not allow HTML in form fields before submission", async () => {
+      const mockMutation = createMockMutation();
+      vi.mocked(useResetPasswordMutation).mockReturnValue(
+        mockMutation as unknown as ReturnType<typeof useResetPasswordMutation>,
+      );
+
+      const { user } = renderWithRouter();
+      const { newPassword, confirmPassword } = getPasswordFields();
+
+      const htmlPayload = "<div onclick=\"alert('xss')\">Click me</div>";
+      await user.type(newPassword, htmlPayload);
+      await user.type(confirmPassword, htmlPayload);
+
+      // Input field should contain raw HTML as text, not rendered
+      expect(newPassword).toHaveValue(htmlPayload);
+      expect(confirmPassword).toHaveValue(htmlPayload);
+
+      // No actual div element should be created in the form
+      expect(document.querySelector("div[onclick]")).not.toBeInTheDocument();
+    });
+
+    it("should sanitize uid and token parameters from XSS in URL", async () => {
+      const mockMutation = createMockMutation();
+      vi.mocked(useResetPasswordMutation).mockReturnValue(
+        mockMutation as unknown as ReturnType<typeof useResetPasswordMutation>,
+      );
+
+      const maliciousProps = {
+        uid: '<script>alert("uid")</script>',
+        token: '<script>alert("token")</script>',
+      };
+
+      const user = userEvent.setup();
+      render(
+        <MemoryRouter initialEntries={["/reset"]}>
+          <Routes>
+            <Route path="/reset" element={<ResetPasswordForm {...maliciousProps} />} />
+            <Route path={ROUTES.HOME} element={<HomeScreen />} />
+          </Routes>
+        </MemoryRouter>,
+      );
+
+      const passwordFields = screen.getAllByLabelText(
+        /Nueva contraseña|Confirmar nueva contraseña/i,
+      );
+      const newPassword = passwordFields[0];
+      const confirmPassword = passwordFields[1];
+
+      await user.type(newPassword, "NewPass123");
+      await user.type(confirmPassword, "NewPass123");
+
+      const submitButton = screen.getByRole("button", { name: /Restablecer contraseña/i });
+      await user.click(submitButton);
+
+      await waitFor(() => {
+        expect(mockMutation.mutate).toHaveBeenCalledWith(
+          expect.objectContaining({
+            uid: maliciousProps.uid,
+            token: maliciousProps.token,
+          }),
+          expect.any(Object),
+        );
+      });
+
+      // Scripts should not be executed
+      expect(document.querySelector("script")).not.toBeInTheDocument();
+    });
+  });
 });

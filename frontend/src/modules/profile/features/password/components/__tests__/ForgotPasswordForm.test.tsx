@@ -347,4 +347,83 @@ describe("ForgotPasswordForm", () => {
       expect(screen.getByRole("button", { name: /Enviando/i })).toBeInTheDocument();
     });
   });
+
+  describe("security - input validation", () => {
+    it("should not allow XSS payload in usernameOrEmail field", async () => {
+      const mockMutation = createMockMutation();
+      vi.mocked(useForgotPasswordMutation).mockReturnValue(
+        mockMutation as unknown as ReturnType<typeof useForgotPasswordMutation>,
+      );
+
+      const { user } = renderWithProviders(<ForgotPasswordForm />);
+      const usernameField = screen.getByLabelText(/Usuario o correo electrónico/i);
+      const xssPayload = '<script>alert("xss")</script>';
+      await user.type(usernameField, xssPayload);
+
+      const submitButton = screen.getByRole("button", { name: /Enviar enlace/i });
+      await user.click(submitButton);
+
+      await waitFor(() => {
+        expect(mockMutation.mutate).toHaveBeenCalledWith(
+          expect.objectContaining({
+            usernameOrEmail: xssPayload,
+          }),
+          expect.any(Object),
+        );
+      });
+
+      // Payload should be in form as string, not executed
+      const scriptTags = document.querySelectorAll("script");
+      expect([...scriptTags].some((tag) => tag.textContent?.includes('alert("xss")'))).toBe(false);
+    });
+
+    it("should sanitize error messages from API responses", async () => {
+      const mockMutation = createMockMutation();
+      vi.mocked(useForgotPasswordMutation).mockReturnValue(
+        mockMutation as unknown as ReturnType<typeof useForgotPasswordMutation>,
+      );
+
+      const { user } = renderWithProviders(<ForgotPasswordForm />);
+      const usernameField = screen.getByLabelText(/Usuario o correo electrónico/i);
+      await user.type(usernameField, "testuser");
+
+      const submitButton = screen.getByRole("button", { name: /Enviar enlace/i });
+      await user.click(submitButton);
+
+      await waitFor(() => {
+        const onError = mockMutation.getOnError();
+        const maliciousError = new Error("<img src=x onerror=\"alert('xss')\">API Error");
+        onError?.(maliciousError);
+      });
+
+      // Error message should be displayed as text, not HTML
+      const errorAlert = screen.getByText(/Algo salió mal/i);
+      expect(errorAlert).toBeInTheDocument();
+      expect(document.querySelector("img[onerror]")).not.toBeInTheDocument();
+    });
+
+    it("should not allow HTML tags in success alert", async () => {
+      const mockMutation = createMockMutation();
+      vi.mocked(useForgotPasswordMutation).mockReturnValue(
+        mockMutation as unknown as ReturnType<typeof useForgotPasswordMutation>,
+      );
+
+      const { user } = renderWithProviders(<ForgotPasswordForm />);
+      const usernameField = screen.getByLabelText(/Usuario o correo electrónico/i);
+      await user.type(usernameField, "testuser");
+
+      const submitButton = screen.getByRole("button", { name: /Enviar enlace/i });
+      await user.click(submitButton);
+
+      await waitFor(() => {
+        const onSuccess = mockMutation.getOnSuccess();
+        onSuccess?.();
+      });
+
+      // Success alert content should be text content, not HTML
+      const successAlert = screen.getByText(/Si existe una cuenta con esa información/i);
+      expect(successAlert.innerHTML).not.toContain("<script");
+      expect(successAlert.innerHTML).not.toContain("<img");
+    });
+  });
 });
