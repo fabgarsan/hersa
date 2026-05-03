@@ -22,6 +22,7 @@ vi.mock("../loginMutation", () => ({
 
 // Mock the auth context
 vi.mock("@shared/contexts", async (importOriginal) => {
+  // eslint-disable-next-line @typescript-eslint/consistent-type-imports
   const actual = await importOriginal<typeof import("@shared/contexts")>();
   return { ...actual, useAuthContext: vi.fn() };
 });
