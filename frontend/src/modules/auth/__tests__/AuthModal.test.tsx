@@ -9,6 +9,9 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { AuthProvider } from "@shared/contexts/AuthProvider";
 import { hersaTheme } from "@shared/styles/theme";
 import { QueryClient } from "@tanstack/react-query";
+import type { InternalAxiosRequestConfig } from "axios";
+import { AxiosError } from "axios";
+import type { TokenPair } from "../types";
 import { AuthModal } from "../AuthModal";
 import { ROUTES } from "@shared/constants/routes";
 
@@ -38,8 +41,8 @@ function ForgotPasswordScreen() {
 const emotionCache = createCache({ key: "css-test", prepend: true });
 
 const createMockMutation = () => {
-  let capturedOnSuccess: ((data: any) => void) | null = null;
-  let capturedOnError: ((err: any) => void) | null = null;
+  let capturedOnSuccess: ((data: TokenPair) => void) | null = null;
+  let capturedOnError: ((err: Error) => void) | null = null;
 
   const mutate = vi.fn((values, options) => {
     capturedOnSuccess = options.onSuccess;
@@ -367,7 +370,19 @@ describe("AuthModal", () => {
         const onError = mockMutation.getOnError();
         expect(onError).toBeDefined();
         // Simulate a 401 error that is not a network error
-        const error = new Error("Unauthorized");
+        const error = new AxiosError(
+          "Unauthorized",
+          "ERR_BAD_RESPONSE",
+          { headers: {} } as InternalAxiosRequestConfig,
+          undefined,
+          {
+            data: {},
+            status: 401,
+            statusText: "Unauthorized",
+            headers: {},
+            config: { headers: {} } as InternalAxiosRequestConfig,
+          },
+        );
         onError?.(error);
       });
 
@@ -395,7 +410,7 @@ describe("AuthModal", () => {
         const onError = mockMutation.getOnError();
         // Simulate a network error with ERR_NETWORK code
         const networkError = new Error("Network Error");
-        (networkError as any).code = "ERR_NETWORK";
+        Object.assign(networkError, { code: "ERR_NETWORK" });
         onError?.(networkError);
       });
 

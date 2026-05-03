@@ -1,5 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { screen, waitFor } from "@testing-library/react";
+import { AxiosError } from "axios";
+import type { InternalAxiosRequestConfig } from "axios";
 import { renderWithProviders } from "@/tests/utils";
 import { ChangePasswordForm } from "../ChangePasswordForm";
 
@@ -12,7 +14,7 @@ import { useChangePasswordMutation } from "../../api/changePasswordMutation";
 
 const createMockMutation = () => {
   let capturedOnSuccess: (() => void) | null = null;
-  let capturedOnError: ((err: any) => void) | null = null;
+  let capturedOnError: ((err: Error) => void) | null = null;
 
   const mutate = vi.fn((values, options) => {
     capturedOnSuccess = options.onSuccess;
@@ -49,7 +51,9 @@ describe("ChangePasswordForm", () => {
       renderWithProviders(<ChangePasswordForm />);
 
       expect(screen.getByLabelText(/Contraseña actual/i)).toBeInTheDocument();
-      expect(screen.getAllByLabelText(/Nueva contraseña|Confirmar nueva contraseña/i).length).toBe(2);
+      expect(screen.getAllByLabelText(/Nueva contraseña|Confirmar nueva contraseña/i).length).toBe(
+        2,
+      );
     });
 
     it("should render submit button", () => {
@@ -127,7 +131,9 @@ describe("ChangePasswordForm", () => {
       await user.click(submitButton);
 
       await waitFor(() => {
-        expect(screen.getByText("La contraseña debe tener al menos 8 caracteres.")).toBeInTheDocument();
+        expect(
+          screen.getByText("La contraseña debe tener al menos 8 caracteres."),
+        ).toBeInTheDocument();
       });
     });
 
@@ -147,7 +153,9 @@ describe("ChangePasswordForm", () => {
       await user.click(submitButton);
 
       await waitFor(() => {
-        expect(screen.getByText("La contraseña no puede ser completamente numérica.")).toBeInTheDocument();
+        expect(
+          screen.getByText("La contraseña no puede ser completamente numérica."),
+        ).toBeInTheDocument();
       });
     });
 
@@ -315,11 +323,19 @@ describe("ChangePasswordForm", () => {
 
       await waitFor(() => {
         const onError = mockMutation.getOnError();
-        const error = new Error("API Error");
-        (error as any).response = {
-          data: { currentPassword: "La contraseña actual es incorrecta." },
-        };
-        (error as any).isAxiosError = true;
+        const error = new AxiosError(
+          "API Error",
+          "ERR_BAD_RESPONSE",
+          { headers: {} } as InternalAxiosRequestConfig,
+          undefined,
+          {
+            data: { currentPassword: "La contraseña actual es incorrecta." },
+            status: 400,
+            statusText: "Bad Request",
+            headers: {},
+            config: { headers: {} } as InternalAxiosRequestConfig,
+          },
+        );
         onError?.(error);
       });
 
@@ -345,11 +361,19 @@ describe("ChangePasswordForm", () => {
 
       await waitFor(() => {
         const onError = mockMutation.getOnError();
-        const error = new Error("API Error");
-        (error as any).response = {
-          data: { newPassword: "La contraseña es común." },
-        };
-        (error as any).isAxiosError = true;
+        const error = new AxiosError(
+          "API Error",
+          "ERR_BAD_RESPONSE",
+          { headers: {} } as InternalAxiosRequestConfig,
+          undefined,
+          {
+            data: { newPassword: "La contraseña es común." },
+            status: 400,
+            statusText: "Bad Request",
+            headers: {},
+            config: { headers: {} } as InternalAxiosRequestConfig,
+          },
+        );
         onError?.(error);
       });
 
@@ -375,11 +399,19 @@ describe("ChangePasswordForm", () => {
 
       await waitFor(() => {
         const onError = mockMutation.getOnError();
-        const error = new Error("API Error");
-        (error as any).response = {
-          data: { newPassword: ["First error", "Second error"] },
-        };
-        (error as any).isAxiosError = true;
+        const error = new AxiosError(
+          "API Error",
+          "ERR_BAD_RESPONSE",
+          { headers: {} } as InternalAxiosRequestConfig,
+          undefined,
+          {
+            data: { newPassword: ["First error", "Second error"] },
+            status: 400,
+            statusText: "Bad Request",
+            headers: {},
+            config: { headers: {} } as InternalAxiosRequestConfig,
+          },
+        );
         onError?.(error);
       });
 
@@ -405,11 +437,19 @@ describe("ChangePasswordForm", () => {
 
       await waitFor(() => {
         const onError = mockMutation.getOnError();
-        const error = new Error("API Error");
-        (error as any).response = {
-          data: { someOtherField: "Some error" },
-        };
-        (error as any).isAxiosError = true;
+        const error = new AxiosError(
+          "API Error",
+          "ERR_BAD_RESPONSE",
+          { headers: {} } as InternalAxiosRequestConfig,
+          undefined,
+          {
+            data: { someOtherField: "Some error" },
+            status: 400,
+            statusText: "Bad Request",
+            headers: {},
+            config: { headers: {} } as InternalAxiosRequestConfig,
+          },
+        );
         onError?.(error);
       });
 
@@ -436,7 +476,7 @@ describe("ChangePasswordForm", () => {
       await waitFor(() => {
         const onError = mockMutation.getOnError();
         const networkError = new Error("Network Error");
-        (networkError as any).code = "ERR_NETWORK";
+        Object.assign(networkError, { code: "ERR_NETWORK" });
         onError?.(networkError);
       });
 

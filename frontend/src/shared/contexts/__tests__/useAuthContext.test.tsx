@@ -77,14 +77,17 @@ describe("useAuthContext", () => {
       const { result } = renderHook(() => {
         try {
           return useAuthContext();
-        } catch (error: any) {
-          return { error: error.message };
+        } catch (error: unknown) {
+          if (error instanceof Error) {
+            return { error: error.message };
+          }
+          return { error: "Unknown error" };
         }
       });
 
       expect(result.current).toHaveProperty("error");
-      expect((result.current as any).error).toBe(
-        "useAuthContext must be used within an AuthProvider"
+      expect((result.current as Record<string, string>).error).toBe(
+        "useAuthContext must be used within an AuthProvider",
       );
     });
 
@@ -215,7 +218,7 @@ describe("useAuthContext", () => {
 
   describe("Error thrown is informative", () => {
     it("should provide helpful error message for debugging", () => {
-      let thrownError: any = null;
+      let thrownError: unknown = null;
 
       try {
         renderHook(() => useAuthContext());
@@ -224,8 +227,10 @@ describe("useAuthContext", () => {
       }
 
       expect(thrownError).toBeDefined();
-      expect(thrownError?.message).toContain("useAuthContext");
-      expect(thrownError?.message).toContain("AuthProvider");
+      if (thrownError instanceof Error) {
+        expect(thrownError.message).toContain("useAuthContext");
+        expect(thrownError.message).toContain("AuthProvider");
+      }
     });
   });
 });

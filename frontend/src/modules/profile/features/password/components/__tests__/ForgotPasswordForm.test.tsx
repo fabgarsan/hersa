@@ -12,7 +12,7 @@ import { useForgotPasswordMutation } from "../../api/forgotPasswordMutation";
 
 const createMockMutation = () => {
   let capturedOnSuccess: (() => void) | null = null;
-  let capturedOnError: ((err: any) => void) | null = null;
+  let capturedOnError: ((err: Error) => void) | null = null;
 
   const mutate = vi.fn((values, options) => {
     capturedOnSuccess = options.onSuccess;
@@ -58,7 +58,7 @@ describe("ForgotPasswordForm", () => {
       renderWithProviders(<ForgotPasswordForm />);
 
       expect(
-        screen.queryByText(/Si existe una cuenta con esa información/i)
+        screen.queryByText(/Si existe una cuenta con esa información/i),
       ).not.toBeInTheDocument();
     });
 
@@ -166,8 +166,8 @@ describe("ForgotPasswordForm", () => {
       await waitFor(() => {
         expect(
           screen.getByText(
-            /Si existe una cuenta con esa información, se ha enviado un enlace para restablecer la contraseña/i
-          )
+            /Si existe una cuenta con esa información, se ha enviado un enlace para restablecer la contraseña/i,
+          ),
         ).toBeInTheDocument();
       });
     });
@@ -214,7 +214,7 @@ describe("ForgotPasswordForm", () => {
 
       await waitFor(() => {
         const successAlert = screen.getByText(
-          /Si existe una cuenta con esa información, se ha enviado un enlace para restablecer la contraseña/i
+          /Si existe una cuenta con esa información, se ha enviado un enlace para restablecer la contraseña/i,
         );
         expect(successAlert).toBeInTheDocument();
       });
@@ -260,7 +260,7 @@ describe("ForgotPasswordForm", () => {
       await waitFor(() => {
         const onError = mockMutation.getOnError();
         const networkError = new Error("Network Error");
-        (networkError as any).code = "ERR_NETWORK";
+        Object.assign(networkError, { code: "ERR_NETWORK" });
         onError?.(networkError);
       });
 

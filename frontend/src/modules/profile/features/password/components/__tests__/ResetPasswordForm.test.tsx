@@ -2,6 +2,8 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { screen, waitFor, render } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter, Routes, Route } from "react-router-dom";
+import { AxiosError } from "axios";
+import type { InternalAxiosRequestConfig } from "axios";
 import { ResetPasswordForm } from "../ResetPasswordForm";
 import { ROUTES } from "@shared/constants/routes";
 
@@ -14,7 +16,7 @@ import { useResetPasswordMutation } from "../../api/resetPasswordMutation";
 
 const createMockMutation = () => {
   let capturedOnSuccess: (() => void) | null = null;
-  let capturedOnError: ((err: any) => void) | null = null;
+  let capturedOnError: ((err: Error) => void) | null = null;
 
   const mutate = vi.fn((values, options) => {
     capturedOnSuccess = options.onSuccess;
@@ -91,7 +93,9 @@ describe("ResetPasswordForm", () => {
       renderWithRouter();
 
       expect(screen.queryByText(/Tu contraseña ha sido restablecida/i)).not.toBeInTheDocument();
-      expect(screen.queryByRole("button", { name: /Ir al inicio de sesión/i })).not.toBeInTheDocument();
+      expect(
+        screen.queryByRole("button", { name: /Ir al inicio de sesión/i }),
+      ).not.toBeInTheDocument();
     });
 
     it("should not show error message initially", () => {
@@ -137,7 +141,9 @@ describe("ResetPasswordForm", () => {
       await user.click(submitButton);
 
       await waitFor(() => {
-        expect(screen.getByText("La contraseña debe tener al menos 8 caracteres.")).toBeInTheDocument();
+        expect(
+          screen.getByText("La contraseña debe tener al menos 8 caracteres."),
+        ).toBeInTheDocument();
       });
     });
 
@@ -155,7 +161,9 @@ describe("ResetPasswordForm", () => {
       await user.click(submitButton);
 
       await waitFor(() => {
-        expect(screen.getByText("La contraseña no puede ser completamente numérica.")).toBeInTheDocument();
+        expect(
+          screen.getByText("La contraseña no puede ser completamente numérica."),
+        ).toBeInTheDocument();
       });
     });
 
@@ -240,7 +248,9 @@ describe("ResetPasswordForm", () => {
       });
 
       await waitFor(() => {
-        expect(screen.getByText(/Tu contraseña ha sido restablecida exitosamente/i)).toBeInTheDocument();
+        expect(
+          screen.getByText(/Tu contraseña ha sido restablecida exitosamente/i),
+        ).toBeInTheDocument();
       });
     });
 
@@ -334,11 +344,19 @@ describe("ResetPasswordForm", () => {
 
       await waitFor(() => {
         const onError = mockMutation.getOnError();
-        const error = new Error("API Error");
-        (error as any).response = {
-          data: { confirmPassword: "Los tokens no coinciden." },
-        };
-        (error as any).isAxiosError = true;
+        const error = new AxiosError(
+          "API Error",
+          "ERR_BAD_RESPONSE",
+          { headers: {} } as InternalAxiosRequestConfig,
+          undefined,
+          {
+            data: { confirmPassword: "Los tokens no coinciden." },
+            status: 400,
+            statusText: "Bad Request",
+            headers: {},
+            config: { headers: {} } as InternalAxiosRequestConfig,
+          },
+        );
         onError?.(error);
       });
 
@@ -362,11 +380,19 @@ describe("ResetPasswordForm", () => {
 
       await waitFor(() => {
         const onError = mockMutation.getOnError();
-        const error = new Error("API Error");
-        (error as any).response = {
-          data: { newPassword: "La contraseña es muy débil." },
-        };
-        (error as any).isAxiosError = true;
+        const error = new AxiosError(
+          "API Error",
+          "ERR_BAD_RESPONSE",
+          { headers: {} } as InternalAxiosRequestConfig,
+          undefined,
+          {
+            data: { newPassword: "La contraseña es muy débil." },
+            status: 400,
+            statusText: "Bad Request",
+            headers: {},
+            config: { headers: {} } as InternalAxiosRequestConfig,
+          },
+        );
         onError?.(error);
       });
 
@@ -390,11 +416,19 @@ describe("ResetPasswordForm", () => {
 
       await waitFor(() => {
         const onError = mockMutation.getOnError();
-        const error = new Error("API Error");
-        (error as any).response = {
-          data: { newPassword: ["First error", "Second error"] },
-        };
-        (error as any).isAxiosError = true;
+        const error = new AxiosError(
+          "API Error",
+          "ERR_BAD_RESPONSE",
+          { headers: {} } as InternalAxiosRequestConfig,
+          undefined,
+          {
+            data: { newPassword: ["First error", "Second error"] },
+            status: 400,
+            statusText: "Bad Request",
+            headers: {},
+            config: { headers: {} } as InternalAxiosRequestConfig,
+          },
+        );
         onError?.(error);
       });
 
@@ -419,11 +453,19 @@ describe("ResetPasswordForm", () => {
 
       await waitFor(() => {
         const onError = mockMutation.getOnError();
-        const error = new Error("API Error");
-        (error as any).response = {
-          data: { detail: "El enlace de restablecimiento ha expirado." },
-        };
-        (error as any).isAxiosError = true;
+        const error = new AxiosError(
+          "API Error",
+          "ERR_BAD_RESPONSE",
+          { headers: {} } as InternalAxiosRequestConfig,
+          undefined,
+          {
+            data: { detail: "El enlace de restablecimiento ha expirado." },
+            status: 400,
+            statusText: "Bad Request",
+            headers: {},
+            config: { headers: {} } as InternalAxiosRequestConfig,
+          },
+        );
         onError?.(error);
       });
 
@@ -447,16 +489,26 @@ describe("ResetPasswordForm", () => {
 
       await waitFor(() => {
         const onError = mockMutation.getOnError();
-        const error = new Error("API Error");
-        (error as any).response = {
-          data: { detail: "El enlace ha expirado." },
-        };
-        (error as any).isAxiosError = true;
+        const error = new AxiosError(
+          "API Error",
+          "ERR_BAD_RESPONSE",
+          { headers: {} } as InternalAxiosRequestConfig,
+          undefined,
+          {
+            data: { detail: "El enlace ha expirado." },
+            status: 400,
+            statusText: "Bad Request",
+            headers: {},
+            config: { headers: {} } as InternalAxiosRequestConfig,
+          },
+        );
         onError?.(error);
       });
 
       await waitFor(() => {
-        expect(screen.getByRole("link", { name: /Solicitar un nuevo enlace/i })).toBeInTheDocument();
+        expect(
+          screen.getByRole("link", { name: /Solicitar un nuevo enlace/i }),
+        ).toBeInTheDocument();
       });
     });
 
@@ -475,11 +527,19 @@ describe("ResetPasswordForm", () => {
 
       await waitFor(() => {
         const onError = mockMutation.getOnError();
-        const error = new Error("API Error");
-        (error as any).response = {
-          data: { someOtherField: "Some error" },
-        };
-        (error as any).isAxiosError = true;
+        const error = new AxiosError(
+          "API Error",
+          "ERR_BAD_RESPONSE",
+          { headers: {} } as InternalAxiosRequestConfig,
+          undefined,
+          {
+            data: { someOtherField: "Some error" },
+            status: 400,
+            statusText: "Bad Request",
+            headers: {},
+            config: { headers: {} } as InternalAxiosRequestConfig,
+          },
+        );
         onError?.(error);
       });
 
@@ -504,7 +564,7 @@ describe("ResetPasswordForm", () => {
       await waitFor(() => {
         const onError = mockMutation.getOnError();
         const networkError = new Error("Network Error");
-        (networkError as any).code = "ERR_NETWORK";
+        Object.assign(networkError, { code: "ERR_NETWORK" });
         onError?.(networkError);
       });
 
@@ -527,11 +587,19 @@ describe("ResetPasswordForm", () => {
 
       await waitFor(() => {
         const onError = mockMutation.getOnError();
-        const error = new Error("API Error");
-        (error as any).response = {
-          data: { detail: "Error occurred." },
-        };
-        (error as any).isAxiosError = true;
+        const error = new AxiosError(
+          "API Error",
+          "ERR_BAD_RESPONSE",
+          { headers: {} } as InternalAxiosRequestConfig,
+          undefined,
+          {
+            data: { detail: "Error occurred." },
+            status: 400,
+            statusText: "Bad Request",
+            headers: {},
+            config: { headers: {} } as InternalAxiosRequestConfig,
+          },
+        );
         onError?.(error);
       });
 
