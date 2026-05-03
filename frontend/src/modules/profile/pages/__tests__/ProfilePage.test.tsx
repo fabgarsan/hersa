@@ -1,5 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { screen } from "@testing-library/react";
+import type { UseQueryResult } from "@tanstack/react-query";
+import type { UserMe } from "@modules/auth/types";
 import { renderWithProviders } from "@/tests/utils";
 import ProfilePage from "../ProfilePage";
 
@@ -27,7 +29,7 @@ describe("ProfilePage", () => {
         isLoading: true,
         isPending: true,
         status: "pending",
-      } as any);
+      } as UseQueryResult<UserMe>);
 
       renderWithProviders(<ProfilePage />);
 
@@ -41,7 +43,7 @@ describe("ProfilePage", () => {
         isLoading: true,
         isPending: true,
         status: "pending",
-      } as any);
+      } as UseQueryResult<UserMe>);
 
       renderWithProviders(<ProfilePage />);
 
@@ -64,7 +66,7 @@ describe("ProfilePage", () => {
         isLoading: false,
         isPending: false,
         status: "success",
-      } as any);
+      } as UseQueryResult<UserMe>);
 
       renderWithProviders(<ProfilePage />);
 
@@ -80,7 +82,7 @@ describe("ProfilePage", () => {
         isLoading: false,
         isPending: false,
         status: "success",
-      } as any);
+      } as UseQueryResult<UserMe>);
 
       renderWithProviders(<ProfilePage />);
 
@@ -96,7 +98,7 @@ describe("ProfilePage", () => {
         isLoading: false,
         isPending: false,
         status: "success",
-      } as any);
+      } as UseQueryResult<UserMe>);
 
       renderWithProviders(<ProfilePage />);
 
@@ -109,7 +111,7 @@ describe("ProfilePage", () => {
         isLoading: false,
         isPending: false,
         status: "success",
-      } as any);
+      } as UseQueryResult<UserMe>);
 
       renderWithProviders(<ProfilePage />);
 
@@ -122,7 +124,7 @@ describe("ProfilePage", () => {
         isLoading: false,
         isPending: false,
         status: "success",
-      } as any);
+      } as UseQueryResult<UserMe>);
 
       renderWithProviders(<ProfilePage />);
 
@@ -146,7 +148,7 @@ describe("ProfilePage", () => {
         isLoading: false,
         isPending: false,
         status: "success",
-      } as any);
+      } as UseQueryResult<UserMe>);
 
       renderWithProviders(<ProfilePage />);
 
@@ -168,7 +170,7 @@ describe("ProfilePage", () => {
         isLoading: false,
         isPending: false,
         status: "success",
-      } as any);
+      } as UseQueryResult<UserMe>);
 
       renderWithProviders(<ProfilePage />);
 
@@ -190,7 +192,7 @@ describe("ProfilePage", () => {
         isLoading: false,
         isPending: false,
         status: "success",
-      } as any);
+      } as UseQueryResult<UserMe>);
 
       renderWithProviders(<ProfilePage />);
 
@@ -212,7 +214,7 @@ describe("ProfilePage", () => {
         isLoading: false,
         isPending: false,
         status: "success",
-      } as any);
+      } as UseQueryResult<UserMe>);
 
       renderWithProviders(<ProfilePage />);
 
@@ -234,7 +236,7 @@ describe("ProfilePage", () => {
         isLoading: false,
         isPending: false,
         status: "success",
-      } as any);
+      } as UseQueryResult<UserMe>);
 
       renderWithProviders(<ProfilePage />);
 
@@ -259,7 +261,7 @@ describe("ProfilePage", () => {
         isLoading: false,
         isPending: false,
         status: "success",
-      } as any);
+      } as UseQueryResult<UserMe>);
 
       const { container } = renderWithProviders(<ProfilePage />);
 
@@ -274,7 +276,7 @@ describe("ProfilePage", () => {
         isLoading: false,
         isPending: false,
         status: "success",
-      } as any);
+      } as UseQueryResult<UserMe>);
 
       const { container } = renderWithProviders(<ProfilePage />);
 
@@ -299,7 +301,7 @@ describe("ProfilePage", () => {
         isLoading: false,
         isPending: false,
         status: "success",
-      } as any);
+      } as UseQueryResult<UserMe>);
 
       renderWithProviders(<ProfilePage />);
 

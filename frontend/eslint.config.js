@@ -149,11 +149,10 @@ export default tseslint.config(
       ],
     },
   },
-  // Test files: relax rules that are impractical to satisfy in mocks
+  // Test files: consistent-type-imports conflicts with vi.mock importOriginal pattern
   {
     files: ["**/*.test.{ts,tsx}", "**/__tests__/**/*.{ts,tsx}", "**/tests/**/*.{ts,tsx}"],
     rules: {
-      "@typescript-eslint/no-explicit-any": "off",
       "@typescript-eslint/consistent-type-imports": "off",
     },
   },
