@@ -3,6 +3,7 @@ from __future__ import annotations
 import logging
 import uuid as _uuid
 from decimal import Decimal
+from typing import Any
 
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -17,12 +18,16 @@ from rest_framework.views import APIView
 from apps.tienda.helpers import (
     BulkInsufficientStockError,
     InsufficientStockError,
+    SalesDayAlreadyClosedError,
     apply_bulk_transfer_atomic,
     apply_movement_atomically,
     apply_transfer_atomic,
+    compute_close_summary,
     compute_replenishment_list,
+    execute_sales_day_close,
 )
 from apps.tienda.models import (
+    DayCloseDetail,
     InventoryMovement,
     Location,
     LocationStock,
@@ -37,8 +42,13 @@ from apps.tienda.permissions import GROUP_TIENDA_ADMIN, IsTiendaAdmin, IsTiendaA
 from apps.tienda.serializers import (
     BulkTransferSerializer,
     CloseOrderSerializer,
+    CloseSalesDaySerializer,
+    CloseSummaryItemAdminSerializer,
+    CloseSummaryItemSellerSerializer,
     CreateOrderSerializer,
     CreateSalesDaySerializer,
+    DayCloseDetailAdminSerializer,
+    DayCloseDetailSellerSerializer,
     FromReplenishmentSerializer,
     LocationStockAdminSerializer,
     LocationStockSellerSerializer,
@@ -926,3 +936,115 @@ class SalesDayReplenishmentView(_TiendaRoleMixin, APIView):
         if is_admin:
             return Response(SalesDayAdminSerializer(sales_day).data)
         return Response(SalesDaySellerSerializer(sales_day).data)
+
+
+# ---------------------------------------------------------------------------
+# EP-05 / EP-06 — Cierre y reporte
+# ---------------------------------------------------------------------------
+
+
+class SalesDayCloseSummaryView(_TiendaRoleMixin, APIView):
+    """POST /jornadas/{pk}/resumen-cierre/ — read-only close preview, never persists."""
+
+    permission_classes = [IsTiendaAdminOrVendedor]
+
+    def post(self, request: Request, pk: _uuid.UUID) -> Response:
+        assert isinstance(request.user, User)
+        is_admin: bool = self._is_admin(request)
+        sales_day: SalesDay = get_object_or_404(
+            SalesDay.objects.select_related("location", "seller", "closed_by"), pk=pk
+        )
+        if not is_admin and sales_day.seller_id != request.user.pk:
+            return Response({"detail": "No encontrado."}, status=404)
+        if sales_day.status != SalesDay.Status.OPEN:
+            return Response({"detail": "La jornada no está abierta."}, status=400)
+        summary: list[dict[str, Any]] = compute_close_summary(sales_day)
+        if is_admin:
+            return Response(CloseSummaryItemAdminSerializer(summary, many=True).data)  # type: ignore[arg-type]
+        return Response(CloseSummaryItemSellerSerializer(summary, many=True).data)  # type: ignore[arg-type]
+
+
+class SalesDayCloseView(_TiendaRoleMixin, APIView):
+    """POST /jornadas/{pk}/cerrar/ — atomic commit: close the jornada and persist details."""
+
+    permission_classes = [IsTiendaAdminOrVendedor]
+    throttle_classes = [TiendaWriteThrottle]
+
+    def post(self, request: Request, pk: _uuid.UUID) -> Response:
+        assert isinstance(request.user, User)
+        is_admin: bool = self._is_admin(request)
+        serializer = CloseSalesDaySerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        vd = serializer.validated_data
+
+        # Lock the SalesDay row to prevent concurrent close attempts.
+        with transaction.atomic():
+            sales_day: SalesDay = get_object_or_404(
+                SalesDay.objects.select_for_update().select_related(
+                    "location", "seller", "closed_by"
+                ),
+                pk=pk,
+            )
+            if not is_admin and sales_day.seller_id != request.user.pk:
+                return Response({"detail": "No encontrado."}, status=404)
+            if sales_day.status != SalesDay.Status.OPEN:
+                return Response({"detail": "La jornada ya está cerrada."}, status=400)
+            try:
+                sales_day = execute_sales_day_close(
+                    sales_day=sales_day,
+                    count_items=vd["items"],
+                    cash_delivery=vd["cash_delivery"],
+                    closed_by=request.user,
+                    cash_out_amount=vd.get("cash_out_amount"),
+                    cash_out_description=vd.get("cash_out_description", ""),
+                )
+            except SalesDayAlreadyClosedError:
+                return Response({"detail": "La jornada ya está cerrada."}, status=400)
+
+        logger.info(
+            "SalesDay closed: pk=%s by user=%s",
+            sales_day.pk,
+            request.user.pk,
+        )
+        sales_day = SalesDay.objects.select_related("location", "seller", "closed_by").get(
+            pk=sales_day.pk
+        )
+        if is_admin:
+            return Response(SalesDayAdminSerializer(sales_day).data)
+        return Response(SalesDaySellerSerializer(sales_day).data)
+
+
+class SalesDayReportView(_TiendaRoleMixin, APIView):
+    """GET /jornadas/{pk}/reporte/ — end-of-day report from DayCloseDetail rows."""
+
+    permission_classes = [IsTiendaAdminOrVendedor]
+
+    def get(self, request: Request, pk: _uuid.UUID) -> Response:
+        assert isinstance(request.user, User)
+        is_admin: bool = self._is_admin(request)
+        sales_day: SalesDay = get_object_or_404(
+            SalesDay.objects.select_related("location", "seller", "closed_by"), pk=pk
+        )
+        if not is_admin and sales_day.seller_id != request.user.pk:
+            return Response({"detail": "No encontrado."}, status=404)
+        if sales_day.status != SalesDay.Status.CLOSED:
+            return Response({"detail": "La jornada no ha sido cerrada."}, status=400)
+        details = DayCloseDetail.objects.filter(sales_day=sales_day).select_related("product")
+        if is_admin:
+            central_location: Location = get_object_or_404(
+                Location, location_type=Location.LocationType.CENTRAL
+            )
+            replenishment = compute_replenishment_list(central_location)
+            return Response(
+                {
+                    "sales_day": SalesDayAdminSerializer(sales_day).data,
+                    "details": DayCloseDetailAdminSerializer(details, many=True).data,
+                    "replenishment_list": ReplenishmentItemSerializer(replenishment, many=True).data,  # type: ignore[arg-type]
+                }
+            )
+        return Response(
+            {
+                "sales_day": SalesDaySellerSerializer(sales_day).data,
+                "details": DayCloseDetailSellerSerializer(details, many=True).data,
+            }
+        )

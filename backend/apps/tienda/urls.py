@@ -65,5 +65,21 @@ urlpatterns: list[URLPattern | Any] = [
         views.SalesDayReplenishmentView.as_view(),
         name="sales-day-replenishment",
     ),
-    # EP-05 — Inventory adjustments / EP-06 — Close summary (Step 8)
+    # EP-05 / EP-06 — Cierre y reporte
+    path(
+        "jornadas/<uuid:pk>/resumen-cierre/",
+        views.SalesDayCloseSummaryView.as_view(),
+        name="sales-day-close-summary",
+    ),
+    path(
+        "jornadas/<uuid:pk>/cerrar/",
+        views.SalesDayCloseView.as_view(),
+        name="sales-day-close",
+    ),
+    path(
+        "jornadas/<uuid:pk>/reporte/",
+        views.SalesDayReportView.as_view(),
+        name="sales-day-report",
+    ),
+    # EP-08 — Ajustes (Step 8)
 ]
