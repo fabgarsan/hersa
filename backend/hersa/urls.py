@@ -16,6 +16,7 @@ urlpatterns = [
     path("api/token/refresh/", ThrottledTokenRefreshView.as_view(), name="token-refresh"),
     path("api/users/", include("apps.users.urls", namespace="users")),
     path("api/modules/", include("apps.modules.urls", namespace="modules")),
+    path("api/v1/tienda/", include("apps.tienda.urls", namespace="tienda")),
     # API documentation — restricted to superusers only
     path("api/schema/", SpectacularAPIView.as_view(permission_classes=[IsSuperUser]), name="schema"),
     path("api/docs/", SpectacularSwaggerView.as_view(url_name="schema", permission_classes=[IsSuperUser]), name="swagger-ui"),
