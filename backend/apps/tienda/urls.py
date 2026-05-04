@@ -24,7 +24,33 @@ urlpatterns: list[URLPattern | Any] = [
     path("stock/", views.StockListView.as_view(), name="stock-list"),
     path("stock/total/", views.StockTotalView.as_view(), name="stock-total"),
     path("stock/reabastecimiento/", views.StockReplenishmentView.as_view(), name="stock-replenishment"),
-    # EP-02 — Purchase orders (Step 5)
+    # EP-02 — Purchase orders
+    path("ordenes-compra/", views.PurchaseOrderListView.as_view(), name="purchase-order-list"),
+    path(
+        "ordenes-compra/desde-reabastecimiento/",
+        views.PurchaseOrderFromReplenishmentView.as_view(),
+        name="purchase-order-from-replenishment",
+    ),
+    path(
+        "ordenes-compra/<uuid:pk>/",
+        views.PurchaseOrderDetailView.as_view(),
+        name="purchase-order-detail",
+    ),
+    path(
+        "ordenes-compra/<uuid:pk>/confirmar/",
+        views.PurchaseOrderConfirmView.as_view(),
+        name="purchase-order-confirm",
+    ),
+    path(
+        "ordenes-compra/<uuid:pk>/recepcionar/",
+        views.PurchaseOrderReceiveView.as_view(),
+        name="purchase-order-receive",
+    ),
+    path(
+        "ordenes-compra/<uuid:pk>/cerrar/",
+        views.PurchaseOrderCloseView.as_view(),
+        name="purchase-order-close",
+    ),
     # EP-03 — Receive orders (Step 6)
     # EP-04 — Sales days (Step 7)
     # EP-05 — Inventory adjustments / EP-06 — Close summary (Step 8)

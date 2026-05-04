@@ -4,6 +4,9 @@ import logging
 import uuid as _uuid
 from decimal import Decimal
 
+from django.conf import settings
+from django.contrib.auth.models import User
+from django.db import transaction
 from django.db.models import Sum
 from django.shortcuts import get_object_or_404
 from rest_framework.permissions import BasePermission, IsAuthenticated
@@ -11,26 +14,37 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from apps.tienda.helpers import compute_replenishment_list
+from apps.tienda.helpers import apply_movement_atomically, compute_replenishment_list
 from apps.tienda.models import (
+    InventoryMovement,
     Location,
     LocationStock,
+    OrderLine,
     Product,
     ProductSupplier,
+    PurchaseOrder,
     Supplier,
 )
 from apps.tienda.permissions import GROUP_TIENDA_ADMIN, IsTiendaAdmin, IsTiendaAdminOrVendedor
 from apps.tienda.serializers import (
+    CloseOrderSerializer,
+    CreateOrderSerializer,
+    FromReplenishmentSerializer,
     LocationStockAdminSerializer,
     LocationStockSellerSerializer,
     ProductAdminSerializer,
     ProductSellerSerializer,
     ProductSupplierAssociationSerializer,
     ProductWriteSerializer,
+    PurchaseOrderAdminSerializer,
+    PurchaseOrderEditSerializer,
+    PurchaseOrderSellerSerializer,
+    ReceiveOrderSerializer,
     ReplenishmentItemSerializer,
     SupplierSerializer,
     SupplierWriteSerializer,
 )
+from apps.tienda.throttles import TiendaWriteThrottle
 
 logger = logging.getLogger(__name__)
 
@@ -304,3 +318,369 @@ class StockReplenishmentView(APIView):
         items = compute_replenishment_list(central_location)
         serializer = ReplenishmentItemSerializer(items, many=True)  # type: ignore[arg-type]
         return Response(serializer.data)
+
+
+# ---------------------------------------------------------------------------
+# EP-02 — Purchase orders
+# ---------------------------------------------------------------------------
+
+
+class PurchaseOrderListView(_TiendaRoleMixin, APIView):
+    """
+    GET  /ordenes-compra/  — list purchase orders; admin sees all fields, sellers see stripped view.
+    POST /ordenes-compra/  — create purchase order with optional order lines (admin only).
+    """
+
+    def get_permissions(self) -> list[BasePermission]:
+        if self.request.method == "POST":
+            return [IsTiendaAdmin()]
+        return [IsTiendaAdminOrVendedor()]
+
+    def get(self, request: Request) -> Response:
+        qs = PurchaseOrder.objects.select_related("supplier", "created_by").prefetch_related(
+            "order_lines__product"
+        )
+        estado: str | None = request.query_params.get("estado")
+        if estado:
+            qs = qs.filter(status=estado)
+        proveedor_id: str | None = request.query_params.get("proveedor_id")
+        if proveedor_id:
+            if _parse_uuid(proveedor_id) is None:
+                return Response({"detail": "proveedor_id inválido."}, status=400)
+            qs = qs.filter(supplier_id=proveedor_id)
+        if self._is_admin(request):
+            return Response(PurchaseOrderAdminSerializer(qs, many=True).data)
+        return Response(PurchaseOrderSellerSerializer(qs, many=True).data)
+
+    def post(self, request: Request) -> Response:
+        assert isinstance(request.user, User)
+        serializer = CreateOrderSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        vd = serializer.validated_data
+        with transaction.atomic():
+            order: PurchaseOrder = PurchaseOrder.objects.create(
+                supplier=vd.get("supplier"),
+                notes=vd.get("notes", ""),
+                status=PurchaseOrder.Status.PENDING,
+                created_by=request.user,
+            )
+            for line_data in vd.get("order_lines", []):
+                OrderLine.objects.create(
+                    purchase_order=order,
+                    product=line_data["product"],
+                    ordered_quantity=line_data.get("ordered_quantity"),
+                    expected_unit_cost=line_data.get("expected_unit_cost"),
+                )
+        logger.info(
+            "PurchaseOrder created: pk=%s supplier=%s lines=%d by user=%s",
+            order.pk,
+            order.supplier_id,
+            order.order_lines.count(),
+            request.user.pk,
+        )
+        return Response(PurchaseOrderAdminSerializer(order).data, status=201)
+
+
+class PurchaseOrderFromReplenishmentView(APIView):
+    """POST /ordenes-compra/desde-reabastecimiento/ — create initiated order from replenishment list (admin only)."""
+
+    permission_classes = [IsTiendaAdmin]
+
+    def post(self, request: Request) -> Response:
+        assert isinstance(request.user, User)
+        serializer = FromReplenishmentSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        products: list[Product] = serializer.validated_data["product_ids"]
+        with transaction.atomic():
+            order: PurchaseOrder = PurchaseOrder.objects.create(
+                status=PurchaseOrder.Status.INITIATED,
+                created_by=request.user,
+            )
+            for product in products:
+                OrderLine.objects.create(purchase_order=order, product=product)
+        logger.info(
+            "PurchaseOrder from replenishment created: pk=%s products=%d by user=%s",
+            order.pk,
+            len(products),
+            request.user.pk,
+        )
+        return Response(PurchaseOrderAdminSerializer(order).data, status=201)
+
+
+class PurchaseOrderDetailView(_TiendaRoleMixin, APIView):
+    """
+    GET   /ordenes-compra/{pk}/  — retrieve purchase order (admin or seller).
+    PATCH /ordenes-compra/{pk}/  — partial update when status='initiated' (admin only).
+    """
+
+    def get_permissions(self) -> list[BasePermission]:
+        if self.request.method == "PATCH":
+            return [IsTiendaAdmin()]
+        return [IsTiendaAdminOrVendedor()]
+
+    def get(self, request: Request, pk: _uuid.UUID) -> Response:
+        order: PurchaseOrder = get_object_or_404(
+            PurchaseOrder.objects.select_related("supplier", "created_by").prefetch_related(
+                "order_lines__product"
+            ),
+            pk=pk,
+        )
+        if self._is_admin(request):
+            return Response(PurchaseOrderAdminSerializer(order).data)
+        return Response(PurchaseOrderSellerSerializer(order).data)
+
+    def patch(self, request: Request, pk: _uuid.UUID) -> Response:
+        order: PurchaseOrder = get_object_or_404(
+            PurchaseOrder.objects.select_related("supplier", "created_by").prefetch_related(
+                "order_lines__product"
+            ),
+            pk=pk,
+        )
+        if order.status != PurchaseOrder.Status.INITIATED:
+            return Response(
+                {"detail": "Solo se puede editar una orden en estado 'iniciada'."},
+                status=400,
+            )
+        edit_serializer = PurchaseOrderEditSerializer(data=request.data)
+        edit_serializer.is_valid(raise_exception=True)
+        vd = edit_serializer.validated_data
+        with transaction.atomic():
+            if "supplier" in vd:
+                order.supplier = vd["supplier"]
+            if "notes" in vd:
+                order.notes = vd["notes"]
+            order.save(update_fields=["supplier_id", "notes", "updated_at"])
+            if "order_lines" in vd:
+                # Replace all lines atomically
+                order.order_lines.all().delete()
+                for line_data in vd["order_lines"]:
+                    OrderLine.objects.create(
+                        purchase_order=order,
+                        product=line_data["product"],
+                        ordered_quantity=line_data.get("ordered_quantity"),
+                        expected_unit_cost=line_data.get("expected_unit_cost"),
+                    )
+        order = (
+            PurchaseOrder.objects.select_related("supplier", "created_by")
+            .prefetch_related("order_lines__product")
+            .get(pk=order.pk)
+        )
+        return Response(PurchaseOrderAdminSerializer(order).data)
+
+
+class PurchaseOrderConfirmView(APIView):
+    """POST /ordenes-compra/{pk}/confirmar/ — transition initiated → pending (admin only, BR-025)."""
+
+    permission_classes = [IsTiendaAdmin]
+
+    def post(self, request: Request, pk: _uuid.UUID) -> Response:
+        order: PurchaseOrder = get_object_or_404(
+            PurchaseOrder.objects.prefetch_related("order_lines"), pk=pk
+        )
+        if order.status != PurchaseOrder.Status.INITIATED:
+            return Response(
+                {"detail": "Solo se puede confirmar una orden en estado 'iniciada'."},
+                status=400,
+            )
+        # BR-025: supplier must be set
+        if not order.supplier_id:
+            return Response(
+                {"detail": "La orden debe tener un proveedor asignado antes de confirmar."},
+                status=400,
+            )
+        lines = list(order.order_lines.all())
+        if not lines:
+            return Response(
+                {"detail": "La orden debe tener al menos una línea."},
+                status=400,
+            )
+        # BR-025: all lines must have ordered_quantity > 0 and expected_unit_cost > 0
+        invalid_lines: list[str] = [
+            str(line.pk)
+            for line in lines
+            if not line.ordered_quantity or not line.expected_unit_cost
+        ]
+        if invalid_lines:
+            return Response(
+                {
+                    "detail": "Todas las líneas deben tener cantidad pedida y costo unitario esperado.",
+                    "invalid_line_ids": invalid_lines,
+                },
+                status=400,
+            )
+        order.status = PurchaseOrder.Status.PENDING
+        order.save(update_fields=["status", "updated_at"])
+        logger.info(
+            "PurchaseOrder confirmed: pk=%s by user=%s",
+            order.pk,
+            request.user.pk,
+        )
+        return Response(PurchaseOrderAdminSerializer(order).data)
+
+
+class PurchaseOrderReceiveView(_TiendaRoleMixin, APIView):
+    """POST /ordenes-compra/{pk}/recepcionar/ — receive goods for an order line (admin or seller)."""
+
+    permission_classes = [IsTiendaAdminOrVendedor]
+    throttle_classes = [TiendaWriteThrottle]
+
+    def post(self, request: Request, pk: _uuid.UUID) -> Response:
+        assert isinstance(request.user, User)
+        order: PurchaseOrder = get_object_or_404(
+            PurchaseOrder.objects.select_related("supplier", "created_by"),
+            pk=pk,
+        )
+        if order.status not in (PurchaseOrder.Status.PENDING, PurchaseOrder.Status.PARTIAL):
+            return Response(
+                {
+                    "detail": (
+                        "Solo se puede recepcionar en órdenes en estado "
+                        "'pendiente' o 'parcialmente recibida'."
+                    )
+                },
+                status=400,
+            )
+        recv_serializer = ReceiveOrderSerializer(data=request.data)
+        recv_serializer.is_valid(raise_exception=True)
+        vd = recv_serializer.validated_data
+        order_line: OrderLine = vd["order_line"]
+        if order_line.purchase_order_id != order.pk:
+            return Response(
+                {"detail": "La línea de orden no pertenece a esta orden."},
+                status=400,
+            )
+        received_good: int = vd["received_quantity_good"]
+        damaged: int = vd["damaged_quantity"]
+        real_cost: Decimal = vd["real_unit_cost"]
+
+        with transaction.atomic():
+            # IN movements per destination for good stock
+            for dest in vd["destinations"]:
+                apply_movement_atomically(
+                    product=order_line.product,
+                    location=dest["location"],
+                    movement_type=InventoryMovement.MovementType.IN,
+                    quantity=dest["quantity"],
+                    unit_cost=real_cost,
+                    concept=InventoryMovement.Concept.PURCHASE,
+                    purchase_order=order,
+                    order_line=order_line,
+                    recorded_by=request.user,
+                )
+            # OUT movement for damaged units (at CENTRAL location)
+            if damaged > 0:
+                central: Location = get_object_or_404(
+                    Location, location_type=Location.LocationType.CENTRAL
+                )
+                apply_movement_atomically(
+                    product=order_line.product,
+                    location=central,
+                    movement_type=InventoryMovement.MovementType.OUT,
+                    quantity=damaged,
+                    unit_cost=real_cost,
+                    concept=InventoryMovement.Concept.DAMAGE,
+                    purchase_order=order,
+                    order_line=order_line,
+                    recorded_by=request.user,
+                )
+            # Update order line cumulative reception
+            order_line.received_quantity_cumulative += received_good + damaged
+            if (
+                order_line.ordered_quantity
+                and order_line.received_quantity_cumulative >= order_line.ordered_quantity
+            ):
+                order_line.status = OrderLine.Status.COMPLETE
+            elif order_line.received_quantity_cumulative > 0:
+                order_line.status = OrderLine.Status.PARTIAL
+            order_line.save(update_fields=["received_quantity_cumulative", "status"])
+            # Transition order to PARTIAL on first reception
+            if order.status == PurchaseOrder.Status.PENDING:
+                order.status = PurchaseOrder.Status.PARTIAL
+                order.save(update_fields=["status", "updated_at"])
+
+        logger.info(
+            "PurchaseOrder reception: pk=%s line=%s good=%d damaged=%d by user=%s",
+            order.pk,
+            order_line.pk,
+            received_good,
+            damaged,
+            request.user.pk,
+        )
+        order = (
+            PurchaseOrder.objects.select_related("supplier", "created_by")
+            .prefetch_related("order_lines__product")
+            .get(pk=order.pk)
+        )
+        if self._is_admin(request):
+            return Response(PurchaseOrderAdminSerializer(order).data)
+        return Response(PurchaseOrderSellerSerializer(order).data)
+
+
+class PurchaseOrderCloseView(APIView):
+    """POST /ordenes-compra/{pk}/cerrar/ — close a purchase order (admin only)."""
+
+    permission_classes = [IsTiendaAdmin]
+    throttle_classes = [TiendaWriteThrottle]
+
+    def post(self, request: Request, pk: _uuid.UUID) -> Response:
+        order: PurchaseOrder = get_object_or_404(
+            PurchaseOrder.objects.select_related("supplier", "created_by").prefetch_related(
+                "order_lines__product"
+            ),
+            pk=pk,
+        )
+        if order.status not in (PurchaseOrder.Status.PENDING, PurchaseOrder.Status.PARTIAL):
+            return Response(
+                {
+                    "detail": (
+                        "Solo se puede cerrar una orden en estado "
+                        "'pendiente' o 'parcialmente recibida'."
+                    )
+                },
+                status=400,
+            )
+        close_serializer = CloseOrderSerializer(data=request.data)
+        close_serializer.is_valid(raise_exception=True)
+        justification: str = close_serializer.validated_data.get("closing_justification", "")
+        threshold: Decimal = settings.TIENDA_UMBRAL_DISCREPANCIA_ORDEN
+
+        discrepancies: list[dict[str, object]] = []
+        for line in order.order_lines.all():
+            ordered: int = line.ordered_quantity or 0
+            received: int = line.received_quantity_cumulative
+            if ordered == 0:
+                continue
+            delta: int = ordered - received
+            delta_pct: Decimal = Decimal(delta) / Decimal(ordered)
+            if abs(delta_pct) > threshold:
+                discrepancies.append(
+                    {
+                        "line_id": str(line.pk),
+                        "product_id": str(line.product_id),
+                        "ordered_quantity": ordered,
+                        "received_quantity": received,
+                        "delta": delta,
+                        "delta_pct": float(round(delta_pct, 4)),
+                    }
+                )
+
+        if discrepancies and not justification.strip():
+            return Response(
+                {
+                    "discrepancias": discrepancies,
+                    "umbral": float(threshold),
+                    "justificacion_requerida": True,
+                },
+                status=422,
+            )
+
+        order.status = PurchaseOrder.Status.CLOSED
+        order.closing_justification = justification
+        order.save(update_fields=["status", "closing_justification", "updated_at"])
+        logger.info(
+            "PurchaseOrder closed: pk=%s discrepancies=%d by user=%s",
+            order.pk,
+            len(discrepancies),
+            request.user.pk,
+        )
+        return Response(PurchaseOrderAdminSerializer(order).data)
