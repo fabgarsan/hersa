@@ -1,7 +1,11 @@
 from datetime import timedelta
+from decimal import Decimal
 from pathlib import Path
 
+import django_stubs_ext
 from decouple import Csv, config
+
+django_stubs_ext.monkeypatch()
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
@@ -26,6 +30,7 @@ INSTALLED_APPS = [
     "apps.core",
     "apps.users",
     "apps.modules",
+    "apps.tienda",
 ]
 
 MIDDLEWARE = [
@@ -113,6 +118,7 @@ REST_FRAMEWORK = {
         "auth": "10/minute",
         "password_reset": "5/hour",
         "change_password": "5/hour",
+        "tienda_write": "60/minute",
     },
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
 }
@@ -143,3 +149,8 @@ SIMPLE_JWT = {
 }
 
 PASSWORD_RESET_TIMEOUT = 3600  # 1 hour (Django default is 3 days)
+
+# Tienda module settings
+TIENDA_UMBRAL_DISCREPANCIA_ORDEN: Decimal = config(
+    "TIENDA_UMBRAL_DISCREPANCIA_ORDEN", default="0.05", cast=Decimal
+)
