@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 from decimal import Decimal
 from typing import Any
 
@@ -20,6 +21,7 @@ from apps.tienda.models import (
 )
 from apps.tienda.utils import decimal_safe_div, weighted_average
 
+logger = logging.getLogger(__name__)
 
 # ---------------------------------------------------------------------------
 # Custom exceptions
@@ -77,6 +79,21 @@ def _get_or_create_stock_for_update(
     )
     # Re-fetch with row-level lock so we are sure we hold the lock.
     return LocationStock.objects.select_for_update().get(pk=stock.pk)
+
+
+def _snapshot_avg_cost_from_movements(
+    movements: list[InventoryMovement],
+    default: Decimal = Decimal("0"),
+) -> Decimal:
+    """Compute weighted-average unit cost from a list of transfer movements (BR-004, BR-012).
+
+    Returns `default` when the total quantity is zero.
+    """
+    total_cost: Decimal = sum(
+        (Decimal(m.quantity) * m.unit_cost for m in movements), Decimal("0")
+    )
+    total_qty: int = sum((m.quantity for m in movements), 0)
+    return decimal_safe_div(total_cost, Decimal(total_qty), default=default)
 
 
 # ---------------------------------------------------------------------------
@@ -198,7 +215,9 @@ def apply_transfer_atomic(
     Snapshot of avg_cost is taken at the start of the transaction before any mutations.
     """
     with transaction.atomic():
-        # BR-003: capture cost snapshot before any mutations.
+        # BR-003: refresh avg_cost from DB before snapshot to avoid stale in-memory value
+        # under PostgreSQL READ COMMITTED (TOCTOU guard).
+        product.refresh_from_db(fields=["avg_cost"])
         snapshot_cost: Decimal = product.avg_cost
 
         out_movement: InventoryMovement = apply_movement_atomically(
@@ -344,12 +363,8 @@ def compute_close_summary(sales_day: SalesDay) -> list[dict[str, Any]]:
         implied_sold_units: Decimal = Decimal(transferred_units) - current_pos_stock
 
         # BR-004: weighted avg of transfer unit_costs.
-        total_cost_weighted: Decimal = sum(
-            (Decimal(m.quantity) * m.unit_cost for m in movements), Decimal("0")
-        )
-        total_qty: Decimal = Decimal(transferred_units)
-        snapshot_avg_cost: Decimal = decimal_safe_div(
-            total_cost_weighted, total_qty, default=Decimal("0")
+        snapshot_avg_cost: Decimal = _snapshot_avg_cost_from_movements(
+            movements, default=Decimal("0")
         )
 
         estimated_revenue: Decimal = implied_sold_units * product.sale_price
@@ -440,17 +455,20 @@ def execute_sales_day_close(
                 day_transfers.aggregate(total=Sum("quantity"))["total"] or 0
             )
 
-            total_cost_weighted: Decimal = sum(
-                (Decimal(m.quantity) * m.unit_cost for m in day_transfers), Decimal("0")
-            )
-            total_qty_decimal: Decimal = Decimal(transferred_units)
-            snapshot_avg_cost: Decimal = decimal_safe_div(
-                total_cost_weighted,
-                total_qty_decimal,
-                default=product.avg_cost,
+            snapshot_avg_cost: Decimal = _snapshot_avg_cost_from_movements(
+                list(day_transfers), default=product.avg_cost
             )
 
             sold_units: int = transferred_units - final_count
+            if sold_units < 0:
+                logger.warning(
+                    "SalesDay %s: product %s final_count (%d) > transferred_units (%d); "
+                    "sold_units clamped to 0.",
+                    sales_day.pk,
+                    product.pk,
+                    final_count,
+                    transferred_units,
+                )
             return_qty: int = final_count
 
             # BR-012: return remaining inventory to CENTRAL at snapshot cost.

@@ -16,6 +16,9 @@ from apps.tienda.models import (
     Supplier,
 )
 
+_MAX_BULK_ITEMS: int = 100
+_MAX_RECEIVE_DESTINATIONS: int = 20
+
 # ---------------------------------------------------------------------------
 # 1.1  Product — role-sensitive pair (BR-027)
 # ---------------------------------------------------------------------------
@@ -250,7 +253,7 @@ class CloseSummaryItemAdminSerializer(serializers.Serializer[dict[str, Any]]):
     transferred_units = serializers.IntegerField()
     current_pos_stock = serializers.DecimalField(max_digits=12, decimal_places=4)
     implied_sold_units = serializers.DecimalField(max_digits=12, decimal_places=4)
-    snapshot_avg_cost = serializers.DecimalField(max_digits=10, decimal_places=2)
+    snapshot_avg_cost = serializers.DecimalField(max_digits=12, decimal_places=4)
     estimated_revenue = serializers.DecimalField(max_digits=12, decimal_places=2)
     estimated_cogs = serializers.DecimalField(max_digits=12, decimal_places=2)
     proposed_return_qty = serializers.DecimalField(max_digits=12, decimal_places=4)
@@ -333,7 +336,7 @@ class ConfirmOrderSerializer(serializers.Serializer[None]):
 
 class CloseOrderSerializer(serializers.Serializer[None]):
     closing_justification = serializers.CharField(
-        required=False, allow_blank=True, default=""
+        required=False, allow_blank=True, default="", max_length=1000
     )
 
 
@@ -365,6 +368,16 @@ class ReceiveOrderSerializer(serializers.Serializer[None]):
                 {
                     "real_unit_cost": (
                         "El costo unitario real es obligatorio cuando se recibe mercancía."
+                    )
+                }
+            )
+
+        # upper bound on destinations to prevent DoS
+        if len(attrs.get("destinations", [])) > _MAX_RECEIVE_DESTINATIONS:
+            raise serializers.ValidationError(
+                {
+                    "destinations": (
+                        f"No se pueden especificar más de {_MAX_RECEIVE_DESTINATIONS} destinos."
                     )
                 }
             )
@@ -413,6 +426,15 @@ class BulkTransferSerializer(serializers.Serializer[None]):
     def validate_items(self, value: list[dict[str, Any]]) -> list[dict[str, Any]]:
         if not value:
             raise serializers.ValidationError("Debe incluir al menos un producto.")
+        if len(value) > _MAX_BULK_ITEMS:
+            raise serializers.ValidationError(
+                f"No se pueden procesar más de {_MAX_BULK_ITEMS} productos por solicitud."
+            )
+        product_ids = [item["product"].pk for item in value]
+        if len(product_ids) != len(set(product_ids)):
+            raise serializers.ValidationError(
+                "No pueden haber productos duplicados en la transferencia."
+            )
         return value
 
 
@@ -427,6 +449,15 @@ class ReplenishmentTransferSerializer(serializers.Serializer[None]):
     def validate_items(self, value: list[dict[str, Any]]) -> list[dict[str, Any]]:
         if not value:
             raise serializers.ValidationError("Debe incluir al menos un producto.")
+        if len(value) > _MAX_BULK_ITEMS:
+            raise serializers.ValidationError(
+                f"No se pueden procesar más de {_MAX_BULK_ITEMS} productos por solicitud."
+            )
+        product_ids = [item["product"].pk for item in value]
+        if len(product_ids) != len(set(product_ids)):
+            raise serializers.ValidationError(
+                "No pueden haber productos duplicados en la transferencia."
+            )
         return value
 
 
@@ -469,7 +500,7 @@ class CloseSalesDaySerializer(serializers.Serializer[None]):
         max_digits=10, decimal_places=2, required=False, allow_null=True, min_value=0
     )
     cash_out_description = serializers.CharField(
-        required=False, allow_blank=True, default=""
+        required=False, allow_blank=True, default="", max_length=1000
     )
 
     def validate(self, attrs: dict[str, Any]) -> dict[str, Any]:
@@ -501,13 +532,16 @@ class AdjustmentSerializer(serializers.Serializer[None]):
     )
     location = serializers.PrimaryKeyRelatedField(queryset=Location.objects.all())
     movement_type = serializers.ChoiceField(
-        choices=InventoryMovement.MovementType.choices
+        choices=[
+            InventoryMovement.MovementType.IN,
+            InventoryMovement.MovementType.OUT,
+        ]
     )
     quantity = serializers.IntegerField(min_value=1)
     unit_cost = serializers.DecimalField(
         max_digits=10, decimal_places=2, min_value=0
     )
-    note = serializers.CharField()
+    note = serializers.CharField(max_length=1000)
 
     def validate_note(self, value: str) -> str:
         # BR-015: note mandatory for ADJUSTMENT
