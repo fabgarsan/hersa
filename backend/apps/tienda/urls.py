@@ -51,7 +51,19 @@ urlpatterns: list[URLPattern | Any] = [
         views.PurchaseOrderCloseView.as_view(),
         name="purchase-order-close",
     ),
-    # EP-03 — Receive orders (Step 6)
-    # EP-04 — Sales days (Step 7)
+    # EP-03 / EP-04 — Jornada (Sales Day)
+    path("jornadas/", views.SalesDayListView.as_view(), name="sales-day-list"),
+    path("jornadas/abierta/", views.SalesDayOpenView.as_view(), name="sales-day-open"),
+    path("jornadas/<uuid:pk>/", views.SalesDayDetailView.as_view(), name="sales-day-detail"),
+    path(
+        "jornadas/<uuid:pk>/traslado-apertura/",
+        views.SalesDayBulkTransferView.as_view(),
+        name="sales-day-bulk-transfer",
+    ),
+    path(
+        "jornadas/<uuid:pk>/reposicion/",
+        views.SalesDayReplenishmentView.as_view(),
+        name="sales-day-replenishment",
+    ),
     # EP-05 — Inventory adjustments / EP-06 — Close summary (Step 8)
 ]

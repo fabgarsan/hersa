@@ -14,7 +14,14 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from apps.tienda.helpers import apply_movement_atomically, compute_replenishment_list
+from apps.tienda.helpers import (
+    BulkInsufficientStockError,
+    InsufficientStockError,
+    apply_bulk_transfer_atomic,
+    apply_movement_atomically,
+    apply_transfer_atomic,
+    compute_replenishment_list,
+)
 from apps.tienda.models import (
     InventoryMovement,
     Location,
@@ -23,12 +30,15 @@ from apps.tienda.models import (
     Product,
     ProductSupplier,
     PurchaseOrder,
+    SalesDay,
     Supplier,
 )
 from apps.tienda.permissions import GROUP_TIENDA_ADMIN, IsTiendaAdmin, IsTiendaAdminOrVendedor
 from apps.tienda.serializers import (
+    BulkTransferSerializer,
     CloseOrderSerializer,
     CreateOrderSerializer,
+    CreateSalesDaySerializer,
     FromReplenishmentSerializer,
     LocationStockAdminSerializer,
     LocationStockSellerSerializer,
@@ -41,6 +51,9 @@ from apps.tienda.serializers import (
     PurchaseOrderSellerSerializer,
     ReceiveOrderSerializer,
     ReplenishmentItemSerializer,
+    ReplenishmentTransferSerializer,
+    SalesDayAdminSerializer,
+    SalesDaySellerSerializer,
     SupplierSerializer,
     SupplierWriteSerializer,
 )
@@ -684,3 +697,232 @@ class PurchaseOrderCloseView(APIView):
             request.user.pk,
         )
         return Response(PurchaseOrderAdminSerializer(order).data)
+
+
+# ---------------------------------------------------------------------------
+# EP-03 / EP-04 — Jornada (Sales Day)
+# ---------------------------------------------------------------------------
+
+
+class SalesDayListView(_TiendaRoleMixin, APIView):
+    """
+    GET  /jornadas/  — list sales days; admin sees all, seller sees only own.
+    POST /jornadas/  — create sales day (admin or seller); BR-008 → 409; BR-009 via serializer.
+    """
+
+    permission_classes = [IsTiendaAdminOrVendedor]
+
+    def get(self, request: Request) -> Response:
+        assert isinstance(request.user, User)
+        is_admin: bool = self._is_admin(request)
+        qs = SalesDay.objects.select_related("location", "seller", "closed_by")
+        if not is_admin:
+            qs = qs.filter(seller=request.user)
+        if is_admin:
+            return Response(SalesDayAdminSerializer(qs, many=True).data)
+        return Response(SalesDaySellerSerializer(qs, many=True).data)
+
+    def post(self, request: Request) -> Response:
+        assert isinstance(request.user, User)
+        is_admin: bool = self._is_admin(request)
+        serializer = CreateSalesDaySerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        vd = serializer.validated_data
+        location: Location = vd["location"]
+
+        # BR-008: only one open jornada per location at a time.
+        # select_for_update() prevents a concurrent request from passing the same
+        # check before this transaction commits (requires transaction.atomic()).
+        with transaction.atomic():
+            if (
+                SalesDay.objects.select_for_update()
+                .filter(location=location, status=SalesDay.Status.OPEN)
+                .exists()
+            ):
+                return Response(
+                    {"detail": "Ya existe una jornada abierta para esta ubicación."},
+                    status=409,
+                )
+            sales_day: SalesDay = SalesDay.objects.create(
+                location=location,
+                date=vd["date"],
+                seller=request.user,
+                status=SalesDay.Status.OPEN,
+            )
+        logger.info(
+            "SalesDay created: pk=%s location=%s date=%s by user=%s",
+            sales_day.pk,
+            location.pk,
+            vd["date"],
+            request.user.pk,
+        )
+        sales_day = SalesDay.objects.select_related("location", "seller", "closed_by").get(
+            pk=sales_day.pk
+        )
+        if is_admin:
+            return Response(SalesDayAdminSerializer(sales_day).data, status=201)
+        return Response(SalesDaySellerSerializer(sales_day).data, status=201)
+
+
+class SalesDayOpenView(_TiendaRoleMixin, APIView):
+    """GET /jornadas/abierta/ — returns the caller's open jornada or 204 if none."""
+
+    permission_classes = [IsTiendaAdminOrVendedor]
+
+    def get(self, request: Request) -> Response:
+        assert isinstance(request.user, User)
+        is_admin: bool = self._is_admin(request)
+        qs = SalesDay.objects.select_related("location", "seller", "closed_by").filter(
+            status=SalesDay.Status.OPEN
+        )
+        if not is_admin:
+            qs = qs.filter(seller=request.user)
+        sales_day: SalesDay | None = qs.first()
+        if sales_day is None:
+            return Response(status=204)
+        if is_admin:
+            return Response(SalesDayAdminSerializer(sales_day).data)
+        return Response(SalesDaySellerSerializer(sales_day).data)
+
+
+class SalesDayDetailView(_TiendaRoleMixin, APIView):
+    """GET /jornadas/{pk}/ — retrieve a sales day; admin sees all, seller sees only own."""
+
+    permission_classes = [IsTiendaAdminOrVendedor]
+
+    def get(self, request: Request, pk: _uuid.UUID) -> Response:
+        assert isinstance(request.user, User)
+        sales_day: SalesDay = get_object_or_404(
+            SalesDay.objects.select_related("location", "seller", "closed_by"), pk=pk
+        )
+        is_admin: bool = self._is_admin(request)
+        # Object-level auth: sellers can only see their own jornadas
+        if not is_admin and sales_day.seller_id != request.user.pk:
+            return Response({"detail": "No encontrado."}, status=404)
+        if is_admin:
+            return Response(SalesDayAdminSerializer(sales_day).data)
+        return Response(SalesDaySellerSerializer(sales_day).data)
+
+
+class SalesDayBulkTransferView(_TiendaRoleMixin, APIView):
+    """POST /jornadas/{pk}/traslado-apertura/ — atomic bulk transfer from CENTRAL to jornada location."""
+
+    permission_classes = [IsTiendaAdminOrVendedor]
+    throttle_classes = [TiendaWriteThrottle]
+
+    def post(self, request: Request, pk: _uuid.UUID) -> Response:
+        assert isinstance(request.user, User)
+        is_admin: bool = self._is_admin(request)
+        sales_day: SalesDay = get_object_or_404(
+            SalesDay.objects.select_related("location", "seller", "closed_by"), pk=pk
+        )
+        if not is_admin and sales_day.seller_id != request.user.pk:
+            return Response({"detail": "No encontrado."}, status=404)
+        if sales_day.status != SalesDay.Status.OPEN:
+            return Response(
+                {"detail": "Solo se puede transferir a una jornada abierta."},
+                status=400,
+            )
+        bulk_serializer = BulkTransferSerializer(data=request.data)
+        bulk_serializer.is_valid(raise_exception=True)
+        vd = bulk_serializer.validated_data
+        central_location: Location = get_object_or_404(
+            Location, location_type=Location.LocationType.CENTRAL
+        )
+        try:
+            apply_bulk_transfer_atomic(
+                items=vd["items"],
+                from_location=central_location,
+                to_location=sales_day.location,
+                recorded_by=request.user,
+                sales_day=sales_day,
+            )
+        except BulkInsufficientStockError as exc:
+            return Response(
+                {
+                    "detail": "Stock insuficiente para algunos productos.",
+                    "insufficient_products": [
+                        {
+                            "product_id": str(e.product.pk),
+                            "product_name": e.product.name,
+                            "available": float(e.available),
+                            "requested": e.requested,
+                        }
+                        for e in exc.errors
+                    ],
+                },
+                status=400,
+            )
+        logger.info(
+            "SalesDay bulk transfer: jornada=%s products=%d by user=%s",
+            sales_day.pk,
+            len(vd["items"]),
+            request.user.pk,
+        )
+        sales_day = SalesDay.objects.select_related("location", "seller", "closed_by").get(
+            pk=sales_day.pk
+        )
+        if is_admin:
+            return Response(SalesDayAdminSerializer(sales_day).data)
+        return Response(SalesDaySellerSerializer(sales_day).data)
+
+
+class SalesDayReplenishmentView(_TiendaRoleMixin, APIView):
+    """POST /jornadas/{pk}/reposicion/ — single or multi-product replenishment from CENTRAL."""
+
+    permission_classes = [IsTiendaAdminOrVendedor]
+    throttle_classes = [TiendaWriteThrottle]
+
+    def post(self, request: Request, pk: _uuid.UUID) -> Response:
+        assert isinstance(request.user, User)
+        is_admin: bool = self._is_admin(request)
+        sales_day: SalesDay = get_object_or_404(
+            SalesDay.objects.select_related("location", "seller", "closed_by"), pk=pk
+        )
+        if not is_admin and sales_day.seller_id != request.user.pk:
+            return Response({"detail": "No encontrado."}, status=404)
+        if sales_day.status != SalesDay.Status.OPEN:
+            return Response(
+                {"detail": "Solo se puede reabastecer una jornada abierta."},
+                status=400,
+            )
+        replenishment_serializer = ReplenishmentTransferSerializer(data=request.data)
+        replenishment_serializer.is_valid(raise_exception=True)
+        vd = replenishment_serializer.validated_data
+        central_location: Location = get_object_or_404(
+            Location, location_type=Location.LocationType.CENTRAL
+        )
+        try:
+            with transaction.atomic():
+                for item in vd["items"]:
+                    apply_transfer_atomic(
+                        product=item["product"],
+                        from_location=central_location,
+                        to_location=sales_day.location,
+                        quantity=item["quantity"],
+                        recorded_by=request.user,
+                        sales_day=sales_day,
+                    )
+        except InsufficientStockError as exc:
+            return Response(
+                {
+                    "detail": "Stock insuficiente.",
+                    "product_id": str(exc.product.pk),
+                    "product_name": exc.product.name,
+                    "available": float(exc.available),
+                    "requested": exc.requested,
+                },
+                status=400,
+            )
+        logger.info(
+            "SalesDay replenishment: jornada=%s products=%d by user=%s",
+            sales_day.pk,
+            len(vd["items"]),
+            request.user.pk,
+        )
+        sales_day = SalesDay.objects.select_related("location", "seller", "closed_by").get(
+            pk=sales_day.pk
+        )
+        if is_admin:
+            return Response(SalesDayAdminSerializer(sales_day).data)
+        return Response(SalesDaySellerSerializer(sales_day).data)
