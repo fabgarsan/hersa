@@ -81,5 +81,6 @@ urlpatterns: list[URLPattern | Any] = [
         views.SalesDayReportView.as_view(),
         name="sales-day-report",
     ),
-    # EP-08 — Ajustes (Step 8)
+    # EP-08 — Ajustes
+    path("ajustes/", views.AdjustmentView.as_view(), name="adjustment-list"),
 ]

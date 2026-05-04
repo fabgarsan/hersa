@@ -40,6 +40,7 @@ from apps.tienda.models import (
 )
 from apps.tienda.permissions import GROUP_TIENDA_ADMIN, IsTiendaAdmin, IsTiendaAdminOrVendedor
 from apps.tienda.serializers import (
+    AdjustmentSerializer,
     BulkTransferSerializer,
     CloseOrderSerializer,
     CloseSalesDaySerializer,
@@ -50,6 +51,7 @@ from apps.tienda.serializers import (
     DayCloseDetailAdminSerializer,
     DayCloseDetailSellerSerializer,
     FromReplenishmentSerializer,
+    InventoryMovementSerializer,
     LocationStockAdminSerializer,
     LocationStockSellerSerializer,
     ProductAdminSerializer,
@@ -1048,3 +1050,64 @@ class SalesDayReportView(_TiendaRoleMixin, APIView):
                 "details": DayCloseDetailSellerSerializer(details, many=True).data,
             }
         )
+
+
+# ---------------------------------------------------------------------------
+# EP-08 — Ajustes (Inventory Adjustments)
+# ---------------------------------------------------------------------------
+
+
+class AdjustmentView(APIView):
+    """
+    GET  /ajustes/  — list ADJUSTMENT movements, optionally filtered by product_id (admin only)
+    POST /ajustes/  — create a manual ADJUSTMENT movement (admin only, BR-015 note required)
+    """
+
+    permission_classes = [IsTiendaAdmin]
+    throttle_classes = [TiendaWriteThrottle]
+
+    def get(self, request: Request) -> Response:
+        qs = InventoryMovement.objects.filter(
+            concept=InventoryMovement.Concept.ADJUSTMENT
+        ).select_related("product", "recorded_by")
+
+        raw_product_id: str | None = request.query_params.get("product_id")
+        if raw_product_id is not None:
+            product_uuid = _parse_uuid(raw_product_id)
+            if product_uuid is None:
+                return Response(
+                    {"detail": "product_id debe ser un UUID válido."}, status=400
+                )
+            qs = qs.filter(product_id=product_uuid)
+
+        return Response(InventoryMovementSerializer(qs, many=True).data)
+
+    def post(self, request: Request) -> Response:
+        assert isinstance(request.user, User)
+        serializer = AdjustmentSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        vd = serializer.validated_data
+
+        movement: InventoryMovement = apply_movement_atomically(
+            product=vd["product"],
+            location=vd["location"],
+            movement_type=vd["movement_type"],
+            quantity=vd["quantity"],
+            unit_cost=vd["unit_cost"],
+            concept=InventoryMovement.Concept.ADJUSTMENT,
+            recorded_by=request.user,
+            note=vd["note"],
+        )
+        logger.info(
+            "Adjustment created: movement=%s product=%s location=%s type=%s qty=%d by user=%s",
+            movement.pk,
+            vd["product"].pk,
+            vd["location"].pk,
+            vd["movement_type"],
+            vd["quantity"],
+            request.user.pk,
+        )
+        movement = InventoryMovement.objects.select_related("product", "recorded_by").get(
+            pk=movement.pk
+        )
+        return Response(InventoryMovementSerializer(movement).data, status=201)

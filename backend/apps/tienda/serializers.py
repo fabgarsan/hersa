@@ -3,6 +3,7 @@ from __future__ import annotations
 from decimal import Decimal
 from typing import Any
 
+from django.contrib.auth.models import User
 from rest_framework import serializers
 
 from apps.tienda.models import (
@@ -603,6 +604,31 @@ class AdjustmentSerializer(serializers.Serializer[None]):
                 "La nota es obligatoria para movimientos de tipo AJUSTE."
             )
         return value
+
+
+# ---------------------------------------------------------------------------
+# 2.11  InventoryMovementSerializer — admin-only read (GET /ajustes/ history)
+# ---------------------------------------------------------------------------
+
+
+class InventoryMovementSerializer(serializers.ModelSerializer[InventoryMovement]):
+    product = ProductAdminSerializer(read_only=True)
+    recorded_by: serializers.StringRelatedField[User] = serializers.StringRelatedField(read_only=True)
+
+    class Meta:
+        model = InventoryMovement
+        fields = [
+            "id",
+            "product",
+            "location",
+            "movement_type",
+            "quantity",
+            "unit_cost",
+            "concept",
+            "note",
+            "recorded_by",
+            "timestamp",
+        ]
 
 
 # ---------------------------------------------------------------------------
