@@ -108,17 +108,11 @@ class OrderLineAdminSerializer(serializers.ModelSerializer[OrderLine]):
 
 
 class OrderLineSellerSerializer(serializers.ModelSerializer[OrderLine]):
-    """Seller view — no monetary fields (BR-027)."""
+    """Seller view — no monetary or procurement volume fields (BR-027)."""
 
     class Meta:
         model = OrderLine
-        fields = [
-            "id",
-            "product",
-            "ordered_quantity",
-            "received_quantity_cumulative",
-            "status",
-        ]
+        fields = ["id", "product", "status"]
 
 
 # ---------------------------------------------------------------------------
@@ -288,20 +282,8 @@ class ReplenishmentItemSerializer(serializers.Serializer[dict[str, Any]]):
 
 
 # ---------------------------------------------------------------------------
-# 2.1  CreateOrderSerializer (POST /ordenes-compra/)
-# ---------------------------------------------------------------------------
-
-
-class CreateOrderSerializer(serializers.Serializer[None]):
-    supplier = serializers.PrimaryKeyRelatedField(
-        queryset=Supplier.objects.all(), required=False, allow_null=True
-    )
-    notes = serializers.CharField(required=False, allow_blank=True, default="")
-    # created_by is set by the view from request.user — NOT a writable field
-
-
-# ---------------------------------------------------------------------------
-# 2.2  OrderLineWriteSerializer — nested or standalone PATCH
+# 2.1  OrderLineWriteSerializer — nested or standalone write (defined first so
+#       CreateOrderSerializer and PurchaseOrderEditSerializer can reference it)
 # ---------------------------------------------------------------------------
 
 
@@ -312,6 +294,76 @@ class OrderLineWriteSerializer(serializers.ModelSerializer[OrderLine]):
         model = OrderLine
         fields = ["id", "product", "ordered_quantity", "expected_unit_cost"]
         read_only_fields = ["id"]
+
+
+# ---------------------------------------------------------------------------
+# 2.2  CreateOrderSerializer (POST /ordenes-compra/)
+# ---------------------------------------------------------------------------
+
+
+class CreateOrderSerializer(serializers.Serializer[None]):
+    supplier = serializers.PrimaryKeyRelatedField(
+        queryset=Supplier.objects.all(), required=False, allow_null=True
+    )
+    notes = serializers.CharField(required=False, allow_blank=True, default="", max_length=1000)
+    order_lines = OrderLineWriteSerializer(many=True, required=False, default=list)
+    # created_by is set by the view from request.user — NOT a writable field
+
+    def validate_order_lines(self, value: list[dict[str, Any]]) -> list[dict[str, Any]]:
+        product_ids = [item["product"].pk for item in value]
+        if len(product_ids) != len(set(product_ids)):
+            raise serializers.ValidationError(
+                "No pueden haber productos duplicados en la orden."
+            )
+        return value
+
+
+# ---------------------------------------------------------------------------
+# 2.2b  FromReplenishmentSerializer (POST /ordenes-compra/desde-reabastecimiento/)
+# ---------------------------------------------------------------------------
+
+
+class FromReplenishmentSerializer(serializers.Serializer[None]):
+    """Create an initiated order from replenishment list (blank order lines, no supplier yet)."""
+
+    product_ids = serializers.ListField(
+        child=serializers.PrimaryKeyRelatedField(
+            queryset=Product.objects.filter(is_active=True)
+        ),
+        min_length=1,
+        max_length=_MAX_BULK_ITEMS,
+    )
+
+    def validate_product_ids(self, value: list[Product]) -> list[Product]:
+        ids = [p.pk for p in value]
+        if len(ids) != len(set(ids)):
+            raise serializers.ValidationError(
+                "No pueden haber productos duplicados."
+            )
+        return value
+
+
+# ---------------------------------------------------------------------------
+# 2.2c  PurchaseOrderEditSerializer (PATCH /ordenes-compra/{id}/)
+# ---------------------------------------------------------------------------
+
+
+class PurchaseOrderEditSerializer(serializers.Serializer[None]):
+    """Partial update for a PurchaseOrder when status='initiated'."""
+
+    supplier = serializers.PrimaryKeyRelatedField(
+        queryset=Supplier.objects.all(), required=False, allow_null=True
+    )
+    notes = serializers.CharField(required=False, allow_blank=True, max_length=1000)
+    order_lines = OrderLineWriteSerializer(many=True, required=False)
+
+    def validate_order_lines(self, value: list[dict[str, Any]]) -> list[dict[str, Any]]:
+        product_ids = [item["product"].pk for item in value]
+        if len(product_ids) != len(set(product_ids)):
+            raise serializers.ValidationError(
+                "No pueden haber productos duplicados en la orden."
+            )
+        return value
 
 
 # ---------------------------------------------------------------------------
