@@ -1,0 +1,20 @@
+@use '@/shared/styles/variables' as v;
+
+.root {
+  padding: v.sp(3);
+  max-width: 480px;
+}
+
+.title {
+  color: v.$primary-main;
+  font-weight: 600;
+  margin-bottom: v.sp(3);
+}
+
+.form {
+  width: 100%;
+}
+
+.conflictAlert {
+  margin-bottom: v.sp(2);
+}
