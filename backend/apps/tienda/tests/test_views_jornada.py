@@ -5,7 +5,6 @@ from decimal import Decimal
 
 import pytest
 
-from apps.tienda.helpers import apply_movement_atomically
 from apps.tienda.models import InventoryMovement, Location, SalesDay
 from apps.tienda.tests.factories import (
     LocationFactory,

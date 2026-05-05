@@ -1,24 +1,21 @@
 from __future__ import annotations
 
 from decimal import Decimal
-from datetime import date
 
 import factory
+from django.contrib.auth.models import User
 from factory.django import DjangoModelFactory
 from faker import Faker
 
-from django.contrib.auth.models import User
-
 from apps.tienda.models import (
-    Location,
-    Product,
-    Supplier,
-    ProductSupplier,
-    PurchaseOrder,
-    OrderLine,
-    SalesDay,
     InventoryMovement,
+    Location,
     LocationStock,
+    OrderLine,
+    Product,
+    PurchaseOrder,
+    SalesDay,
+    Supplier,
 )
 
 fake = Faker()
