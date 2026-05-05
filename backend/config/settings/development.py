@@ -1,6 +1,9 @@
+import django_stubs_ext
 from decouple import config
 
 from .base import *
+
+django_stubs_ext.monkeypatch()
 
 DEBUG = True
 ALLOWED_HOSTS = ["localhost", "127.0.0.1"]

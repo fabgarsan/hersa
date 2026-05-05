@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-export interface TiendaTabBarProps {}
+export type TiendaTabBarProps = Record<string, never>;
 
 export interface TiendaTabItem {
   label: string;

@@ -9,7 +9,7 @@ import EventIcon from "@mui/icons-material/Event";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import { TIENDA_ROUTES } from "@modules/tienda/constants/routes";
-import type { TiendaTabBarProps, TiendaTabItem } from "./types";
+import type { TiendaTabItem } from "./types";
 import styles from "./TiendaTabBar.module.scss";
 
 const TAB_ITEMS: TiendaTabItem[] = [
@@ -25,7 +25,7 @@ function resolveActiveTab(pathname: string): string | false {
   return match ? match.path : false;
 }
 
-export function TiendaTabBar(_props: TiendaTabBarProps) {
+export function TiendaTabBar() {
   const location = useLocation();
   const navigate = useNavigate();
   const activeTab = resolveActiveTab(location.pathname);
@@ -36,12 +36,7 @@ export function TiendaTabBar(_props: TiendaTabBarProps) {
 
   return (
     <div className={styles.root}>
-      <Tabs
-        value={activeTab}
-        onChange={handleChange}
-        variant="scrollable"
-        scrollButtons={false}
-      >
+      <Tabs value={activeTab} onChange={handleChange} variant="scrollable" scrollButtons={false}>
         {TAB_ITEMS.map(({ label, path, icon }) => (
           <Tab
             key={path}
