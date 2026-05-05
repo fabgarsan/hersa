@@ -24,10 +24,10 @@ export default function JornadaListPage() {
   const [page, setPage] = useState(0);
   const [pageSize, setPageSize] = useState(10);
 
-  const { data, isLoading, isError } = useGetJornadasQuery({
-    page: page + 1,
-    pageSize,
-  });
+  const { data, isLoading, isError } = useGetJornadasQuery(
+    { page: page + 1, pageSize },
+    role !== "none",
+  );
 
   if (role === "none") {
     return <Navigate to="/tienda" replace />;
@@ -51,7 +51,7 @@ export default function JornadaListPage() {
       headerName: "Fecha",
       width: 120,
       renderCell: (params) => {
-        const val = params.value as string;
+        const val = params.row.date;
         if (!val) return <span>—</span>;
         const [yyyy, mm, dd] = val.split("-");
         return <span>{`${dd}/${mm}/${yyyy}`}</span>;
@@ -61,16 +61,14 @@ export default function JornadaListPage() {
       field: "createdAt",
       headerName: "Apertura",
       width: 180,
-      renderCell: (params) => (
-        <span>{new Date(params.value as string).toLocaleString("es-CO")}</span>
-      ),
+      renderCell: (params) => <span>{new Date(params.row.createdAt).toLocaleString("es-CO")}</span>,
     },
     {
       field: "closedAt",
       headerName: "Cierre",
       width: 180,
       renderCell: (params) => {
-        const val = params.value as string | null;
+        const val = params.row.closedAt;
         if (!val) return <span>—</span>;
         return <span>{new Date(val).toLocaleString("es-CO")}</span>;
       },
@@ -80,7 +78,7 @@ export default function JornadaListPage() {
       headerName: "Alerta caja",
       width: 110,
       renderCell: (params) => {
-        const val = params.value as string | null | undefined;
+        const val = params.row.cashAlert;
         if (!val) return null;
         return (
           <Tooltip title={val}>

@@ -114,6 +114,7 @@ export default function OrdenDetailPage() {
           setSnackbarOpen(true);
         },
         onError: (err) => {
+          if (isNetworkError(err)) return;
           if (
             isAxiosError(err) &&
             err.response?.status === 422 &&
@@ -124,7 +125,6 @@ export default function OrdenDetailPage() {
             setUmbral(resp.umbral);
             setCloseDialogOpen(true);
           } else {
-            if (isNetworkError(err)) return;
             setSnackbarMessage("Error al cerrar la orden");
             setSnackbarSeverity("error");
             setSnackbarOpen(true);

@@ -34,7 +34,7 @@ export default function CierreConteoPage() {
   const { role } = useTiendaRole();
   const navigate = useNavigate();
 
-  const { data: jornada, isLoading: isLoadingJornada } = useGetJornadaAbiertaQuery();
+  const { data: jornada, isLoading: isLoadingJornada } = useGetJornadaAbiertaQuery(role !== "none");
   const {
     mutate: getResumen,
     isPending: isLoadingResumen,

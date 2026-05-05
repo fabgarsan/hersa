@@ -37,11 +37,10 @@ export default function OrdenListPage() {
   const [page, setPage] = useState(0);
   const [pageSize, setPageSize] = useState(10);
 
-  const { data, isLoading, isError } = useGetOrdenesQuery({
-    estado: estadoFilter !== "all" ? estadoFilter : undefined,
-    page: page + 1,
-    pageSize,
-  });
+  const { data, isLoading, isError } = useGetOrdenesQuery(
+    { estado: estadoFilter !== "all" ? estadoFilter : undefined, page: page + 1, pageSize },
+    role !== "none",
+  );
 
   const handleFilterChange = useCallback((filter: EstadoFilter) => {
     setEstadoFilter(filter);
@@ -58,14 +57,14 @@ export default function OrdenListPage() {
       headerName: "Orden #",
       flex: 1,
       minWidth: 160,
-      renderCell: (params) => <span className={styles.idCell}>{params.value as string}</span>,
+      renderCell: (params) => <span className={styles.idCell}>{params.row.id}</span>,
     },
     {
       field: "supplier",
       headerName: "Proveedor",
       flex: 1,
       minWidth: 140,
-      renderCell: (params) => <span>{(params.value as string | null) ?? "—"}</span>,
+      renderCell: (params) => <span>{params.row.supplier ?? "—"}</span>,
     },
     {
       field: "status",
@@ -78,7 +77,7 @@ export default function OrdenListPage() {
       headerName: "Fecha",
       width: 120,
       renderCell: (params) => {
-        const val = params.value as string | null;
+        const val = params.row.orderDate;
         if (!val) return <span>—</span>;
         const [yyyy, mm, dd] = val.split("-");
         return <span>{`${dd}/${mm}/${yyyy}`}</span>;

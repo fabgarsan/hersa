@@ -17,7 +17,7 @@ export async function fetchOrdenes(params: OrdenesQueryParams): Promise<OrdenesP
   return data;
 }
 
-export function useGetOrdenesQuery(params: OrdenesQueryParams) {
+export function useGetOrdenesQuery(params: OrdenesQueryParams, enabled = true) {
   return useQuery({
     queryKey: [
       "tienda",
@@ -26,5 +26,6 @@ export function useGetOrdenesQuery(params: OrdenesQueryParams) {
     ],
     queryFn: () => fetchOrdenes(params),
     staleTime: 30_000,
+    enabled,
   });
 }

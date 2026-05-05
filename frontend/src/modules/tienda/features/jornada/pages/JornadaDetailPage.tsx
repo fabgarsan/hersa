@@ -20,7 +20,7 @@ export default function JornadaDetailPage() {
   const { id } = useParams<{ id: string }>();
   const { isAdmin, role } = useTiendaRole();
 
-  const { data: jornada, isLoading, isError } = useGetJornadaQuery(id);
+  const { data: jornada, isLoading, isError } = useGetJornadaQuery(id, role !== "none");
 
   if (role === "none") {
     return <Navigate to="/tienda" replace />;

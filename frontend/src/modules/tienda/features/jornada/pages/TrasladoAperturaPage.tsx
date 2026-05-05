@@ -40,10 +40,10 @@ export default function TrasladoAperturaPage() {
   const { mutate: doTraslado, isPending } = useTrasladoAperturaMutation();
 
   const ALL_PRODUCTS_PAGE_SIZE = 200; // Upper bound to load full catalog for Autocomplete selection
-  const { data: productosData, isLoading: isLoadingProductos } = useGetProductosQuery({
-    activo: true,
-    pageSize: ALL_PRODUCTS_PAGE_SIZE,
-  });
+  const { data: productosData, isLoading: isLoadingProductos } = useGetProductosQuery(
+    { activo: true, pageSize: ALL_PRODUCTS_PAGE_SIZE },
+    role !== "none",
+  );
   const productos = productosData?.results ?? [];
 
   const { control, handleSubmit } = useForm<TrasladoAperturaFormValues>({

@@ -35,12 +35,10 @@ export default function ProductoListPage() {
   const activoParam =
     activeFilter === "active" ? true : activeFilter === "inactive" ? false : undefined;
 
-  const { data, isLoading, isError } = useGetProductosQuery({
-    q: debouncedSearch || undefined,
-    activo: isAdmin ? activoParam : undefined,
-    page,
-    pageSize,
-  });
+  const { data, isLoading, isError } = useGetProductosQuery(
+    { q: debouncedSearch || undefined, activo: isAdmin ? activoParam : undefined, page, pageSize },
+    role !== "none",
+  );
 
   const handlePageChange = useCallback((newPage: number) => {
     setPage(newPage);

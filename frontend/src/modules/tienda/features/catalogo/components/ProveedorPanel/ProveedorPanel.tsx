@@ -11,6 +11,7 @@ import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import AddIcon from "@mui/icons-material/Add";
 
+import { isNetworkError } from "@api/offlineMutationEvents";
 import { useGetProveedoresQuery } from "../../api/getProveedoresQuery";
 import { useAssociateProveedorMutation } from "../../api/associateProveedorMutation";
 import { useRemoveProveedorMutation } from "../../api/removeProveedorMutation";
@@ -43,7 +44,10 @@ export function ProveedorPanel({ productoId, suppliers, isAdmin }: ProveedorPane
       { productoId, supplierId: selectedSupplier.id },
       {
         onSuccess: () => setSelectedSupplier(null),
-        onError: () => setAddError("Error al asociar el proveedor. Intenta nuevamente."),
+        onError: (err) => {
+          if (isNetworkError(err)) return;
+          setAddError("Error al asociar el proveedor. Intenta nuevamente.");
+        },
       },
     );
   };

@@ -15,10 +15,11 @@ export async function fetchJornadas(params: JornadasQueryParams): Promise<Jornad
   return data;
 }
 
-export function useGetJornadasQuery(params: JornadasQueryParams) {
+export function useGetJornadasQuery(params: JornadasQueryParams, enabled = true) {
   return useQuery({
     queryKey: ["tienda", "jornadas", { page: params.page, pageSize: params.pageSize }],
     queryFn: () => fetchJornadas(params),
     staleTime: 30_000,
+    enabled,
   });
 }
