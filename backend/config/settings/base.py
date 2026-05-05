@@ -2,10 +2,7 @@ from datetime import timedelta
 from decimal import Decimal
 from pathlib import Path
 
-import django_stubs_ext
 from decouple import Csv, config
-
-django_stubs_ext.monkeypatch()
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
