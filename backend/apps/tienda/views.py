@@ -13,6 +13,7 @@ from django.shortcuts import get_object_or_404
 from rest_framework.permissions import BasePermission, IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
+from rest_framework.throttling import BaseThrottle
 from rest_framework.views import APIView
 
 from apps.core.pagination import StandardResultsSetPagination
@@ -105,6 +106,8 @@ class ProductListView(_TiendaRoleMixin, APIView):
     POST /productos/  — create product (admin only)
     """
 
+    throttle_classes = [TiendaWriteThrottle]
+
     def get_permissions(self) -> list[BasePermission]:
         if self.request.method in ("POST", "PATCH", "PUT", "DELETE"):
             return [IsTiendaAdmin()]
@@ -140,6 +143,8 @@ class ProductDetailView(_TiendaRoleMixin, APIView):
     GET   /productos/{pk}/  — retrieve a product
     PATCH /productos/{pk}/  — partial update (admin only)
     """
+
+    throttle_classes = [TiendaWriteThrottle]
 
     def get_permissions(self) -> list[BasePermission]:
         if self.request.method in ("POST", "PATCH", "PUT", "DELETE"):
@@ -177,6 +182,7 @@ class SupplierListView(APIView):
     """
 
     permission_classes = [IsTiendaAdmin]
+    throttle_classes = [TiendaWriteThrottle]
 
     def get(self, request: Request) -> Response:
         suppliers = Supplier.objects.all()
@@ -197,6 +203,7 @@ class SupplierDetailView(APIView):
     """
 
     permission_classes = [IsTiendaAdmin]
+    throttle_classes = [TiendaWriteThrottle]
 
     def get(self, request: Request, pk: _uuid.UUID) -> Response:
         supplier: Supplier = get_object_or_404(Supplier, pk=pk)
@@ -214,6 +221,7 @@ class ProductSupplierView(APIView):
     """POST /productos/{pk}/proveedores/ — associate a supplier with a product (admin only)."""
 
     permission_classes = [IsTiendaAdmin]
+    throttle_classes = [TiendaWriteThrottle]
 
     def post(self, request: Request, pk: _uuid.UUID) -> Response:
         product: Product = get_object_or_404(Product, pk=pk)
@@ -244,6 +252,7 @@ class ProductSupplierDetailView(APIView):
     """DELETE /productos/{pk}/proveedores/{supplier_pk}/ — remove supplier association (admin only)."""
 
     permission_classes = [IsTiendaAdmin]
+    throttle_classes = [TiendaWriteThrottle]
 
     def delete(self, request: Request, pk: _uuid.UUID, supplier_pk: _uuid.UUID) -> Response:
         product: Product = get_object_or_404(Product, pk=pk)
@@ -336,6 +345,7 @@ class StockReplenishmentView(APIView):
     """GET /stock/reabastecimiento/ — list products needing replenishment (admin only, BR-026)."""
 
     permission_classes = [IsTiendaAdmin]
+    throttle_classes = [TiendaWriteThrottle]
 
     def get(self, request: Request) -> Response:
         central_location: Location = get_object_or_404(
@@ -356,6 +366,8 @@ class PurchaseOrderListView(_TiendaRoleMixin, APIView):
     GET  /ordenes-compra/  — list purchase orders; admin sees all fields, sellers see stripped view.
     POST /ordenes-compra/  — create purchase order with optional order lines (admin only).
     """
+
+    throttle_classes = [TiendaWriteThrottle]
 
     def get_permissions(self) -> list[BasePermission]:
         if self.request.method == "POST":
@@ -411,6 +423,7 @@ class PurchaseOrderFromReplenishmentView(APIView):
     """POST /ordenes-compra/desde-reabastecimiento/ — create initiated order from replenishment list (admin only)."""
 
     permission_classes = [IsTiendaAdmin]
+    throttle_classes = [TiendaWriteThrottle]
 
     def post(self, request: Request) -> Response:
         assert isinstance(request.user, User)
@@ -438,6 +451,8 @@ class PurchaseOrderDetailView(_TiendaRoleMixin, APIView):
     GET   /ordenes-compra/{pk}/  — retrieve purchase order (admin or seller).
     PATCH /ordenes-compra/{pk}/  — partial update when status='initiated' (admin only).
     """
+
+    throttle_classes = [TiendaWriteThrottle]
 
     def get_permissions(self) -> list[BasePermission]:
         if self.request.method == "PATCH":
@@ -498,6 +513,7 @@ class PurchaseOrderConfirmView(APIView):
     """POST /ordenes-compra/{pk}/confirmar/ — transition initiated → pending (admin only, BR-025)."""
 
     permission_classes = [IsTiendaAdmin]
+    throttle_classes = [TiendaWriteThrottle]
 
     def post(self, request: Request, pk: _uuid.UUID) -> Response:
         order: PurchaseOrder = get_object_or_404(
@@ -566,15 +582,10 @@ class PurchaseOrderReceiveView(_TiendaRoleMixin, APIView):
                 },
                 status=400,
             )
-        recv_serializer = ReceiveOrderSerializer(data=request.data)
+        recv_serializer = ReceiveOrderSerializer(data=request.data, context={"order": order})
         recv_serializer.is_valid(raise_exception=True)
         vd = recv_serializer.validated_data
         order_line: OrderLine = vd["order_line"]
-        if order_line.purchase_order_id != order.pk:
-            return Response(
-                {"detail": "La línea de orden no pertenece a esta orden."},
-                status=400,
-            )
         received_good: int = vd["received_quantity_good"]
         damaged: int = vd["damaged_quantity"]
         real_cost: Decimal = vd["real_unit_cost"]
@@ -724,6 +735,7 @@ class SalesDayListView(_TiendaRoleMixin, APIView):
     """
 
     permission_classes = [IsTiendaAdminOrVendedor]
+    throttle_classes = [TiendaWriteThrottle]
 
     def get(self, request: Request) -> Response:
         assert isinstance(request.user, User)
@@ -1023,6 +1035,7 @@ class SalesDayReportView(_TiendaRoleMixin, APIView):
     """GET /jornadas/{pk}/reporte/ — end-of-day report from DayCloseDetail rows."""
 
     permission_classes = [IsTiendaAdminOrVendedor]
+    throttle_classes = [TiendaWriteThrottle]
 
     def get(self, request: Request, pk: _uuid.UUID) -> Response:
         assert isinstance(request.user, User)
@@ -1067,7 +1080,11 @@ class AdjustmentView(APIView):
     """
 
     permission_classes = [IsTiendaAdmin]
-    throttle_classes = [TiendaWriteThrottle]
+
+    def get_throttles(self) -> list[BaseThrottle]:
+        if self.request.method == "POST":
+            return [TiendaWriteThrottle()]
+        return []
 
     def get(self, request: Request) -> Response:
         qs = InventoryMovement.objects.filter(

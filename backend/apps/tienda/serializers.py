@@ -409,8 +409,17 @@ class ReceiveOrderSerializer(serializers.Serializer[None]):
     received_quantity_good = serializers.IntegerField(min_value=0, default=0)
     damaged_quantity = serializers.IntegerField(min_value=0, default=0)
     real_unit_cost = serializers.DecimalField(
-        max_digits=10, decimal_places=2, required=False, allow_null=True
+        max_digits=10, decimal_places=2, required=False, allow_null=True,
+        min_value=Decimal("0.01"),
     )
+
+    def validate_order_line(self, value: OrderLine) -> OrderLine:
+        order = self.context.get("order")
+        if order is not None and value.purchase_order_id != order.pk:
+            raise serializers.ValidationError(
+                "La línea de orden no pertenece a esta orden."
+            )
+        return value
     destinations = ReceiveDestinationSerializer(many=True)
 
     def validate(self, attrs: dict[str, Any]) -> dict[str, Any]:
@@ -573,6 +582,14 @@ class CloseSalesDaySerializer(serializers.Serializer[None]):
             raise serializers.ValidationError(
                 {"items": "Debe incluir al menos un producto en el conteo."}
             )
+        if len(items) > _MAX_BULK_ITEMS:
+            raise serializers.ValidationError(
+                {
+                    "items": (
+                        f"No se pueden procesar más de {_MAX_BULK_ITEMS} productos por solicitud."
+                    )
+                }
+            )
         seen: set[Any] = set()
         for item in items:
             pid = item["product"].pk
@@ -613,6 +630,18 @@ class AdjustmentSerializer(serializers.Serializer[None]):
                 "La nota es obligatoria para movimientos de tipo AJUSTE."
             )
         return value
+
+    def validate(self, attrs: dict[str, Any]) -> dict[str, Any]:
+        # IN adjustments with zero cost corrupt avg_cost (BR-001/BR-002)
+        if (
+            attrs.get("movement_type") == InventoryMovement.MovementType.IN
+            and attrs.get("unit_cost") is not None
+            and attrs["unit_cost"] == Decimal("0.00")
+        ):
+            raise serializers.ValidationError(
+                {"unit_cost": "El costo unitario debe ser mayor a 0 para movimientos de entrada."}
+            )
+        return attrs
 
 
 # ---------------------------------------------------------------------------
