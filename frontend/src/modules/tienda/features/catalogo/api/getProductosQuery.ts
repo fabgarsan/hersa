@@ -19,10 +19,11 @@ export async function fetchProductos(
   return data;
 }
 
-export function useGetProductosQuery(params: ProductosQueryParams) {
+export function useGetProductosQuery(params: ProductosQueryParams, enabled = true) {
   return useQuery({
     queryKey: ["tienda", "productos", { activo: params.activo, q: params.q, page: params.page }],
     queryFn: () => fetchProductos(params),
     staleTime: 30_000,
+    enabled,
   });
 }

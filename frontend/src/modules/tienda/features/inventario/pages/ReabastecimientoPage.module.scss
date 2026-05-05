@@ -1,0 +1,70 @@
+@use '@/shared/styles/variables' as v;
+
+.root {
+  padding: v.sp(3);
+}
+
+.header {
+  margin-bottom: v.sp(3);
+}
+
+.title {
+  color: v.$primary-main;
+  font-weight: 600;
+}
+
+.tableContainer {
+  border: 1px solid v.$border-default;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: v.sp(3);
+}
+
+.tableHead {
+  background-color: v.$primary-main;
+
+  th {
+    color: v.$bg-paper;
+    font-weight: 600;
+  }
+
+  :global(.MuiCheckbox-root) {
+    color: v.$bg-paper;
+  }
+}
+
+.tableRow {
+  cursor: pointer;
+
+  &:nth-child(even) {
+    background-color: v.$bg-surface-1;
+  }
+
+  &:hover {
+    background-color: v.$primary-tint-1;
+  }
+}
+
+.actions {
+  margin-top: v.sp(2);
+  display: flex;
+  justify-content: flex-end;
+}
+
+.error {
+  margin-bottom: v.sp(2);
+}
+
+.skeletonHeader {
+  margin-bottom: v.sp(2);
+  border-radius: 4px;
+}
+
+.skeletonTable {
+  border-radius: 4px;
+}
+
+.emptyState {
+  color: v.$text-secondary;
+  margin-top: v.sp(2);
+}
