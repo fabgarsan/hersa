@@ -6,14 +6,12 @@ import Alert from "@mui/material/Alert";
 import Autocomplete from "@mui/material/Autocomplete";
 import Box from "@mui/material/Box";
 import IconButton from "@mui/material/IconButton";
-import Skeleton from "@mui/material/Skeleton";
 import Stack from "@mui/material/Stack";
 import TableCell from "@mui/material/TableCell";
 import TextField from "@mui/material/TextField";
-import Typography from "@mui/material/Typography";
 import DeleteIcon from "@mui/icons-material/Delete";
 
-import { MutationButton } from "@shared/components";
+import { LoadingState, MutationButton, PageHeader } from "@shared/components";
 import { isNetworkError } from "@api/offlineMutationEvents";
 import { useTiendaRole } from "@modules/tienda/shared/hooks/useTiendaRole";
 import { TIENDA_ROUTES } from "@modules/tienda/constants/routes";
@@ -62,12 +60,7 @@ export default function TrasladoAperturaPage() {
   }
 
   if (isLoadingProductos) {
-    return (
-      <Box className={styles.root}>
-        <Skeleton variant="rectangular" height={56} className={styles.skeleton} />
-        <Skeleton variant="rectangular" height={200} className={styles.skeleton} />
-      </Box>
-    );
+    return <LoadingState variant="skeleton" rows={2} />;
   }
 
   const onSubmit = (values: TrasladoAperturaFormValues) => {
@@ -96,9 +89,15 @@ export default function TrasladoAperturaPage() {
 
   return (
     <Box className={styles.root}>
-      <Typography variant="h5" className={styles.title}>
-        Traslado de apertura
-      </Typography>
+      <PageHeader
+        title="Traslado apertura"
+        breadcrumbs={[
+          { label: "Tienda", href: "/tienda" },
+          { label: "Jornadas", href: "/tienda/jornadas" },
+          { label: `Jornada ${id?.slice(0, 8)}…`, href: `/tienda/jornadas/${id}` },
+          { label: "Traslado apertura" },
+        ]}
+      />
 
       {submitError && (
         <Alert severity="error" className={styles.skeleton}>

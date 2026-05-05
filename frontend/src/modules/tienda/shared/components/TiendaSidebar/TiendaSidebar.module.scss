@@ -10,6 +10,12 @@
     color: #ffffff;
     border-right: none;
     box-sizing: border-box;
+
+    // Offset behind the main NavSidebar so both drawers are visible side-by-side.
+    // The temporary (mobile) drawer keeps left: 0 (full-screen overlay behavior).
+    @media (min-width: v.$breakpoint-md) {
+      left: v.$drawer-width;
+    }
   }
 }
 

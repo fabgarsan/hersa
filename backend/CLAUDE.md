@@ -74,6 +74,19 @@ backend/
 - Always include `id` as the first field in every serializer.
 - Never `print()` — always `import logging; logger = logging.getLogger(__name__)`.
 - Never hardcode secrets — always `decouple.config('VAR')`.
+- **Every list GET endpoint MUST paginate** using `StandardResultsSetPagination` from `apps.core.pagination`. Never return a plain `many=True` array from a list view. Exceptions: action/report endpoints, bounded sub-resources (see `api-contract.md §Pagination`).
+
+```python
+# Mandatory list view pattern
+from apps.core.pagination import StandardResultsSetPagination
+
+def get(self, request: Request) -> Response:
+    qs = MyModel.objects.all()
+    paginator = StandardResultsSetPagination()
+    page = paginator.paginate_queryset(qs, request)
+    serializer = MySerializer(page, many=True)
+    return paginator.get_paginated_response(serializer.data)
+```
 
 ## Helpers vs utils
 

@@ -5,15 +5,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import Alert from "@mui/material/Alert";
 import Autocomplete from "@mui/material/Autocomplete";
 import Box from "@mui/material/Box";
-import Skeleton from "@mui/material/Skeleton";
 import Snackbar from "@mui/material/Snackbar";
 import Stack from "@mui/material/Stack";
 import TextField from "@mui/material/TextField";
-import Typography from "@mui/material/Typography";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useTheme } from "@mui/material/styles";
 
-import { MutationButton } from "@shared/components";
+import { LoadingState, MutationButton, PageHeader } from "@shared/components";
 import { isNetworkError } from "@api/offlineMutationEvents";
 import { useTiendaRole } from "@modules/tienda/shared/hooks/useTiendaRole";
 import { useGetProductosQuery } from "@modules/tienda/features/catalogo/api/getProductosQuery";
@@ -49,12 +47,7 @@ export default function ReposicionPage() {
   }
 
   if (isLoadingJornada || isLoadingProductos) {
-    return (
-      <Box className={styles.root}>
-        <Skeleton variant="rectangular" height={56} className={styles.skeleton} />
-        <Skeleton variant="rectangular" height={160} className={styles.skeleton} />
-      </Box>
-    );
+    return <LoadingState variant="skeleton" rows={2} />;
   }
 
   if (!jornada) {
@@ -94,9 +87,14 @@ export default function ReposicionPage() {
 
   return (
     <Box className={styles.root}>
-      <Typography variant="h5" className={styles.title}>
-        Reposición de inventario
-      </Typography>
+      <PageHeader
+        title="Reposición"
+        breadcrumbs={[
+          { label: "Tienda", href: "/tienda" },
+          { label: "Jornadas", href: "/tienda/jornadas" },
+          { label: "Reposición" },
+        ]}
+      />
 
       <Box component="form" onSubmit={handleSubmit(onSubmit)} noValidate className={styles.form}>
         <Stack spacing={3}>

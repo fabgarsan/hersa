@@ -90,9 +90,45 @@ For validation errors (400):
 
 ## Pagination
 
-- `PageNumberPagination` with `page_size=20`
+**Rule: every GET endpoint that returns a collection MUST use `StandardResultsSetPagination`.**
+
+- Class: `apps.core.pagination.StandardResultsSetPagination` (default page_size=20, max=100)
 - Query params: `?page=2&page_size=50`
-- The frontend uses `next` for infinite scroll or `count` for classic pagination
+- Response shape is always:
+
+```json
+{
+  "count": 42,
+  "next": "http://.../resource/?page=3",
+  "previous": "http://.../resource/?page=1",
+  "results": [ ... ]
+}
+```
+
+**Backend pattern** (mandatory for all list views):
+
+```python
+def get(self, request: Request) -> Response:
+    qs = MyModel.objects.all()
+    paginator = StandardResultsSetPagination()
+    page = paginator.paginate_queryset(qs, request)
+    serializer = MySerializer(page, many=True)
+    return paginator.get_paginated_response(serializer.data)
+```
+
+**Frontend pattern** (mandatory for all list pages — see `frontend/CLAUDE.md`):
+
+```ts
+const adapter = useDrfAdapter<MyType>({
+  queryFn: (params) => fetchMyItems(params),
+  queryKey: ['my', 'items'],
+});
+```
+
+**Exceptions** (do NOT paginate):
+- Action/computation endpoints (`POST` returning a calculated result, close summaries, reports)
+- Sub-resources bounded by parent cardinality (e.g. stock per product across ≤N locations)
+- Endpoints explicitly designed for full-dataset consumption (dropdown population with `page_size=200`)
 
 ## Business domain resources
 

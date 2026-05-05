@@ -21,8 +21,8 @@ class TestProductListView:
 
         assert response.status_code == 200
         data = response.json()
-        assert len(data) >= 2
-        product_ids = [p["id"] for p in data]
+        assert len(data["results"]) >= 2
+        product_ids = [p["id"] for p in data["results"]]
         assert str(active.id) in product_ids
         assert str(inactive.id) in product_ids
 
@@ -35,7 +35,7 @@ class TestProductListView:
 
         assert response.status_code == 200
         data = response.json()
-        product_ids = [p["id"] for p in data]
+        product_ids = [p["id"] for p in data["results"]]
         assert str(active.id) in product_ids
         assert str(inactive.id) not in product_ids
 
@@ -48,7 +48,7 @@ class TestProductListView:
 
         assert response.status_code == 200
         data = response.json()
-        product_ids = [p["id"] for p in data]
+        product_ids = [p["id"] for p in data["results"]]
         assert str(active.id) not in product_ids
         assert str(inactive.id) in product_ids
 
@@ -69,7 +69,7 @@ class TestProductListView:
 
         assert response.status_code == 200
         data = response.json()
-        product_data = next(p for p in data if p["id"] == str(product.id))
+        product_data = next(p for p in data["results"] if p["id"] == str(product.id))
         assert "avg_cost" in product_data
         assert "sale_price" in product_data
         assert product_data["sale_price"] == "99.99"
@@ -83,7 +83,7 @@ class TestProductListView:
 
         assert response.status_code == 200
         data = response.json()
-        product_data = next(p for p in data if p["id"] == str(product.id))
+        product_data = next(p for p in data["results"] if p["id"] == str(product.id))
         assert "avg_cost" not in product_data
         assert "sale_price" not in product_data
 

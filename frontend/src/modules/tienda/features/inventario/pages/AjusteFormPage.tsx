@@ -10,9 +10,8 @@ import MenuItem from "@mui/material/MenuItem";
 import Snackbar from "@mui/material/Snackbar";
 import Stack from "@mui/material/Stack";
 import TextField from "@mui/material/TextField";
-import Typography from "@mui/material/Typography";
 
-import { MutationButton } from "@shared/components";
+import { MutationButton, PageHeader } from "@shared/components";
 import { isNetworkError } from "@api/offlineMutationEvents";
 import { useTiendaRole } from "@modules/tienda/shared/hooks/useTiendaRole";
 import { TIENDA_ROUTES } from "@modules/tienda/constants/routes";
@@ -78,9 +77,14 @@ export default function AjusteFormPage() {
 
   return (
     <Box className={styles.root}>
-      <Typography variant="h5" className={styles.title}>
-        Nuevo ajuste de inventario
-      </Typography>
+      <PageHeader
+        title="Nuevo ajuste"
+        breadcrumbs={[
+          { label: "Tienda", href: "/tienda" },
+          { label: "Ajustes", href: "/tienda/ajustes" },
+          { label: "Nuevo ajuste" },
+        ]}
+      />
 
       {formError && (
         <Alert severity="error" className={styles.formError}>

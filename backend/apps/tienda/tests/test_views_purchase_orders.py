@@ -87,7 +87,7 @@ class TestPurchaseOrderListView:
 
         assert response.status_code == 200
         data = response.json()
-        for order in data:
+        for order in data["results"]:
             assert order["status"] == PurchaseOrder.Status.PENDING
 
 

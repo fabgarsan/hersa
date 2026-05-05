@@ -115,21 +115,25 @@ class ProductListView(_TiendaRoleMixin, APIView):
 
     def get(self, request: Request) -> Response:
         is_admin: bool = self._is_admin(request)
-        serializer: ProductAdminSerializer | ProductSellerSerializer
 
         if is_admin:
             qs = Product.objects.all()
             activo_param: str | None = request.query_params.get("activo")
             if activo_param is not None:
-                is_active: bool = activo_param.lower() == "true"
-                qs = qs.filter(is_active=is_active)
-            serializer = ProductAdminSerializer(qs, many=True)
+                qs = qs.filter(is_active=activo_param.lower() == "true")
         else:
             # BR-020: sellers only see active products
             qs = Product.objects.filter(is_active=True)
-            serializer = ProductSellerSerializer(qs, many=True)
 
-        return Response(serializer.data)
+        paginator = StandardResultsSetPagination()
+        page = paginator.paginate_queryset(qs, request)
+        if is_admin:
+            serializer: ProductAdminSerializer | ProductSellerSerializer = ProductAdminSerializer(
+                page, many=True
+            )
+        else:
+            serializer = ProductSellerSerializer(page, many=True)
+        return paginator.get_paginated_response(serializer.data)
 
     def post(self, request: Request) -> Response:
         write_serializer = ProductWriteSerializer(data=request.data)
@@ -186,8 +190,10 @@ class SupplierListView(APIView):
 
     def get(self, request: Request) -> Response:
         suppliers = Supplier.objects.all()
-        serializer = SupplierSerializer(suppliers, many=True)
-        return Response(serializer.data)
+        paginator = StandardResultsSetPagination()
+        page = paginator.paginate_queryset(suppliers, request)
+        serializer = SupplierSerializer(page, many=True)
+        return paginator.get_paginated_response(serializer.data)
 
     def post(self, request: Request) -> Response:
         write_serializer = SupplierWriteSerializer(data=request.data)
@@ -386,9 +392,17 @@ class PurchaseOrderListView(_TiendaRoleMixin, APIView):
             if _parse_uuid(proveedor_id) is None:
                 return Response({"detail": "proveedor_id inválido."}, status=400)
             qs = qs.filter(supplier_id=proveedor_id)
-        if self._is_admin(request):
-            return Response(PurchaseOrderAdminSerializer(qs, many=True).data)
-        return Response(PurchaseOrderSellerSerializer(qs, many=True).data)
+
+        is_admin = self._is_admin(request)
+        paginator = StandardResultsSetPagination()
+        page = paginator.paginate_queryset(qs, request)
+        if is_admin:
+            serializer: PurchaseOrderAdminSerializer | PurchaseOrderSellerSerializer = (
+                PurchaseOrderAdminSerializer(page, many=True)
+            )
+        else:
+            serializer = PurchaseOrderSellerSerializer(page, many=True)
+        return paginator.get_paginated_response(serializer.data)
 
     def post(self, request: Request) -> Response:
         assert isinstance(request.user, User)
@@ -743,9 +757,16 @@ class SalesDayListView(_TiendaRoleMixin, APIView):
         qs = SalesDay.objects.select_related("location", "seller", "closed_by")
         if not is_admin:
             qs = qs.filter(seller=request.user)
+
+        paginator = StandardResultsSetPagination()
+        page = paginator.paginate_queryset(qs, request)
         if is_admin:
-            return Response(SalesDayAdminSerializer(qs, many=True).data)
-        return Response(SalesDaySellerSerializer(qs, many=True).data)
+            serializer: SalesDayAdminSerializer | SalesDaySellerSerializer = SalesDayAdminSerializer(
+                page, many=True
+            )
+        else:
+            serializer = SalesDaySellerSerializer(page, many=True)
+        return paginator.get_paginated_response(serializer.data)
 
     def post(self, request: Request) -> Response:
         assert isinstance(request.user, User)

@@ -1,13 +1,12 @@
 import { Navigate, useParams } from "react-router-dom";
-import Alert from "@mui/material/Alert";
 import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import Divider from "@mui/material/Divider";
-import Skeleton from "@mui/material/Skeleton";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 
+import { ErrorState, LoadingState, PageHeader } from "@shared/components";
 import { useTiendaRole } from "@modules/tienda/shared/hooks/useTiendaRole";
 import { TIENDA_ROUTES } from "@modules/tienda/constants/routes";
 import { useGetJornadaQuery } from "../api/getJornadaQuery";
@@ -31,35 +30,23 @@ export default function JornadaDetailPage() {
   }
 
   if (isLoading) {
-    return (
-      <Box className={styles.root}>
-        <Skeleton variant="rectangular" height={120} className={styles.skeleton} />
-        <Skeleton variant="rectangular" height={200} className={styles.skeleton} />
-      </Box>
-    );
+    return <LoadingState variant="skeleton" rows={2} />;
   }
 
   if (isError || !jornada) {
-    return (
-      <Box className={styles.root}>
-        <Alert severity="error">Error al cargar la jornada. Intenta nuevamente.</Alert>
-      </Box>
-    );
+    return <ErrorState title="Error al cargar la jornada" description="Intenta nuevamente." />;
   }
 
   return (
     <Box className={styles.root}>
-      <Stack
-        direction={{ xs: "column", sm: "row" }}
-        justifyContent="space-between"
-        alignItems={{ xs: "flex-start", sm: "center" }}
-        className={styles.header}
-        spacing={2}
-      >
-        <Typography variant="h5" className={styles.title}>
-          Detalle de jornada
-        </Typography>
-      </Stack>
+      <PageHeader
+        title={`Jornada ${id?.slice(0, 8)}…`}
+        breadcrumbs={[
+          { label: "Tienda", href: "/tienda" },
+          { label: "Jornadas", href: "/tienda/jornadas" },
+          { label: `Jornada ${id?.slice(0, 8)}…` },
+        ]}
+      />
 
       <AlertaCajaAlert cashAlert={jornada.cashAlert} />
 

@@ -4,7 +4,6 @@ import Alert from "@mui/material/Alert";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import CircularProgress from "@mui/material/CircularProgress";
-import Skeleton from "@mui/material/Skeleton";
 import Stack from "@mui/material/Stack";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -15,6 +14,7 @@ import Typography from "@mui/material/Typography";
 import LockIcon from "@mui/icons-material/Lock";
 
 import { isNetworkError } from "@api/offlineMutationEvents";
+import { LoadingState, PageHeader } from "@shared/components";
 import { useTiendaRole } from "@modules/tienda/shared/hooks/useTiendaRole";
 import { TIENDA_ROUTES } from "@modules/tienda/constants/routes";
 import { useResumenCierreMutation } from "../api/resumenCierreMutation";
@@ -77,12 +77,7 @@ export default function CierreResumenPage() {
   }
 
   if (isLoadingResumen) {
-    return (
-      <Box className={styles.root}>
-        <Skeleton variant="rectangular" height={40} className={styles.skeleton} />
-        <Skeleton variant="rectangular" height={300} className={styles.skeleton} />
-      </Box>
-    );
+    return <LoadingState variant="skeleton" rows={2} />;
   }
 
   const handleCerrar = () => {
@@ -112,9 +107,15 @@ export default function CierreResumenPage() {
 
   return (
     <Box className={styles.root}>
-      <Typography variant="h5" className={styles.title}>
-        Cierre de jornada
-      </Typography>
+      <PageHeader
+        title="Cierre — Resumen"
+        breadcrumbs={[
+          { label: "Tienda", href: "/tienda" },
+          { label: "Jornadas", href: "/tienda/jornadas" },
+          { label: `Jornada ${id?.slice(0, 8)}…`, href: `/tienda/jornadas/${id}` },
+          { label: "Cierre — Resumen" },
+        ]}
+      />
 
       <CierreProgressBar step={3} />
 

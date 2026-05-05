@@ -6,8 +6,6 @@ export { default as ProveedorListPage } from "./pages/ProveedorListPage";
 export { default as ProveedorFormPage } from "./pages/ProveedorFormPage";
 
 // Components
-export { ProductoTable } from "./components/ProductoTable";
-export { ProveedorTable } from "./components/ProveedorTable";
 export { ProveedorPanel } from "./components/ProveedorPanel";
 
 // Types
@@ -20,7 +18,5 @@ export type {
   ProveedoresQueryParams,
   ProductoFormValues,
   ProveedorFormValues,
-  ProductoTableProps,
-  ProveedorTableProps,
   ProveedorPanelProps,
 } from "./types";

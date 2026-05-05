@@ -2,15 +2,13 @@ import { Navigate } from "react-router-dom";
 import { Controller } from "react-hook-form";
 import Alert from "@mui/material/Alert";
 import Box from "@mui/material/Box";
-import Skeleton from "@mui/material/Skeleton";
 import Snackbar from "@mui/material/Snackbar";
 import Stack from "@mui/material/Stack";
 import TextField from "@mui/material/TextField";
-import Typography from "@mui/material/Typography";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useTheme } from "@mui/material/styles";
 
-import { MutationButton } from "@shared/components";
+import { ErrorState, LoadingState, MutationButton, PageHeader } from "@shared/components";
 import { useTiendaRole } from "@modules/tienda/shared/hooks/useTiendaRole";
 import { useProveedorForm } from "../hooks/useProveedorForm";
 import styles from "./ProveedorFormPage.module.scss";
@@ -39,27 +37,31 @@ export default function ProveedorFormPage() {
   }
 
   if (isEditMode && isLoadingProveedor) {
-    return (
-      <Box className={styles.root}>
-        <Skeleton variant="rectangular" height={56} className={styles.skeleton} />
-        <Skeleton variant="rectangular" height={56} className={styles.skeleton} />
-      </Box>
-    );
+    return <LoadingState variant="skeleton" rows={2} />;
   }
 
   if (isEditMode && errorProveedor) {
-    return (
-      <Box className={styles.root}>
-        <Alert severity="error">Error al cargar el proveedor. Intenta nuevamente.</Alert>
-      </Box>
-    );
+    return <ErrorState title="Error al cargar el proveedor" description="Intenta nuevamente." />;
   }
 
   return (
     <Box className={styles.root}>
-      <Typography variant="h5" className={styles.title}>
-        {isEditMode ? "Editar Proveedor" : "Nuevo Proveedor"}
-      </Typography>
+      <PageHeader
+        title={isEditMode ? "Editar proveedor" : "Nuevo proveedor"}
+        breadcrumbs={
+          isEditMode
+            ? [
+                { label: "Tienda", href: "/tienda" },
+                { label: "Proveedores", href: "/tienda/proveedores" },
+                { label: "Editar proveedor" },
+              ]
+            : [
+                { label: "Tienda", href: "/tienda" },
+                { label: "Proveedores", href: "/tienda/proveedores" },
+                { label: "Nuevo proveedor" },
+              ]
+        }
+      />
 
       <Box component="form" onSubmit={handleSubmit(onSubmit)} noValidate className={styles.form}>
         <Stack spacing={3}>
