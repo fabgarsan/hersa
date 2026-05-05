@@ -9,7 +9,11 @@ export const TIENDA_API = {
   JORNADA_ABIERTA: "/api/v1/tienda/jornadas/abierta/",
   AJUSTES: "/api/v1/tienda/ajustes/",
 <<<<<<< HEAD
+<<<<<<< HEAD
   ORDENES_DESDE_REABASTECIMIENTO: "/api/v1/tienda/ordenes-compra/desde-reabastecimiento/",
 =======
 >>>>>>> f35c572 (feat(tienda): implement frontend foundation — shared hooks, components, and theme (HRS-54))
+=======
+  ORDENES_DESDE_REABASTECIMIENTO: "/api/v1/tienda/ordenes-compra/desde-reabastecimiento/",
+>>>>>>> 7ba1577 (feat(tienda): add inventario feature — stock view, reabastecimiento, ajustes)
 } as const;
