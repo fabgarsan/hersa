@@ -76,7 +76,10 @@ export default defineConfig({
   ],
   resolve: {
     alias: {
+<<<<<<< HEAD
       "@/tests": resolve(__dirname, "tests"),
+=======
+>>>>>>> 1fea187 (feat(tienda): implement frontend foundation — shared hooks, components, and theme (HRS-54))
       "@": resolve(__dirname, "src"),
       "@shared": resolve(__dirname, "src/shared"),
       "@modules": resolve(__dirname, "src/modules"),
