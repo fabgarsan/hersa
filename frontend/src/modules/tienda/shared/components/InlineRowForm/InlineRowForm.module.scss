@@ -1,0 +1,23 @@
+@use '@/shared/styles/variables' as v;
+
+.root {
+  width: 100%;
+}
+
+.mobileStack {
+  display: flex;
+  flex-direction: column;
+  gap: v.sp(2);
+}
+
+.mobileCard {
+  padding: v.sp(2);
+}
+
+.appendButton {
+  margin-top: v.sp(2);
+}
+
+.skeletonRow {
+  margin-bottom: v.sp(1);
+}

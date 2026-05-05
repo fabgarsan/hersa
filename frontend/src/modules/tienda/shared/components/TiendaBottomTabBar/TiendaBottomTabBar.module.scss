@@ -1,0 +1,23 @@
+@use '@/shared/styles/variables' as v;
+
+.root {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1100;
+
+  @media (min-width: v.$breakpoint-md) {
+    display: none;
+  }
+
+  :global(.MuiBottomNavigation-root) {
+    background-color: v.$bg-paper;
+    border-top: 1px solid v.$border-default;
+    height: 56px;
+  }
+
+  :global(.MuiBottomNavigationAction-root.Mui-selected) {
+    color: v.$secondary-main;
+  }
+}

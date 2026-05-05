@@ -72,6 +72,58 @@ export const hersaTheme = createTheme({
         },
       },
     },
+    MuiTableHead: {
+      styleOverrides: {
+        root: {
+          backgroundColor: "#0B1F3A",
+          "& .MuiTableCell-head": {
+            color: "#FFFFFF",
+            fontWeight: 600,
+          },
+        },
+      },
+    },
+    MuiTableRow: {
+      styleOverrides: {
+        root: {
+          "&:nth-of-type(odd)": {
+            backgroundColor: "#FFFFFF",
+          },
+          "&:nth-of-type(even)": {
+            backgroundColor: "#F5F5F5",
+          },
+          "&:hover": {
+            backgroundColor: "rgba(11,31,58,0.04)",
+          },
+        },
+      },
+    },
+    MuiCard: {
+      defaultProps: {
+        elevation: 0,
+      },
+      styleOverrides: {
+        root: {
+          border: "1px solid rgba(0,0,0,0.08)",
+          borderRadius: 8,
+        },
+      },
+    },
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          borderRadius: 4,
+          minHeight: 36,
+        },
+      },
+    },
+    MuiChip: {
+      styleOverrides: {
+        root: {
+          borderRadius: 16,
+        },
+      },
+    },
   },
   shape: {
     borderRadius: 8,

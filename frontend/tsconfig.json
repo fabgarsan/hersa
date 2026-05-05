@@ -18,7 +18,8 @@
     "noUncheckedSideEffectImports": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./*"],
+      "@/tests/*": ["./tests/*"],
+      "@/*": ["./src/*"],
       "@shared/*": ["src/shared/*"],
       "@modules/*": ["src/modules/*"],
       "@api/*": ["src/api/*"]

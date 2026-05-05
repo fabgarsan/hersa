@@ -52,7 +52,7 @@ describe("ConfirmDialog", () => {
     const { getAllByRole } = renderDialog({ loading: true });
     const buttons = getAllByRole("button");
     expect(buttons).toHaveLength(2);
-    buttons.forEach((button) => {
+    buttons.forEach((button: HTMLElement) => {
       expect(button).toBeDisabled();
     });
   });
@@ -91,7 +91,7 @@ describe("ConfirmDialog", () => {
     );
     expect(spinner).toBeInTheDocument();
     const buttons = getAllByRole("button");
-    buttons.forEach((button) => {
+    buttons.forEach((button: HTMLElement) => {
       expect(button).toBeDisabled();
     });
   });
@@ -104,7 +104,7 @@ describe("ConfirmDialog", () => {
     const cancelButton = getByRole("button", { name: /cancelar/i });
     expect(cancelButton).not.toBeDisabled();
     const buttons = getAllByRole("button");
-    buttons.forEach((button) => {
+    buttons.forEach((button: HTMLElement) => {
       expect(button).not.toBeDisabled();
     });
   });
