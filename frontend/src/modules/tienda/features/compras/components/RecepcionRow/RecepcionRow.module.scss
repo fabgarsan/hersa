@@ -1,0 +1,6 @@
+@use '@/shared/styles/variables' as v;
+
+.monetary {
+  font-variant-numeric: tabular-nums;
+  color: v.$text-secondary;
+}
