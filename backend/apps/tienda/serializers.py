@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from decimal import Decimal
 from typing import Any
 
 from rest_framework import serializers
@@ -550,3 +551,65 @@ class AdjustmentSerializer(serializers.Serializer[None]):
                 "La nota es obligatoria para movimientos de tipo AJUSTE."
             )
         return value
+
+
+# ---------------------------------------------------------------------------
+# 3.1  ProductWriteSerializer — create/update a Product
+# ---------------------------------------------------------------------------
+
+
+class ProductWriteSerializer(serializers.ModelSerializer[Product]):
+    """Create/update a Product. avg_cost is system-managed (editable=False), excluded automatically."""
+
+    class Meta:
+        model = Product
+        fields = [
+            "id",
+            "name",
+            "description",
+            "unit_label",
+            "sale_price",
+            "reorder_point",
+            "suggested_order_qty",
+            "is_active",
+        ]
+        read_only_fields = ["id"]
+
+    def validate_sale_price(self, value: Decimal) -> Decimal:
+        if value <= Decimal("0"):
+            raise serializers.ValidationError("El precio de venta debe ser mayor a 0.")
+        return value
+
+    def validate_reorder_point(self, value: int) -> int:
+        if value < 0:
+            raise serializers.ValidationError("El punto de reorden no puede ser negativo.")
+        return value
+
+    def validate_suggested_order_qty(self, value: int) -> int:
+        if value < 0:
+            raise serializers.ValidationError(
+                "La cantidad sugerida de orden no puede ser negativa."
+            )
+        return value
+
+
+# ---------------------------------------------------------------------------
+# 3.2  SupplierWriteSerializer — create/update a Supplier
+# ---------------------------------------------------------------------------
+
+
+class SupplierWriteSerializer(serializers.ModelSerializer[Supplier]):
+    class Meta:
+        model = Supplier
+        fields = ["id", "name", "contact"]
+        read_only_fields = ["id"]
+        extra_kwargs = {"contact": {"max_length": 1000}}
+
+
+# ---------------------------------------------------------------------------
+# 3.3  ProductSupplierAssociationSerializer — link a Supplier to a Product
+# ---------------------------------------------------------------------------
+
+
+class ProductSupplierAssociationSerializer(serializers.Serializer[None]):
+    supplier = serializers.PrimaryKeyRelatedField(queryset=Supplier.objects.all())
