@@ -8,5 +8,4 @@ export const TIENDA_API = {
   JORNADAS: "/api/v1/tienda/jornadas/",
   JORNADA_ABIERTA: "/api/v1/tienda/jornadas/abierta/",
   AJUSTES: "/api/v1/tienda/ajustes/",
-  ORDENES_DESDE_REABASTECIMIENTO: "/api/v1/tienda/ordenes-compra/desde-reabastecimiento/",
 } as const;
