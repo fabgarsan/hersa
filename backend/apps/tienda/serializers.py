@@ -568,10 +568,19 @@ class CloseSalesDaySerializer(serializers.Serializer[None]):
                     )
                 }
             )
-        if not attrs.get("items"):
+        items = attrs.get("items") or []
+        if not items:
             raise serializers.ValidationError(
                 {"items": "Debe incluir al menos un producto en el conteo."}
             )
+        seen: set[Any] = set()
+        for item in items:
+            pid = item["product"].pk
+            if pid in seen:
+                raise serializers.ValidationError(
+                    {"items": "No se permiten productos duplicados en el conteo."}
+                )
+            seen.add(pid)
         return attrs
 
 

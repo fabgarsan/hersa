@@ -15,6 +15,7 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from apps.core.pagination import StandardResultsSetPagination
 from apps.tienda.helpers import (
     BulkInsufficientStockError,
     InsufficientStockError,
@@ -949,6 +950,7 @@ class SalesDayCloseSummaryView(_TiendaRoleMixin, APIView):
     """POST /jornadas/{pk}/resumen-cierre/ — read-only close preview, never persists."""
 
     permission_classes = [IsTiendaAdminOrVendedor]
+    throttle_classes = [TiendaWriteThrottle]
 
     def post(self, request: Request, pk: _uuid.UUID) -> Response:
         assert isinstance(request.user, User)
@@ -979,10 +981,11 @@ class SalesDayCloseView(_TiendaRoleMixin, APIView):
         serializer.is_valid(raise_exception=True)
         vd = serializer.validated_data
 
-        # Lock the SalesDay row to prevent concurrent close attempts.
+        # Lock only the SalesDay row (of=("self",) avoids outer-join conflict on
+        # nullable closed_by FK in PostgreSQL's FOR UPDATE clause).
         with transaction.atomic():
             sales_day: SalesDay = get_object_or_404(
-                SalesDay.objects.select_for_update().select_related(
+                SalesDay.objects.select_for_update(of=("self",)).select_related(
                     "location", "seller", "closed_by"
                 ),
                 pk=pk,
@@ -1080,6 +1083,12 @@ class AdjustmentView(APIView):
                 )
             qs = qs.filter(product_id=product_uuid)
 
+        paginator = StandardResultsSetPagination()
+        page = paginator.paginate_queryset(qs, request, view=self)
+        if page is not None:
+            return paginator.get_paginated_response(
+                InventoryMovementSerializer(page, many=True).data
+            )
         return Response(InventoryMovementSerializer(qs, many=True).data)
 
     def post(self, request: Request) -> Response:

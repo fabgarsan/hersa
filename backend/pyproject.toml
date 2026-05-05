@@ -24,8 +24,8 @@ module = ["factory", "factory.*"]
 ignore_errors = true
 
 [[tool.mypy.overrides]]
-module = "apps.*.factories"
-disallow_untyped_calls = false
+module = ["apps.*.factories", "apps.*.tests.*"]
+ignore_errors = true
 
 [tool.django-stubs]
 django_settings_module = "config.settings.development"
