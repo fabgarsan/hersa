@@ -4,7 +4,7 @@ from decimal import Decimal
 
 import pytest
 
-from apps.tienda.models import Product, ProductSupplier, Supplier
+from apps.tienda.models import ProductSupplier
 from apps.tienda.tests.factories import ProductFactory, SupplierFactory
 
 

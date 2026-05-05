@@ -3,7 +3,6 @@ from __future__ import annotations
 from decimal import Decimal
 
 import pytest
-from django.db import IntegrityError
 
 from apps.tienda.helpers import (
     BulkInsufficientStockError,
@@ -21,7 +20,6 @@ from apps.tienda.models import (
     InventoryMovement,
     Location,
     LocationStock,
-    Product,
     PurchaseOrder,
     SalesDay,
 )
