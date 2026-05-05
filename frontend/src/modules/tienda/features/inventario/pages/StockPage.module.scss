@@ -1,0 +1,66 @@
+@use '@/shared/styles/variables' as v;
+
+.root {
+  padding: v.sp(3);
+}
+
+.title {
+  color: v.$primary-main;
+  font-weight: 600;
+  margin-bottom: v.sp(3);
+}
+
+.autocomplete {
+  margin-bottom: v.sp(3);
+  max-width: 480px;
+}
+
+.sectionTitle {
+  color: v.$primary-main;
+  font-weight: 600;
+  margin-bottom: v.sp(2);
+}
+
+.totalBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: v.sp(1);
+  margin-bottom: v.sp(2);
+}
+
+.tableContainer {
+  border: 1px solid v.$border-default;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.tableHead {
+  background-color: v.$primary-main;
+
+  th {
+    color: v.$bg-paper;
+    font-weight: 600;
+  }
+}
+
+.tableRow {
+  &:nth-child(even) {
+    background-color: v.$bg-surface-1;
+  }
+}
+
+.emptyState {
+  color: v.$text-secondary;
+  margin-top: v.sp(2);
+}
+
+.skeletonAutocomplete {
+  max-width: 480px;
+  height: 56px;
+  border-radius: 4px;
+  margin-bottom: v.sp(3);
+}
+
+.skeletonTable {
+  border-radius: 4px;
+}
