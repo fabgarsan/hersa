@@ -5,7 +5,6 @@ import { useCierreDraft } from "./useCierreDraft";
 import type { CierreDraft } from "../types";
 
 describe("useCierreDraft", () => {
-  let getItemSpy: MockInstance<typeof Storage.prototype.getItem>;
   let setItemSpy: MockInstance<typeof Storage.prototype.setItem>;
   let removeItemSpy: MockInstance<typeof Storage.prototype.removeItem>;
 
@@ -28,7 +27,6 @@ describe("useCierreDraft", () => {
   beforeEach(() => {
     localStorage.clear();
     vi.clearAllMocks();
-    getItemSpy = vi.spyOn(Storage.prototype, "getItem");
     setItemSpy = vi.spyOn(Storage.prototype, "setItem");
     removeItemSpy = vi.spyOn(Storage.prototype, "removeItem");
   });
@@ -117,10 +115,7 @@ describe("useCierreDraft", () => {
       });
 
       const key = `tienda:cierre_draft:${validJornadaId}`;
-      expect(setItemSpy).toHaveBeenCalledWith(
-        key,
-        JSON.stringify(validDraft)
-      );
+      expect(setItemSpy).toHaveBeenCalledWith(key, JSON.stringify(validDraft));
     });
 
     it("should handle multiple saves (overwrites previous draft)", () => {

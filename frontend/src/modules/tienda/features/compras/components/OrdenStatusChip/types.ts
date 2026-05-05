@@ -1,7 +1,7 @@
 import type { OrdenEstado, OrdenLineaEstado } from "../../types";
 
 export interface OrdenStatusChipProps {
-  status: OrdenEstado | OrdenLineaEstado;
+  status: OrdenEstado | OrdenLineaEstado | (string & {});
   size?: "small" | "medium";
 }
 
