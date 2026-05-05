@@ -1,0 +1,65 @@
+@use '@/shared/styles/variables' as v;
+
+.root {
+  padding: v.sp(3);
+}
+
+.header {
+  margin-bottom: v.sp(2);
+}
+
+.title {
+  color: v.$primary-main;
+  font-weight: 600;
+}
+
+.filters {
+  margin-bottom: v.sp(2);
+}
+
+.error {
+  margin-bottom: v.sp(2);
+}
+
+.skeletonHeader {
+  margin-bottom: v.sp(2);
+  border-radius: 4px;
+}
+
+.skeletonTable {
+  border-radius: 4px;
+}
+
+.gridWrapper {
+  height: 500px;
+  width: 100%;
+
+  :global(.MuiDataGrid-columnHeaders) {
+    background-color: v.$primary-main;
+    color: v.$bg-paper;
+  }
+
+  :global(.MuiDataGrid-columnHeaderTitle) {
+    font-weight: 600;
+    color: v.$bg-paper;
+  }
+
+  :global(.MuiDataGrid-sortIcon),
+  :global(.MuiDataGrid-menuIconButton),
+  :global(.MuiDataGrid-iconButtonContainer) {
+    color: v.$bg-paper;
+  }
+
+  :global(.MuiDataGrid-row:nth-child(even)) {
+    background-color: v.$bg-surface-1;
+  }
+}
+
+.grid {
+  border: 1px solid v.$border-default;
+}
+
+.idCell {
+  font-family: monospace;
+  font-size: 0.75rem;
+}

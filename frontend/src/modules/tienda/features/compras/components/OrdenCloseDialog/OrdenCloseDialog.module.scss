@@ -1,0 +1,49 @@
+@use '@/shared/styles/variables' as v;
+
+.title {
+  color: v.$primary-main;
+  font-weight: 600;
+}
+
+.alert {
+  margin-bottom: v.sp(2);
+}
+
+.tableLabel {
+  margin-bottom: v.sp(1);
+  color: v.$text-secondary;
+}
+
+.tableWrapper {
+  margin-bottom: v.sp(2);
+  border: 1px solid v.$border-default;
+  border-radius: 4px;
+  overflow-x: auto;
+
+  :global(.MuiTableHead-root) {
+    background-color: v.$primary-main;
+
+    :global(.MuiTableCell-head) {
+      color: v.$bg-paper;
+      font-weight: 600;
+    }
+  }
+}
+
+.lineIdCell {
+  font-family: monospace;
+  font-size: 0.75rem;
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.form {
+  margin-top: v.sp(2);
+}
+
+.actions {
+  padding: v.sp(2);
+  gap: v.sp(1);
+}

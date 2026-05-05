@@ -1,0 +1,66 @@
+@use '@/shared/styles/variables' as v;
+
+.root {
+  padding: v.sp(3);
+}
+
+.header {
+  margin-bottom: v.sp(3);
+}
+
+.title {
+  color: v.$primary-main;
+  font-weight: 600;
+}
+
+.card {
+  border: 1px solid v.$border-default;
+  margin-bottom: v.sp(2);
+}
+
+.fieldLabel {
+  color: v.$text-secondary;
+  font-weight: 500;
+  min-width: 80px;
+}
+
+.divider {
+  margin-bottom: v.sp(2);
+}
+
+.sectionTitle {
+  color: v.$primary-main;
+  font-weight: 600;
+  margin-bottom: v.sp(1);
+}
+
+.tableWrapper {
+  border: 1px solid v.$border-default;
+  border-radius: 4px;
+  overflow-x: auto;
+
+  :global(.MuiTableHead-root) {
+    background-color: v.$primary-main;
+
+    :global(.MuiTableCell-head) {
+      color: v.$bg-paper;
+      font-weight: 600;
+    }
+  }
+
+  :global(.MuiTableBody-root) {
+    :global(.MuiTableRow-root:nth-child(even)) {
+      background-color: v.$bg-surface-1;
+    }
+  }
+}
+
+.emptyCell {
+  color: v.$text-secondary;
+  padding: v.sp(3);
+}
+
+.skeleton {
+  margin-bottom: v.sp(2);
+  border-radius: 4px;
+}
