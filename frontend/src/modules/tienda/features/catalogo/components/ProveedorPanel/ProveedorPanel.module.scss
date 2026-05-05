@@ -1,0 +1,45 @@
+@use '@/shared/styles/variables' as v;
+
+.root {
+  padding: v.sp(2);
+  border: 1px solid v.$border-default;
+  border-radius: 8px;
+  background-color: v.$bg-paper;
+}
+
+.title {
+  color: v.$primary-main;
+  font-weight: 600;
+  margin-bottom: v.sp(1);
+}
+
+.divider {
+  margin-bottom: v.sp(2);
+}
+
+.empty {
+  color: v.$text-secondary;
+  font-style: italic;
+}
+
+.chipList {
+  margin-bottom: v.sp(2);
+}
+
+.addSection {
+  margin-top: v.sp(2);
+}
+
+.autocomplete {
+  flex: 1;
+  min-width: 200px;
+}
+
+.addButton {
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.addError {
+  margin-top: v.sp(1);
+}

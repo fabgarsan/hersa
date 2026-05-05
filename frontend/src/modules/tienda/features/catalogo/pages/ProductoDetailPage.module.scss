@@ -1,0 +1,39 @@
+@use '@/shared/styles/variables' as v;
+
+.root {
+  padding: v.sp(3);
+  max-width: 800px;
+}
+
+.header {
+  margin-bottom: v.sp(2);
+}
+
+.title {
+  color: v.$primary-main;
+  font-weight: 600;
+}
+
+.card {
+  border: 1px solid v.$border-default;
+  margin-bottom: v.sp(3);
+}
+
+.fieldLabel {
+  color: v.$text-secondary;
+  display: block;
+  margin-bottom: v.sp(0.5);
+  font-weight: 500;
+  text-transform: uppercase;
+  font-size: 0.7rem;
+  letter-spacing: 0.05em;
+}
+
+.proveedorSection {
+  margin-top: v.sp(2);
+}
+
+.skeleton {
+  margin-bottom: v.sp(2);
+  border-radius: 8px;
+}
