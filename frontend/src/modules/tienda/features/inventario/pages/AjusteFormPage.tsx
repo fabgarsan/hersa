@@ -68,10 +68,7 @@ export default function AjusteFormPage() {
       onError: (err) => {
         if (isNetworkError(err)) return;
         if (isAxiosError(err) && err.response?.status === 400) {
-          const data = err.response.data as Record<string, unknown>;
-          const firstKey = Object.keys(data)[0];
-          const msg = firstKey ? String(data[firstKey]) : "Error de validación. Revisa los campos.";
-          setFormError(msg);
+          setFormError("Error de validación. Revisa los campos e intenta nuevamente.");
         } else {
           setFormError("Error al registrar el ajuste. Intenta nuevamente.");
         }

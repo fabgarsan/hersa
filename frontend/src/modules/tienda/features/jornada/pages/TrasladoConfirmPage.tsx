@@ -14,11 +14,15 @@ import { TIENDA_ROUTES } from "@modules/tienda/constants/routes";
 import type { LocationState } from "../types";
 import styles from "./TrasladoConfirmPage.module.scss";
 
+function isLocationState(s: unknown): s is LocationState {
+  return typeof s === "object" && s !== null && ("items" in s || "productos" in s);
+}
+
 export default function TrasladoConfirmPage() {
   const { role } = useTiendaRole();
   const navigate = useNavigate();
   const location = useLocation();
-  const state = location.state as LocationState | null;
+  const state = isLocationState(location.state) ? location.state : null;
 
   if (role === "none") {
     return <Navigate to="/tienda" replace />;

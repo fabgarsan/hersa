@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
-import { isAxiosError } from "axios";
 import Alert from "@mui/material/Alert";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
@@ -60,14 +59,7 @@ export default function ReabastecimientoPage() {
         },
         onError: (err) => {
           if (isNetworkError(err)) return;
-          if (isAxiosError(err) && err.response?.data) {
-            const detail = (err.response.data as Record<string, unknown>)["detail"];
-            setSubmitError(
-              typeof detail === "string" ? detail : "Error al crear la orden. Intenta nuevamente.",
-            );
-          } else {
-            setSubmitError("Error al crear la orden. Intenta nuevamente.");
-          }
+          setSubmitError("Error al crear la orden. Intenta nuevamente.");
         },
       },
     );

@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { OrdenStatusChip } from "./OrdenStatusChip";
-import type { OrdenLineaEstado } from "../../types";
+import type { OrdenEstado, OrdenLineaEstado } from "../../types";
 
 describe("OrdenStatusChip", () => {
   describe("PurchaseOrder status labels", () => {
@@ -48,12 +48,12 @@ describe("OrdenStatusChip", () => {
 
   describe("unknown status", () => {
     it("should render the raw unknown status string as fallback", () => {
-      render(<OrdenStatusChip status="unknown_status" />);
+      render(<OrdenStatusChip status={"unknown_status" as unknown as OrdenEstado} />);
       expect(screen.getByText("unknown_status")).toBeInTheDocument();
     });
 
     it("should render unknown status with default color", () => {
-      render(<OrdenStatusChip status="some_random_status" />);
+      render(<OrdenStatusChip status={"some_random_status" as unknown as OrdenEstado} />);
       expect(screen.getByText("some_random_status")).toBeInTheDocument();
     });
   });
@@ -110,7 +110,9 @@ describe("OrdenStatusChip", () => {
     });
 
     it("should apply default color for unknown status", () => {
-      const { container } = render(<OrdenStatusChip status="some_unknown" />);
+      const { container } = render(
+        <OrdenStatusChip status={"some_unknown" as unknown as OrdenEstado} />,
+      );
       const chip = container.querySelector(".MuiChip-colorDefault");
       expect(chip).toBeInTheDocument();
     });

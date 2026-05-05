@@ -11,11 +11,11 @@ export async function fetchJornada(id: string): Promise<Jornada> {
   return data;
 }
 
-export function useGetJornadaQuery(id: string | undefined) {
+export function useGetJornadaQuery(id: string | undefined, enabled = true) {
   return useQuery({
     queryKey: ["tienda", "jornadas", id],
     queryFn: () => fetchJornada(id!),
-    enabled: !!id,
+    enabled: !!id && enabled,
     staleTime: 30_000,
   });
 }
