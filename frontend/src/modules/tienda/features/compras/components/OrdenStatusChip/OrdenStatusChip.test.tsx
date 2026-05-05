@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { OrdenStatusChip } from "./OrdenStatusChip";
-import type { OrdenEstado, OrdenLineaEstado } from "../../types";
+import type { OrdenLineaEstado } from "../../types";
 
 describe("OrdenStatusChip", () => {
   describe("PurchaseOrder status labels", () => {
@@ -66,17 +66,13 @@ describe("OrdenStatusChip", () => {
     });
 
     it("should render with small size when explicitly set", () => {
-      const { container } = render(
-        <OrdenStatusChip status="initiated" size="small" />
-      );
+      const { container } = render(<OrdenStatusChip status="initiated" size="small" />);
       const chip = container.querySelector(".MuiChip-sizeSmall");
       expect(chip).toBeInTheDocument();
     });
 
     it("should render with medium size when specified", () => {
-      const { container } = render(
-        <OrdenStatusChip status="initiated" size="medium" />
-      );
+      const { container } = render(<OrdenStatusChip status="initiated" size="medium" />);
       const chip = container.querySelector(".MuiChip-sizeMedium");
       expect(chip).toBeInTheDocument();
     });
@@ -96,9 +92,7 @@ describe("OrdenStatusChip", () => {
     });
 
     it("should apply warning color for partially_received status", () => {
-      const { container } = render(
-        <OrdenStatusChip status="partially_received" />
-      );
+      const { container } = render(<OrdenStatusChip status="partially_received" />);
       const chip = container.querySelector(".MuiChip-colorWarning");
       expect(chip).toBeInTheDocument();
     });
