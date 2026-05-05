@@ -1,0 +1,1 @@
+export { TiendaTabBar } from './TiendaTabBar';
