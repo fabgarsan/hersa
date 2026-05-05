@@ -1,0 +1,24 @@
+@use '@/shared/styles/variables' as v;
+
+.root {
+  padding: v.sp(3);
+}
+
+.title {
+  color: v.$primary-main;
+  font-weight: 600;
+  margin-bottom: v.sp(1);
+}
+
+.form {
+  width: 100%;
+}
+
+.skeleton {
+  margin-bottom: v.sp(2);
+  border-radius: 4px;
+}
+
+.readOnlyCell {
+  color: v.$text-secondary;
+}

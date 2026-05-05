@@ -1,0 +1,52 @@
+@use '@/shared/styles/variables' as v;
+
+.root {
+  padding: v.sp(3);
+}
+
+.title {
+  color: v.$primary-main;
+  font-weight: 600;
+}
+
+.header {
+  margin-bottom: v.sp(2);
+}
+
+.card {
+  border: 1px solid v.$border-default;
+  box-shadow: none;
+  margin-bottom: v.sp(3);
+
+  &:hover {
+    border-color: v.$primary-light;
+  }
+}
+
+.fieldLabel {
+  color: v.$text-secondary;
+  font-weight: 500;
+  min-width: 140px;
+}
+
+.sectionTitle {
+  color: v.$primary-main;
+  font-weight: 600;
+  margin-bottom: v.sp(1);
+}
+
+.divider {
+  margin-bottom: v.sp(2);
+}
+
+.skeleton {
+  margin-bottom: v.sp(2);
+  border-radius: 4px;
+}
+
+.monetarySection {
+  padding: v.sp(2);
+  border: 1px solid v.$border-default;
+  border-radius: 4px;
+  margin-top: v.sp(2);
+}

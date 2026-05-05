@@ -1,0 +1,16 @@
+@use '@/shared/styles/variables' as v;
+
+.root {
+  margin-bottom: v.sp(3);
+}
+
+.stepLabel {
+  font-size: 0.75rem;
+  color: v.$text-secondary;
+}
+
+.stepLabelActive {
+  font-size: 0.75rem;
+  color: v.$primary-main;
+  font-weight: 600;
+}

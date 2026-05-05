@@ -1,0 +1,52 @@
+@use '@/shared/styles/variables' as v;
+
+.root {
+  padding: v.sp(3);
+}
+
+.title {
+  color: v.$primary-main;
+  font-weight: 600;
+  margin-bottom: v.sp(1);
+}
+
+.skeleton {
+  margin-bottom: v.sp(2);
+  border-radius: 4px;
+}
+
+.tableWrapper {
+  margin-bottom: v.sp(3);
+  overflow-x: auto;
+
+  :global(.MuiTableHead-root) {
+    background-color: v.$primary-main;
+  }
+
+  :global(.MuiTableCell-head) {
+    color: v.$bg-paper;
+    font-weight: 600;
+  }
+
+  :global(.MuiTableRow-root:nth-child(even)) {
+    background-color: v.$bg-surface-1;
+  }
+}
+
+.monetarySummary {
+  padding: v.sp(2);
+  border: 1px solid v.$border-default;
+  border-radius: 4px;
+  margin-bottom: v.sp(3);
+}
+
+.summaryLabel {
+  color: v.$text-secondary;
+  font-weight: 500;
+  min-width: 180px;
+}
+
+.alertValue {
+  color: v.$warning-main;
+  font-weight: 600;
+}

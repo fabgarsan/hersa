@@ -18,6 +18,18 @@ import {
   OrdenEditInitiatedPage,
   RecepcionFormPage,
 } from "@modules/tienda/features/compras";
+import {
+  VendedorHomePage,
+  JornadaOpenPage,
+  TrasladoAperturaPage,
+  TrasladoConfirmPage,
+  ReposicionPage,
+  CierreConteoPage,
+  CierreDineroPage,
+  CierreResumenPage,
+  JornadaListPage,
+  JornadaDetailPage,
+} from "@modules/tienda/features/jornada";
 import styles from "./TiendaPage.module.scss";
 
 export default function TiendaPage() {
@@ -43,6 +55,16 @@ export default function TiendaPage() {
               <Route path="ordenes/:id" element={<OrdenDetailPage />} />
               <Route path="ordenes/:id/editar" element={<OrdenEditInitiatedPage />} />
               <Route path="ordenes/:id/recepcionar" element={<RecepcionFormPage />} />
+              <Route path="vendedor" element={<VendedorHomePage />} />
+              <Route path="jornadas" element={<JornadaListPage />} />
+              <Route path="jornadas/nueva" element={<JornadaOpenPage />} />
+              <Route path="jornadas/:id" element={<JornadaDetailPage />} />
+              <Route path="jornadas/:id/apertura" element={<TrasladoAperturaPage />} />
+              <Route path="jornadas/:id/apertura/confirmar" element={<TrasladoConfirmPage />} />
+              <Route path="jornadas/:id/cierre/conteo" element={<CierreConteoPage />} />
+              <Route path="jornadas/:id/cierre/dinero" element={<CierreDineroPage />} />
+              <Route path="jornadas/:id/cierre/resumen" element={<CierreResumenPage />} />
+              <Route path="reposicion" element={<ReposicionPage />} />
               <Route path="*" element={<Navigate to="." replace />} />
             </Routes>
           </main>
