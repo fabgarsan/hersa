@@ -1,0 +1,66 @@
+@use '@/shared/styles/variables' as v;
+
+.drawer {
+  width: v.$drawer-width;
+  flex-shrink: 0;
+
+  :global(.MuiDrawer-paper) {
+    width: v.$drawer-width;
+    background-color: v.$primary-dark;
+    color: #ffffff;
+    border-right: none;
+    box-sizing: border-box;
+  }
+}
+
+.toolbar {
+  padding: v.sp(2) v.sp(2);
+}
+
+.brandTitle {
+  color: v.$secondary-main;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+
+.list {
+  padding: v.sp(1) 0;
+}
+
+.navLink {
+  text-decoration: none;
+  display: block;
+}
+
+.navItem {
+  color: v.$text-on-dark;
+  border-left: 3px solid transparent;
+  padding: v.sp(1) v.sp(2);
+
+  :global(.MuiListItemIcon-root) {
+    color: v.$icon-on-dark;
+    min-width: 40px;
+  }
+}
+
+.navItemActive {
+  color: v.$secondary-main;
+  border-left: 3px solid v.$secondary-main;
+  background-color: v.$secondary-tint-8;
+  padding: v.sp(1) v.sp(2);
+
+  :global(.MuiListItemIcon-root) {
+    color: v.$secondary-main;
+    min-width: 40px;
+  }
+}
+
+.navLabel {
+  font-size: 0.875rem;
+  font-weight: 400;
+}
+
+.navLabelActive {
+  font-size: 0.875rem;
+  font-weight: 600;
+}

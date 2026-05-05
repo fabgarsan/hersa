@@ -63,7 +63,7 @@ export default function App() {
           <Route element={<ProtectedLayout />}>
             <Route path={ROUTES.HOME} element={<SmartRedirect />} />
             <Route
-              path={ROUTES.TIENDA}
+              path="/tienda/*"
               element={
                 <ModuleGuard module="modules.access_tienda">
                   <TiendaPage />
