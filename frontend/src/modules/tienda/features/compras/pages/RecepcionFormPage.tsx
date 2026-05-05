@@ -6,7 +6,6 @@ import Select from "@mui/material/Select";
 import FormControl from "@mui/material/FormControl";
 import FormHelperText from "@mui/material/FormHelperText";
 import InputLabel from "@mui/material/InputLabel";
-import Skeleton from "@mui/material/Skeleton";
 import Snackbar from "@mui/material/Snackbar";
 import Stack from "@mui/material/Stack";
 import TextField from "@mui/material/TextField";
@@ -15,7 +14,7 @@ import { Controller } from "react-hook-form";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useTheme } from "@mui/material/styles";
 
-import { MutationButton } from "@shared/components";
+import { ErrorState, LoadingState, MutationButton, PageHeader } from "@shared/components";
 import { useTiendaRole } from "@modules/tienda/shared/hooks/useTiendaRole";
 import { MonetaryInput } from "@modules/tienda/shared/components/MonetaryInput";
 import { TIENDA_ROUTES } from "@modules/tienda/constants/routes";
@@ -51,21 +50,11 @@ export default function RecepcionFormPage() {
   }
 
   if (isLoadingOrden) {
-    return (
-      <Box className={styles.root}>
-        <Skeleton variant="rectangular" height={56} className={styles.skeleton} />
-        <Skeleton variant="rectangular" height={56} className={styles.skeleton} />
-        <Skeleton variant="rectangular" height={56} className={styles.skeleton} />
-      </Box>
-    );
+    return <LoadingState variant="skeleton" rows={3} />;
   }
 
   if (isError || !orden) {
-    return (
-      <Box className={styles.root}>
-        <Alert severity="error">Error al cargar la orden. Intenta nuevamente.</Alert>
-      </Box>
-    );
+    return <ErrorState title="Error al cargar la orden" description="Intenta nuevamente." />;
   }
 
   // Only lines that are not complete can be received
@@ -84,9 +73,15 @@ export default function RecepcionFormPage() {
 
   return (
     <Box className={styles.root}>
-      <Typography variant="h5" className={styles.title}>
-        Registrar Recepción
-      </Typography>
+      <PageHeader
+        title="Recepcionar orden"
+        breadcrumbs={[
+          { label: "Tienda", href: "/tienda" },
+          { label: "Órdenes", href: "/tienda/ordenes" },
+          { label: `Orden ${id?.slice(0, 8)}…`, href: `/tienda/ordenes/${id}` },
+          { label: "Recepcionar" },
+        ]}
+      />
 
       <Box component="form" onSubmit={handleSubmit(onSubmit)} noValidate className={styles.form}>
         <Stack spacing={3}>

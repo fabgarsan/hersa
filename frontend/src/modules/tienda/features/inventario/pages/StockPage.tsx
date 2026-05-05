@@ -12,6 +12,7 @@ import TableRow from "@mui/material/TableRow";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 
+import { PageHeader } from "@shared/components";
 import { assertUuid } from "@shared/utils/assertUuid";
 import { useTiendaRole } from "@modules/tienda/shared/hooks/useTiendaRole";
 import { useGetProductosQuery } from "@modules/tienda/features/catalogo/api/getProductosQuery";
@@ -57,9 +58,10 @@ export default function StockPage() {
 
   return (
     <Box className={styles.root}>
-      <Typography variant="h5" className={styles.title}>
-        Stock de productos
-      </Typography>
+      <PageHeader
+        title="Stock por producto"
+        breadcrumbs={[{ label: "Tienda", href: "/tienda" }, { label: "Stock" }]}
+      />
 
       {isLoadingProductos ? (
         <Skeleton variant="rectangular" className={styles.skeletonAutocomplete} />

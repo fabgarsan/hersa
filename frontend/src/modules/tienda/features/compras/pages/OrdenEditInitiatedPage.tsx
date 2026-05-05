@@ -3,7 +3,6 @@ import { Navigate } from "react-router-dom";
 import Alert from "@mui/material/Alert";
 import Box from "@mui/material/Box";
 import IconButton from "@mui/material/IconButton";
-import Skeleton from "@mui/material/Skeleton";
 import Snackbar from "@mui/material/Snackbar";
 import Stack from "@mui/material/Stack";
 import TableCell from "@mui/material/TableCell";
@@ -15,7 +14,7 @@ import { Controller } from "react-hook-form";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useTheme } from "@mui/material/styles";
 
-import { MutationButton } from "@shared/components";
+import { ErrorState, LoadingState, MutationButton, PageHeader } from "@shared/components";
 import { useTiendaRole } from "@modules/tienda/shared/hooks/useTiendaRole";
 import { InlineRowForm } from "@modules/tienda/shared/components/InlineRowForm";
 import { MonetaryInput } from "@modules/tienda/shared/components/MonetaryInput";
@@ -73,20 +72,11 @@ export default function OrdenEditInitiatedPage() {
   }
 
   if (isLoadingRaw || isLoadingOrden || isLoadingProveedores || isLoadingProductos) {
-    return (
-      <Box className={styles.root}>
-        <Skeleton variant="rectangular" height={56} className={styles.skeleton} />
-        <Skeleton variant="rectangular" height={200} className={styles.skeleton} />
-      </Box>
-    );
+    return <LoadingState variant="skeleton" rows={2} />;
   }
 
   if (errorOrden) {
-    return (
-      <Box className={styles.root}>
-        <Alert severity="error">Error al cargar la orden. Intenta nuevamente.</Alert>
-      </Box>
-    );
+    return <ErrorState title="Error al cargar la orden" description="Intenta nuevamente." />;
   }
 
   // Redirect if order is not in "initiated" state
@@ -99,9 +89,15 @@ export default function OrdenEditInitiatedPage() {
 
   return (
     <Box className={styles.root}>
-      <Typography variant="h5" className={styles.title}>
-        Editar Orden de Compra
-      </Typography>
+      <PageHeader
+        title="Editar orden"
+        breadcrumbs={[
+          { label: "Tienda", href: "/tienda" },
+          { label: "Órdenes", href: "/tienda/ordenes" },
+          { label: `Orden ${id?.slice(0, 8)}…`, href: `/tienda/ordenes/${id}` },
+          { label: "Editar" },
+        ]}
+      />
 
       <Box component="form" onSubmit={handleSubmit(onSubmit)} noValidate className={styles.form}>
         <Stack spacing={3}>

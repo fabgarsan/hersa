@@ -115,6 +115,41 @@ Every feature (and `shared/`) has two folders for auxiliary logic. The distincti
 | RQ mutations         | `<method><n>Mutation.ts`      | `createRoomMutation.ts`                 |
 | Component props      | `<ComponentName>Props`        | `AppHeaderProps`, `ModuleGuardProps`    |
 
+## List pages — mandatory pattern
+
+Every page that displays a paginated collection **must** use `DataTable` + `useDrfAdapter`. Never use `DataGrid` directly or manage `page`/`pageSize` state manually in list pages.
+
+```tsx
+import { DataTable } from '@shared/components/DataTable';
+import type { DataTableColumn } from '@shared/components/DataTable';
+import { useDrfAdapter } from '@shared/hooks';
+
+const columns: DataTableColumn<MyType>[] = [
+  { field: 'name', headerName: 'Nombre', flex: 2 },
+  // field must be keyof MyType & string; use 'id' for actions column
+];
+
+const adapter = useDrfAdapter<MyType>({
+  queryFn: (params) => fetchMyItems(params),   // DrfQueryParams → DrfPaginatedResponse<MyType>
+  queryKey: ['my', 'items'],
+});
+
+<DataTable<MyType>
+  tableId="my-module-items"            // unique per table; used for localStorage column config
+  columns={columns}
+  adapter={adapter}
+  searchMode="client"                  // "server" only if backend implements ?search=
+  toolbarActions={<Button>+ Nuevo</Button>}   // CTA buttons go here, not in the page header
+/>
+```
+
+**Rules:**
+- `field` in `DataTableColumn<R>` must be `keyof R & string` — use an existing domain field (e.g. `id`) for action-only columns; `renderCell` overrides the display.
+- Domain-specific filters (status chips, active/inactive) live as `useState` in the page; reset with `adapter.onPageChange(0)` in the filter handler; include filter state in `queryKey`.
+- Use `searchMode="client"` by default; switch to `"server"` only when the backend supports `?search=`.
+- `toolbarActions` is for action buttons (create, export triggers); do not duplicate them in the page header.
+- **Exception**: action/selection tables (e.g. replenishment, bulk operations) may use MUI `Table` when the primary purpose is selection for a mutation, not data browsing.
+
 ## Do Not Touch
 
 - `src/shared/styles/_variables.scss` — brand tokens; only the design system owner should modify.

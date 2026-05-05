@@ -1,4 +1,9 @@
+import { useState } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
+import IconButton from "@mui/material/IconButton";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import { useTheme } from "@mui/material/styles";
+import MenuIcon from "@mui/icons-material/Menu";
 
 import { ModuleLayout } from "@shared/components";
 import { TiendaSidebar } from "@modules/tienda/shared/components/TiendaSidebar";
@@ -40,12 +45,33 @@ import styles from "./TiendaPage.module.scss";
 
 export default function TiendaPage() {
   const { isAdmin } = useTiendaRole();
+  const theme = useTheme();
+  const isMdUp = useMediaQuery(theme.breakpoints.up("md"));
+  const [tiendaSidebarOpen, setTiendaSidebarOpen] = useState(false);
 
   return (
     <div className={styles.root}>
-      <ModuleLayout title="Tienda">
+      <ModuleLayout
+        title="Tienda"
+        actions={
+          isAdmin && !isMdUp ? (
+            <IconButton
+              color="primary"
+              aria-label="abrir menú tienda"
+              onClick={() => setTiendaSidebarOpen(true)}
+            >
+              <MenuIcon />
+            </IconButton>
+          ) : undefined
+        }
+      >
         <div className={styles.layout}>
-          {isAdmin && <TiendaSidebar />}
+          {isAdmin && (
+            <TiendaSidebar
+              mobileOpen={tiendaSidebarOpen}
+              onMobileClose={() => setTiendaSidebarOpen(false)}
+            />
+          )}
           <main className={styles.content}>
             <Routes>
               <Route index element={<p>Selecciona una opción</p>} />

@@ -7,9 +7,8 @@ import Alert from "@mui/material/Alert";
 import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
 import TextField from "@mui/material/TextField";
-import Typography from "@mui/material/Typography";
 
-import { MutationButton } from "@shared/components";
+import { MutationButton, PageHeader } from "@shared/components";
 import { isNetworkError } from "@api/offlineMutationEvents";
 import { useTiendaRole } from "@modules/tienda/shared/hooks/useTiendaRole";
 import { TIENDA_ROUTES } from "@modules/tienda/constants/routes";
@@ -58,9 +57,14 @@ export default function JornadaOpenPage() {
 
   return (
     <Box className={styles.root}>
-      <Typography variant="h5" className={styles.title}>
-        Nueva Jornada
-      </Typography>
+      <PageHeader
+        title="Nueva jornada de venta"
+        breadcrumbs={[
+          { label: "Tienda", href: "/tienda" },
+          { label: "Jornadas", href: "/tienda/jornadas" },
+          { label: "Nueva jornada" },
+        ]}
+      />
 
       {conflictError && (
         <Alert severity="error" className={styles.conflictAlert}>

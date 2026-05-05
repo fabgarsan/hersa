@@ -2,7 +2,6 @@ import { Navigate } from "react-router-dom";
 import Alert from "@mui/material/Alert";
 import Box from "@mui/material/Box";
 import IconButton from "@mui/material/IconButton";
-import Skeleton from "@mui/material/Skeleton";
 import Snackbar from "@mui/material/Snackbar";
 import Stack from "@mui/material/Stack";
 import TableCell from "@mui/material/TableCell";
@@ -14,7 +13,7 @@ import { Controller } from "react-hook-form";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useTheme } from "@mui/material/styles";
 
-import { MutationButton } from "@shared/components";
+import { LoadingState, MutationButton, PageHeader } from "@shared/components";
 import { useTiendaRole } from "@modules/tienda/shared/hooks/useTiendaRole";
 import { InlineRowForm } from "@modules/tienda/shared/components/InlineRowForm";
 import { MonetaryInput } from "@modules/tienda/shared/components/MonetaryInput";
@@ -68,19 +67,19 @@ export default function OrdenCreatePage() {
   const isLoadingCatalogs = isLoadingProveedores || isLoadingProductos;
 
   if (isLoadingCatalogs) {
-    return (
-      <Box className={styles.root}>
-        <Skeleton variant="rectangular" height={56} className={styles.skeleton} />
-        <Skeleton variant="rectangular" height={200} className={styles.skeleton} />
-      </Box>
-    );
+    return <LoadingState variant="skeleton" rows={2} />;
   }
 
   return (
     <Box className={styles.root}>
-      <Typography variant="h5" className={styles.title}>
-        Nueva Orden de Compra
-      </Typography>
+      <PageHeader
+        title="Nueva orden de compra"
+        breadcrumbs={[
+          { label: "Tienda", href: "/tienda" },
+          { label: "Órdenes", href: "/tienda/ordenes" },
+          { label: "Nueva orden" },
+        ]}
+      />
 
       <Box component="form" onSubmit={handleSubmit(onSubmit)} noValidate className={styles.form}>
         <Stack spacing={3}>

@@ -10,6 +10,7 @@ import InventoryIcon from "@mui/icons-material/Inventory";
 import CategoryIcon from "@mui/icons-material/Category";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import EventIcon from "@mui/icons-material/Event";
+import BusinessIcon from "@mui/icons-material/Business";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useTheme } from "@mui/material/styles";
 import { NavLink } from "react-router-dom";
@@ -21,6 +22,7 @@ import styles from "./TiendaSidebar.module.scss";
 const NAV_ITEMS: (TiendaNavItem & { icon: React.ReactNode })[] = [
   { label: "Inventario", path: TIENDA_ROUTES.STOCK, icon: <InventoryIcon /> },
   { label: "Catálogo", path: TIENDA_ROUTES.PRODUCTOS, icon: <CategoryIcon /> },
+  { label: "Proveedores", path: TIENDA_ROUTES.PROVEEDORES, icon: <BusinessIcon /> },
   { label: "Compras", path: TIENDA_ROUTES.ORDENES, icon: <ShoppingCartIcon /> },
   { label: "Jornadas", path: TIENDA_ROUTES.JORNADAS, icon: <EventIcon /> },
 ];

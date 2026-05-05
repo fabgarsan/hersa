@@ -88,7 +88,7 @@ class TestSalesDayListView:
 
         assert response.status_code == 200
         data = response.json()
-        ids = [j["id"] for j in data]
+        ids = [j["id"] for j in data["results"]]
         assert str(own.id) in ids
         assert str(other.id) not in ids
 

@@ -5,12 +5,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import Alert from "@mui/material/Alert";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
-import Skeleton from "@mui/material/Skeleton";
 import Stack from "@mui/material/Stack";
 import TableCell from "@mui/material/TableCell";
 import TextField from "@mui/material/TextField";
-import Typography from "@mui/material/Typography";
 
+import { LoadingState, PageHeader } from "@shared/components";
 import { useTiendaRole } from "@modules/tienda/shared/hooks/useTiendaRole";
 import { TIENDA_ROUTES } from "@modules/tienda/constants/routes";
 import { InlineRowForm } from "@modules/tienda/shared/components/InlineRowForm";
@@ -82,12 +81,7 @@ export default function CierreConteoPage() {
   }
 
   if (isLoadingJornada || isLoadingResumen) {
-    return (
-      <Box className={styles.root}>
-        <Skeleton variant="rectangular" height={40} className={styles.skeleton} />
-        <Skeleton variant="rectangular" height={300} className={styles.skeleton} />
-      </Box>
-    );
+    return <LoadingState variant="skeleton" rows={2} />;
   }
 
   if (!jornada && !resumenData) {
@@ -114,9 +108,15 @@ export default function CierreConteoPage() {
 
   return (
     <Box className={styles.root}>
-      <Typography variant="h5" className={styles.title}>
-        Cierre de jornada
-      </Typography>
+      <PageHeader
+        title="Cierre — Conteo"
+        breadcrumbs={[
+          { label: "Tienda", href: "/tienda" },
+          { label: "Jornadas", href: "/tienda/jornadas" },
+          { label: `Jornada ${id?.slice(0, 8)}…`, href: `/tienda/jornadas/${id}` },
+          { label: "Cierre — Conteo" },
+        ]}
+      />
 
       <CierreProgressBar step={1} />
 

@@ -7,7 +7,6 @@ import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import CircularProgress from "@mui/material/CircularProgress";
 import Divider from "@mui/material/Divider";
-import Skeleton from "@mui/material/Skeleton";
 import Snackbar from "@mui/material/Snackbar";
 import Stack from "@mui/material/Stack";
 import Table from "@mui/material/Table";
@@ -25,6 +24,7 @@ import { useTheme } from "@mui/material/styles";
 import { isAxiosError } from "axios";
 import { isNetworkError } from "@api/offlineMutationEvents";
 
+import { ErrorState, LoadingState, PageHeader } from "@shared/components";
 import { useTiendaRole } from "@modules/tienda/shared/hooks/useTiendaRole";
 import { TIENDA_ROUTES } from "@modules/tienda/constants/routes";
 import { useGetOrdenQuery } from "../api/getOrdenQuery";
@@ -72,20 +72,11 @@ export default function OrdenDetailPage() {
   }
 
   if (isLoading) {
-    return (
-      <Box className={styles.root}>
-        <Skeleton variant="rectangular" height={120} className={styles.skeleton} />
-        <Skeleton variant="rectangular" height={300} className={styles.skeleton} />
-      </Box>
-    );
+    return <LoadingState variant="skeleton" rows={2} />;
   }
 
   if (isError || !orden) {
-    return (
-      <Box className={styles.root}>
-        <Alert severity="error">Error al cargar la orden. Intenta nuevamente.</Alert>
-      </Box>
-    );
+    return <ErrorState title="Error al cargar la orden" description="Intenta nuevamente." />;
   }
 
   const handleConfirmar = () => {
@@ -138,66 +129,67 @@ export default function OrdenDetailPage() {
 
   return (
     <Box className={styles.root}>
-      <Stack
-        direction={{ xs: "column", sm: "row" }}
-        justifyContent="space-between"
-        alignItems={{ xs: "flex-start", sm: "center" }}
-        className={styles.header}
-        spacing={2}
-      >
-        <Typography variant="h5" className={styles.title}>
-          Detalle de Orden
-        </Typography>
-        <Stack direction="row" spacing={1} flexWrap="wrap">
-          {orden.status === "initiated" && isAdmin && (
-            <>
-              <Button
-                variant="outlined"
-                startIcon={<EditIcon />}
-                onClick={() => navigate(`${TIENDA_ROUTES.ORDENES}/${id}/editar`)}
-              >
-                Editar
-              </Button>
+      <PageHeader
+        title={`Orden ${id?.slice(0, 8)}…`}
+        breadcrumbs={[
+          { label: "Tienda", href: "/tienda" },
+          { label: "Órdenes", href: "/tienda/ordenes" },
+          { label: `Orden ${id?.slice(0, 8)}…` },
+        ]}
+        actions={
+          <Stack direction="row" spacing={1} flexWrap="wrap">
+            {orden.status === "initiated" && isAdmin && (
+              <>
+                <Button
+                  variant="outlined"
+                  startIcon={<EditIcon />}
+                  onClick={() => navigate(`${TIENDA_ROUTES.ORDENES}/${id}/editar`)}
+                >
+                  Editar
+                </Button>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  startIcon={
+                    isConfirming ? (
+                      <CircularProgress size={20} color="inherit" />
+                    ) : (
+                      <CheckCircleIcon />
+                    )
+                  }
+                  onClick={handleConfirmar}
+                  disabled={isConfirming}
+                >
+                  {isConfirming ? "Confirmando..." : "Confirmar Orden"}
+                </Button>
+              </>
+            )}
+            {isInProgress && (
               <Button
                 variant="contained"
                 color="primary"
-                startIcon={
-                  isConfirming ? (
-                    <CircularProgress size={20} color="inherit" />
-                  ) : (
-                    <CheckCircleIcon />
-                  )
-                }
-                onClick={handleConfirmar}
-                disabled={isConfirming}
+                startIcon={<ReceiptLongIcon />}
+                onClick={() => navigate(`${TIENDA_ROUTES.ORDENES}/${id}/recepcionar`)}
               >
-                {isConfirming ? "Confirmando..." : "Confirmar Orden"}
+                Recepcionar
               </Button>
-            </>
-          )}
-          {isInProgress && (
-            <Button
-              variant="contained"
-              color="primary"
-              startIcon={<ReceiptLongIcon />}
-              onClick={() => navigate(`${TIENDA_ROUTES.ORDENES}/${id}/recepcionar`)}
-            >
-              Recepcionar
-            </Button>
-          )}
-          {isInProgress && isAdmin && (
-            <Button
-              variant="outlined"
-              color="error"
-              startIcon={isCerrando ? <CircularProgress size={20} color="inherit" /> : <LockIcon />}
-              onClick={handleCerrar}
-              disabled={isCerrando}
-            >
-              {isCerrando ? "Cerrando..." : "Cerrar Orden"}
-            </Button>
-          )}
-        </Stack>
-      </Stack>
+            )}
+            {isInProgress && isAdmin && (
+              <Button
+                variant="outlined"
+                color="error"
+                startIcon={
+                  isCerrando ? <CircularProgress size={20} color="inherit" /> : <LockIcon />
+                }
+                onClick={handleCerrar}
+                disabled={isCerrando}
+              >
+                {isCerrando ? "Cerrando..." : "Cerrar Orden"}
+              </Button>
+            )}
+          </Stack>
+        }
+      />
 
       <Card elevation={0} className={styles.card}>
         <CardContent>

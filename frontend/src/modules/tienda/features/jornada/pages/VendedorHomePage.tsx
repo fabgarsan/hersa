@@ -1,10 +1,8 @@
 import { Navigate, useNavigate } from "react-router-dom";
-import Alert from "@mui/material/Alert";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
-import Skeleton from "@mui/material/Skeleton";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import AddIcon from "@mui/icons-material/Add";
@@ -12,6 +10,7 @@ import SwapHorizIcon from "@mui/icons-material/SwapHoriz";
 import InventoryIcon from "@mui/icons-material/Inventory";
 import LockIcon from "@mui/icons-material/Lock";
 
+import { ErrorState, LoadingState, PageHeader } from "@shared/components";
 import { useTiendaRole } from "@modules/tienda/shared/hooks/useTiendaRole";
 import { TIENDA_ROUTES } from "@modules/tienda/constants/routes";
 import { useGetJornadaAbiertaQuery } from "../api/getJornadaAbiertaQuery";
@@ -33,27 +32,19 @@ export default function VendedorHomePage() {
   }
 
   if (isLoading) {
-    return (
-      <Box className={styles.root}>
-        <Skeleton variant="rectangular" height={40} className={styles.title} />
-        <Skeleton variant="rectangular" height={160} />
-      </Box>
-    );
+    return <LoadingState variant="skeleton" rows={2} />;
   }
 
   if (isError) {
-    return (
-      <Box className={styles.root}>
-        <Alert severity="error">Error al cargar la jornada. Intenta nuevamente.</Alert>
-      </Box>
-    );
+    return <ErrorState title="Error al cargar la jornada" description="Intenta nuevamente." />;
   }
 
   return (
     <Box className={styles.root}>
-      <Typography variant="h5" className={styles.title}>
-        Mi jornada
-      </Typography>
+      <PageHeader
+        title="Mi jornada"
+        breadcrumbs={[{ label: "Tienda", href: "/tienda" }, { label: "Inicio vendedor" }]}
+      />
 
       {!jornada ? (
         <Box className={styles.emptyState}>

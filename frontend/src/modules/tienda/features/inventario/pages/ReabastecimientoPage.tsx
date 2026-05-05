@@ -5,8 +5,6 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Checkbox from "@mui/material/Checkbox";
 import CircularProgress from "@mui/material/CircularProgress";
-import Skeleton from "@mui/material/Skeleton";
-import Stack from "@mui/material/Stack";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -17,6 +15,7 @@ import Typography from "@mui/material/Typography";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 
 import { isNetworkError } from "@api/offlineMutationEvents";
+import { LoadingState, PageHeader } from "@shared/components";
 import { useTiendaRole } from "@modules/tienda/shared/hooks/useTiendaRole";
 import { TIENDA_ROUTES } from "@modules/tienda/constants/routes";
 import { useGetReabastecimientoQuery } from "../api/getReabastecimientoQuery";
@@ -66,12 +65,7 @@ export default function ReabastecimientoPage() {
   }
 
   if (isLoading) {
-    return (
-      <Box className={styles.root}>
-        <Skeleton variant="rectangular" height={40} className={styles.skeletonHeader} />
-        <Skeleton variant="rectangular" height={400} className={styles.skeletonTable} />
-      </Box>
-    );
+    return <LoadingState variant="skeleton" rows={2} />;
   }
 
   const allIds = items?.map((item) => item.product.id) ?? [];
@@ -80,17 +74,10 @@ export default function ReabastecimientoPage() {
 
   return (
     <Box className={styles.root}>
-      <Stack
-        direction={{ xs: "column", sm: "row" }}
-        justifyContent="space-between"
-        alignItems={{ xs: "flex-start", sm: "center" }}
-        className={styles.header}
-        spacing={2}
-      >
-        <Typography variant="h5" className={styles.title}>
-          Reabastecimiento sugerido
-        </Typography>
-      </Stack>
+      <PageHeader
+        title="Reabastecimiento sugerido"
+        breadcrumbs={[{ label: "Tienda", href: "/tienda" }, { label: "Reabastecimiento" }]}
+      />
 
       {isError && (
         <Alert severity="error" className={styles.error}>

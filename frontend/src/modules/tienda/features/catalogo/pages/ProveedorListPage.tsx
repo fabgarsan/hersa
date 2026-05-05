@@ -1,88 +1,93 @@
-import { useState, useCallback } from "react";
+import type { GridRenderCellParams } from "@mui/x-data-grid";
 import { useNavigate, Navigate } from "react-router-dom";
-import Alert from "@mui/material/Alert";
+import AddIcon from "@mui/icons-material/Add";
+import EditIcon from "@mui/icons-material/Edit";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
-import Skeleton from "@mui/material/Skeleton";
+import IconButton from "@mui/material/IconButton";
 import Stack from "@mui/material/Stack";
-import Typography from "@mui/material/Typography";
-import AddIcon from "@mui/icons-material/Add";
+import Tooltip from "@mui/material/Tooltip";
 
 import { useTiendaRole } from "@modules/tienda/shared/hooks/useTiendaRole";
-import { useGetProveedoresQuery } from "../api/getProveedoresQuery";
-import { ProveedorTable } from "../components/ProveedorTable";
+import { DataTable } from "@shared/components/DataTable";
+import type { DataTableColumn } from "@shared/components/DataTable";
+import { PageHeader } from "@shared/components";
+import { useDrfAdapter } from "@shared/hooks";
+import { fetchProveedores } from "../api/getProveedoresQuery";
+import type { Supplier } from "../types";
 import styles from "./ProveedorListPage.module.scss";
+
+function buildColumns(
+  isAdmin: boolean,
+  navigate: ReturnType<typeof useNavigate>,
+): DataTableColumn<Supplier>[] {
+  const columns: DataTableColumn<Supplier>[] = [
+    { field: "name", headerName: "Nombre", flex: 2, minWidth: 160 },
+    { field: "contact", headerName: "Contacto", flex: 2, minWidth: 160 },
+  ];
+
+  if (isAdmin) {
+    columns.push({
+      field: "id",
+      headerName: "Acciones",
+      width: 90,
+      sortable: false,
+      filterable: false,
+      renderCell: (params: GridRenderCellParams<Supplier, string>) => (
+        <Stack direction="row" spacing={0.5}>
+          <Tooltip title="Editar">
+            <IconButton
+              size="small"
+              onClick={() => navigate(`/tienda/proveedores/${params.value}/editar`)}
+              aria-label="Editar proveedor"
+            >
+              <EditIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+        </Stack>
+      ),
+    });
+  }
+
+  return columns;
+}
 
 export default function ProveedorListPage() {
   const { isAdmin, role } = useTiendaRole();
   const navigate = useNavigate();
 
-  const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
-
-  const { data, isLoading, isError } = useGetProveedoresQuery({ page, pageSize });
-
-  const handlePageChange = useCallback((newPage: number) => {
-    setPage(newPage);
-  }, []);
-
-  const handlePageSizeChange = useCallback((newSize: number) => {
-    setPageSize(newSize);
-    setPage(1);
-  }, []);
+  const adapter = useDrfAdapter<Supplier>({
+    queryFn: fetchProveedores,
+    queryKey: ["tienda", "proveedores"],
+  });
 
   if (role === "none") {
     return <Navigate to="/tienda" replace />;
   }
 
-  if (isLoading && !data) {
-    return (
-      <Box className={styles.root}>
-        <Skeleton variant="rectangular" height={40} className={styles.skeletonHeader} />
-        <Skeleton variant="rectangular" height={400} className={styles.skeletonTable} />
-      </Box>
-    );
-  }
-
   return (
     <Box className={styles.root}>
-      <Stack
-        direction={{ xs: "column", sm: "row" }}
-        justifyContent="space-between"
-        alignItems={{ xs: "flex-start", sm: "center" }}
-        className={styles.header}
-        spacing={2}
-      >
-        <Typography variant="h5" className={styles.title}>
-          Proveedores
-        </Typography>
-        {isAdmin && (
-          <Button
-            variant="contained"
-            color="primary"
-            startIcon={<AddIcon />}
-            onClick={() => navigate("/tienda/proveedores/nuevo")}
-          >
-            Nuevo Proveedor
-          </Button>
-        )}
-      </Stack>
+      <PageHeader
+        title="Proveedores"
+        breadcrumbs={[{ label: "Tienda", href: "/tienda" }, { label: "Proveedores" }]}
+      />
 
-      {isError && (
-        <Alert severity="error" className={styles.error}>
-          Error al cargar los proveedores. Intenta nuevamente.
-        </Alert>
-      )}
-
-      <ProveedorTable
-        proveedores={data?.results ?? []}
-        isLoading={isLoading}
-        isAdmin={isAdmin}
-        totalCount={data?.count ?? 0}
-        page={page}
-        pageSize={pageSize}
-        onPageChange={handlePageChange}
-        onPageSizeChange={handlePageSizeChange}
+      <DataTable<Supplier>
+        tableId="tienda-proveedores"
+        columns={buildColumns(isAdmin, navigate)}
+        adapter={adapter}
+        toolbarActions={
+          isAdmin ? (
+            <Button
+              variant="contained"
+              color="primary"
+              startIcon={<AddIcon />}
+              onClick={() => navigate("/tienda/proveedores/nuevo")}
+            >
+              Nuevo Proveedor
+            </Button>
+          ) : undefined
+        }
       />
     </Box>
   );
