@@ -1,0 +1,22 @@
+@use '@/shared/styles/variables' as v;
+
+.root {
+  width: 100%;
+}
+
+.grid {
+  border: 1px solid v.$border-default;
+
+  :global(.MuiDataGrid-columnHeaders) {
+    background-color: v.$primary-main;
+    color: v.$bg-paper;
+  }
+
+  :global(.MuiDataGrid-row:nth-child(even)) {
+    background-color: v.$bg-default;
+  }
+
+  :global(.MuiDataGrid-row:hover) {
+    background-color: v.$primary-tint-1;
+  }
+}

@@ -1,0 +1,27 @@
+@use '@/shared/styles/variables' as v;
+
+.root {
+  padding: v.sp(3);
+}
+
+.header {
+  margin-bottom: v.sp(2);
+}
+
+.title {
+  color: v.$primary-main;
+  font-weight: 600;
+}
+
+.error {
+  margin-bottom: v.sp(2);
+}
+
+.skeletonHeader {
+  margin-bottom: v.sp(2);
+  border-radius: 4px;
+}
+
+.skeletonTable {
+  border-radius: 4px;
+}
